@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","error":{"name":"HANDLER_ERROR","cause":{"info":{},"name":"INVALID_TRANSACTION"},"code":-32000,"message":"Server error","data":{"TxExecutionError":{"InvalidTxError":{"SignerDoesNotExist":{"signer_id":"ks-b328.sandbox"}}}}},"id":"keyhole-131"}

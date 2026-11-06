@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>keyhole · status · replay of live-testnet-20261106T150556Z</title>
+<style>
+:root {
+  color-scheme: light;
+  --paper: #F2F0E9;
+  --ink: #111110;
+  --dim: rgb(17 17 16 / 0.62);
+  --rule: rgb(17 17 16 / 0.3);
+  --mono: "Iosevka Term", "Iosevka", ui-monospace, "SF Mono", "Cascadia Mono", "DejaVu Sans Mono", "Liberation Mono", Menlo, Consolas, monospace;
+  --sans: "Atkinson Hyperlegible", system-ui, "Segoe UI", "Helvetica Neue", "Noto Sans", sans-serif;
+  --display: "D-DIN Condensed", "DIN Condensed", "Barlow Condensed", "Liberation Sans Narrow", "Nimbus Sans Narrow", "Helvetica Neue", system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--paper); color: var(--ink); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; font: 16px/1.5 var(--sans); }
+a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+a:focus-visible, summary:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+.page { container-type: inline-size; max-width: 1440px; margin: 0 auto; padding: 16px clamp(12px, 3vw, 32px) 56px; }
+
+.strip { margin: 0 0 clamp(20px, 4cqi, 40px); padding: 8px 12px; border: 2px solid var(--ink); font: 700 13px/1.45 var(--mono); overflow-wrap: anywhere; }
+
+.hero h1 { margin: 0; font-family: var(--display); font-weight: 700; font-stretch: condensed; font-size: min(120px, 10cqi); line-height: 0.95; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.sub { margin: 14px 0 0; max-width: 62ch; font-size: clamp(17px, 2cqi, 24px); line-height: 1.35; overflow-wrap: anywhere; }
+.meta, .result { margin: 12px 0 0; font: 14px/1.5 var(--mono); overflow-wrap: anywhere; }
+.result { font-weight: 700; }
+
+.cols { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px 24px; margin-top: 32px; align-items: start; }
+@container (min-width: 1100px) {
+  .cols { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .primary { grid-column: 1 / 9; }
+  .evidence { grid-column: 9 / 13; }
+}
+.sect-h { margin: 0 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--ink); font: 700 13px/1.4 var(--mono); letter-spacing: 0.03em; overflow-wrap: anywhere; }
+/* The left column: the plate, then the step table (LAYOUT R8 order: card, steps, refusal bodies, staircase). */
+.primary { min-width: 0; }
+.sect-sub { margin: 0 0 12px; font-size: 14px; line-height: 1.4; }
+
+/* The plate: a grid in the system monospace, sized from the width of its own container. */
+.plate-slot { container-type: inline-size; min-width: 0; }
+.plate { --cols: 11ch minmax(0, 1fr) 14ch; font-family: var(--mono); font-size: min(18px, (100cqi - 4px) / 49); line-height: 1.35; width: min(calc(98ch + 4px), 100%); border: 2px solid var(--ink); background: var(--paper); }
+.plate-head { display: flex; justify-content: space-between; gap: 2ch; padding: 0.35em 1ch; border-bottom: 2px solid var(--ink); font-weight: 700; }
+.plate-title { min-width: 0; overflow-wrap: anywhere; }
+.plate-tag { flex: none; }
+.plate-foot { padding: 0.35em 1ch; border-top: 2px solid var(--ink); overflow-wrap: anywhere; }
+.plate-grid { display: grid; }
+.row { display: grid; grid-template-columns: var(--cols); border-top: 1px solid var(--rule); }
+.row:first-child { border-top: 0; }
+.row > div { min-width: 0; padding: 0.25em 0.5ch; }
+.row.head > div { font-size: 0.75em; font-weight: 700; letter-spacing: 0.05em; }
+.label { font-weight: 700; border-right: 1px solid var(--rule); }
+.line { white-space: pre-wrap; overflow-wrap: anywhere; }
+.dim { color: var(--dim); }
+.runtime { font-weight: 700; text-decoration: underline dotted; text-underline-offset: 0.2em; }
+.enforcer { align-self: start; justify-self: start; margin: 0.25em 0.5ch; padding: 0 0.5ch; border: 1px solid var(--ink); }
+.enforcer.protocol { background: var(--ink); color: var(--paper); font-weight: 700; }
+
+.refusals { list-style: none; margin: 0 0 24px; padding: 0; }
+.refusal { margin: 0 0 14px; border: 2px solid var(--ink); }
+.refusal-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding: 8px 10px; }
+.stamp { background: #00EC97; color: var(--ink); border: 2px solid var(--ink); padding: 1px 8px; font: 700 14px/1.3 var(--mono); letter-spacing: 0.08em; }
+.verdict { background: var(--ink); color: var(--paper); padding: 1px 8px; font: 700 14px/1.3 var(--mono); overflow-wrap: anywhere; }
+.refusal p { margin: 0; padding: 0 10px 6px; font: 12.5px/1.45 var(--mono); overflow-wrap: anywhere; }
+.refusal p.what { font: 15px/1.35 var(--sans); }
+.refusal details { border-top: 1px solid var(--ink); }
+.refusal summary { padding: 6px 10px; font: 12px/1.4 var(--mono); cursor: pointer; overflow-wrap: anywhere; }
+.refusal pre { margin: 0; padding: 8px 10px 10px; border-top: 1px dashed var(--rule); font: 12px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.staircase, .primary .steps { margin-top: 48px; }
+.stair { font: 14px/1.5 var(--mono); }
+.stair-row { display: flex; flex-wrap: wrap; gap: 0 2ch; padding: 4px 0; border-top: 1px solid var(--rule); }
+.stair-row.head { border-top: 0; font-size: 12px; font-weight: 700; }
+.stair-row .n { flex: none; width: 5ch; }
+.stair-row .slots { display: flex; flex-wrap: wrap; flex: 0 1 auto; min-width: 0; }
+.stair-row .parsed { flex: 1 1 24ch; min-width: 0; overflow-wrap: anywhere; }
+.slot { display: inline-block; width: 12ch; padding-left: 1ch; }
+.slot.hit { padding-left: 0; font-weight: 700; }
+.check { margin: 14px 0 0; font: 14px/1.5 var(--mono); overflow-wrap: anywhere; }
+.check strong { font-weight: 700; }
+
+.steps table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.4; }
+.steps th { padding: 6px 12px 6px 0; border-bottom: 2px solid var(--ink); font: 700 12px/1.4 var(--mono); text-align: left; }
+.steps td { padding: 8px 12px 8px 0; border-top: 1px solid var(--rule); vertical-align: top; overflow-wrap: anywhere; }
+.steps tr:first-child td { border-top: 0; }
+.steps td.signer { white-space: nowrap; overflow-wrap: normal; }
+.steps td.tx { font: 13px/1.5 var(--mono); }
+.steps tr.note-row td { padding: 0 12px 8px 0; border-top: 0; color: var(--dim); font-size: 13px; }
+
+.foot { margin-top: 56px; padding-top: 12px; border-top: 2px solid var(--ink); font: 13px/1.55 var(--mono); }
+.foot p { margin: 0 0 6px; overflow-wrap: anywhere; }
+
+@container (max-width: 719px) {
+  .steps thead { display: none; }
+  .steps table, .steps tbody { display: block; }
+  .steps tr { display: block; padding: 10px 0; border-top: 1px solid var(--rule); }
+  .steps tr:first-child { border-top: 0; }
+  .steps td, .steps tr:first-child td { display: block; padding: 2px 0; border: 0; }
+  .steps td::before { content: attr(data-label); display: block; color: var(--dim); font: 700 11px/1.3 var(--mono); }
+  .steps tr.note-row { padding: 0 0 10px; border-top: 0; }
+  .steps tr.note-row td::before { content: none; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+<p class="strip">REPLAY · demo run live-testnet-20261106T150556Z · testnet · exit 0 · nothing on this page is live · no keys on this page</p>
+<header class="hero">
+<h1>act_proposal</h1>
+<p class="sub">is the only method this key can call — on kh-2c19.sputnik-v2.testnet, as seat.kh-op-021e.testnet.</p>
+<p class="meta">keyhole · testnet · run of 2026-11-06 15:05:56 UTC · replay of live-testnet-20261106T150556Z</p>
+<p class="result">RESULT 14/14 PASS · 5 protocol refusals · 8 tx hashes · 3m23s · exit 0 · transcript demo/transcript.md</p>
+</header>
+<div class="cols">
+<div class="primary">
+<section class="plate-slot" aria-labelledby="plate-h">
+<h2 class="sect-h" id="plate-h">[12/14] inspect ks-16e5: the cage card, read from chain</h2>
+<article class="plate" aria-label="cage card">
+<header class="plate-head"><span class="plate-title">keyhole · cage card · ks-16e5 · testnet</span><span class="plate-tag">[REPLAY]</span></header>
+<div class="plate-grid" role="table" aria-label="what the key may and may not do, and who enforces each limit">
+<div class="row head" role="row"><div role="columnheader">FIELD</div><div role="columnheader">VALUE</div><div role="columnheader">ENFORCED BY</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">RECEIVER</div><div class="value" role="cell"><div class="line">kh-2c19.sputnik-v2.testnet</div></div><div class="enforcer protocol" role="cell">PROTOCOL</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">SIGNER</div><div class="value" role="cell"><div class="line">seat.kh-op-021e.testnet · on-account</div></div><div class="enforcer" role="cell">—</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">METHOD</div><div class="value" role="cell"><div class="line">act_proposal <span class="dim">········</span> callable</div></div><div class="enforcer protocol" role="cell">PROTOCOL</div></div>
+<div class="row" role="row"><div class="label" role="cell"></div><div class="value" role="cell"><div class="line">add_proposal <span class="dim">········</span> not in allowlist</div></div><div class="enforcer protocol" role="cell">PROTOCOL</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">ACTIONS</div><div class="value" role="cell"><div class="line">one FunctionCall per tx; no Transfer, no AddKey</div></div><div class="enforcer protocol" role="cell">PROTOCOL</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">DEPOSIT</div><div class="value" role="cell"><div class="line">0 only; methods that demand one fail at runtime</div></div><div class="enforcer protocol" role="cell">PROTOCOL</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">GAS</div><div class="value" role="cell"><div class="line">███████████████████─ 0.0494 of 0.0500 NEAR left · gas only</div></div><div class="enforcer protocol" role="cell">PROTOCOL</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">CODE HASH</div><div class="value" role="cell"><div class="line">ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq · match</div></div><div class="enforcer" role="cell">KEYHOLE server-side</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">VOTE</div><div class="value" role="cell"><div class="line">any proposal here, either way, until burn; quorum 2-of-2</div></div><div class="enforcer" role="cell">NOT A KEY LIMIT</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">EXPIRY</div><div class="value" role="cell"><div class="line">none in the protocol; ends at keyhole burn ks-16e5</div></div><div class="enforcer" role="cell">OPERATOR</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">KEY</div><div class="value" role="cell"><div class="line">ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3</div></div><div class="enforcer" role="cell">—</div></div>
+<div class="row" role="row"><div class="label" role="rowheader">VIEWS</div><div class="value" role="cell"><div class="line">get_proposals, get_policy: read-only, no key needed</div></div><div class="enforcer" role="cell">—</div></div>
+</div>
+<footer class="plate-foot">REPLAY of run live-testnet-20261106T150556Z recorded 2026-11-06T15:08:55.908Z</footer>
+</article>
+</section>
+<section class="steps" aria-labelledby="steps-h">
+<h2 class="sect-h" id="steps-h">STEPS · 14 · the signer, the result, and the transaction or "never in a block"</h2>
+<table>
+<thead><tr><th>step</th><th>signer</th><th>result</th><th>tx</th></tr></thead>
+<tbody>
+<tr id="step-01"><td class="step" data-label="step">[01/14] DAO kh-2c19.sputnik-v2.testnet (via sputnik-v2.testnet) · council [seat, cosigner] · 2-of-2</td><td class="signer" data-label="signer">full access</td><td class="result" data-label="result">PASS</td><td class="tx" data-label="tx"><a href="https://testnet.nearblocks.io/txns/Ek1APr5joscLK3cRL9DPuesjGpvSLZ1cQPs9uRJEX9WT" rel="noopener noreferrer">Ek1APr5joscLK3cRL9DPuesjGpvSLZ1cQPs9uRJEX9WT</a></td></tr>
+<tr class="note-row"><td colspan="4">created 2026-11-06 · code_hash ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq = pack pin</td></tr>
+<tr id="step-02"><td class="step" data-label="step">[02/14] cosigner adds proposal #0 (grant payout) and #1 (injected description)</td><td class="signer" data-label="signer">cosigner</td><td class="result" data-label="result">PASS</td><td class="tx" data-label="tx"><a href="https://testnet.nearblocks.io/txns/9F3ctuo8a6T1uGNrcp23dLhP4mvH22SY1tbTByEf5kzX" rel="noopener noreferrer">9F3ctuo8a6T1uGNrcp23dLhP4mvH22SY1tbTByEf5kzX</a><br><a href="https://testnet.nearblocks.io/txns/97132WVdw8F9BtH84EzRZmhdUKHRnCVJG7uU6VxYnq6r" rel="noopener noreferrer">97132WVdw8F9BtH84EzRZmhdUKHRnCVJG7uU6VxYnq6r</a></td></tr>
+<tr class="note-row"><td colspan="4">ids returned by add_proposal · bond 0.1000 NEAR each</td></tr>
+<tr id="step-03"><td class="step" data-label="step">[03/14] seat.kh-op-021e.testnet signs one AddKey: act_proposal only · gas allowance 0.0500 NEAR</td><td class="signer" data-label="signer">full access</td><td class="result" data-label="result">PASS</td><td class="tx" data-label="tx"><a href="https://testnet.nearblocks.io/txns/3t1xgoYTxaiddjUJCXmkQbqhPECm4UbstKYbMqBxzVWm" rel="noopener noreferrer">3t1xgoYTxaiddjUJCXmkQbqhPECm4UbstKYbMqBxzVWm</a></td></tr>
+<tr class="note-row"><td colspan="4">key on chain (view_access_key) as planned · session ks-16e5</td></tr>
+<tr id="step-04"><td class="step" data-label="step">[04/14] the session approves #0 (grant payout)</td><td class="signer" data-label="signer">session</td><td class="result" data-label="result">PASS: in scope, landed</td><td class="tx" data-label="tx"><a href="https://testnet.nearblocks.io/txns/9kTGibv726GGerm7Ebk316wFu1qC1sp8CFXXis8Y5T2d" rel="noopener noreferrer">9kTGibv726GGerm7Ebk316wFu1qC1sp8CFXXis8Y5T2d</a></td></tr>
+<tr id="step-05"><td class="step" data-label="step">[05/14] the cosigner approves #0 with its own full-access key</td><td class="signer" data-label="signer">cosigner</td><td class="result" data-label="result">PASS</td><td class="tx" data-label="tx"><a href="https://testnet.nearblocks.io/txns/GfzC2xPK7BNGnGVT7dwWwc4jJZ6LvCKzjq68GzWVtw2Y" rel="noopener noreferrer">GfzC2xPK7BNGnGVT7dwWwc4jJZ6LvCKzjq68GzWVtw2Y</a></td></tr>
+<tr class="note-row"><td colspan="4">payout executed: grantee.kh-op-021e.testnet +0.0100 NEAR (view_account before and after)</td></tr>
+<tr id="step-06"><td class="step" data-label="step">[06/14] the session approves #1 (the injected proposal)</td><td class="signer" data-label="signer">session</td><td class="result" data-label="result">PASS: in scope, landed</td><td class="tx" data-label="tx"><a href="https://testnet.nearblocks.io/txns/2qPWeYkeQ6zdhh455gpr2hZx39byKHwbCXzMXphiqEVx" rel="noopener noreferrer">2qPWeYkeQ6zdhh455gpr2hZx39byKHwbCXzMXphiqEVx</a></td></tr>
+<tr class="note-row"><td colspan="4">NOTE: in scope — the key does not judge votes; the quorum does</td></tr>
+<tr id="step-07"><td class="step" data-label="step">[07/14] open a payout proposal</td><td class="signer" data-label="signer">session</td><td class="result" data-label="result">PASS: refused by protocol (MethodNameMismatch)</td><td class="tx" data-label="tx">never in a block</td></tr>
+<tr id="step-08"><td class="step" data-label="step">[08/14] send NEAR</td><td class="signer" data-label="signer">session</td><td class="result" data-label="result">PASS: refused by protocol (RequiresFullAccess)</td><td class="tx" data-label="tx">never in a block</td></tr>
+<tr id="step-09"><td class="step" data-label="step">[09/14] vote in another DAO</td><td class="signer" data-label="signer">session</td><td class="result" data-label="result">PASS: refused by protocol (ReceiverMismatch)</td><td class="tx" data-label="tx">never in a block</td></tr>
+<tr id="step-10"><td class="step" data-label="step">[10/14] attach the bond</td><td class="signer" data-label="signer">session</td><td class="result" data-label="result">PASS: refused by protocol (DepositWithFunctionCall)</td><td class="tx" data-label="tx">never in a block</td></tr>
+<tr id="step-11"><td class="step" data-label="step">[11/14] chain check: view_access_key before [07] and after [10]</td><td class="signer" data-label="signer">none</td><td class="result" data-label="result">PASS: key state unchanged by 4 refusals</td><td class="tx" data-label="tx">—</td></tr>
+<tr id="step-12"><td class="step" data-label="step">[12/14] inspect ks-16e5: the cage card, read from chain</td><td class="signer" data-label="signer">none</td><td class="result" data-label="result">PASS</td><td class="tx" data-label="tx">—</td></tr>
+<tr id="step-13"><td class="step" data-label="step">[13/14] seat.kh-op-021e.testnet signs DeleteKey of ks-16e5&#39;s key</td><td class="signer" data-label="signer">full access</td><td class="result" data-label="result">PASS</td><td class="tx" data-label="tx"><a href="https://testnet.nearblocks.io/txns/5gYFWwJ3qpLBaSUgK6jui9dUFPSoktwyfwo72KtrMjBS" rel="noopener noreferrer">5gYFWwJ3qpLBaSUgK6jui9dUFPSoktwyfwo72KtrMjBS</a></td></tr>
+<tr id="step-14"><td class="step" data-label="step">[14/14] vote with the deleted key</td><td class="signer" data-label="signer">session</td><td class="result" data-label="result">PASS: refused by protocol (AccessKeyNotFound)</td><td class="tx" data-label="tx">never in a block</td></tr>
+</tbody>
+</table>
+</section>
+</div>
+<section class="evidence" aria-labelledby="evidence-h">
+<h2 class="sect-h" id="evidence-h">3/5 ASSUME THE INJECTION WORKS · 4 attempts via keyhole_attempt</h2>
+<p class="sect-sub">rejected at validation — never in a block; the RPC response is the evidence</p>
+<ol class="refusals">
+<li class="refusal" id="refusal-07">
+<div class="refusal-head"><span class="stamp">PASS</span><span class="verdict">MethodNameMismatch</span></div>
+<p class="what">[07/14] open a payout proposal</p>
+<p class="signed">signed: FunctionCall add_proposal → kh-2c19.sputnik-v2.testnet · deposit 0 · 30 TGas</p>
+<p class="ledger-line">reached block: no · on-chain tx: none · InvalidTxError › InvalidAccessKeyError › MethodNameMismatch</p>
+<details open><summary>response body, verbatim · testnet.sputnik-v2.refuse-method.json</summary><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:{&quot;MethodNameMismatch&quot;:{&quot;method_name&quot;:&quot;add_proposal&quot;}}}}}},&quot;id&quot;:&quot;keyhole-58&quot;}</pre></details>
+</li>
+<li class="refusal" id="refusal-08">
+<div class="refusal-head"><span class="stamp">PASS</span><span class="verdict">RequiresFullAccess</span></div>
+<p class="what">[08/14] send NEAR</p>
+<p class="signed">signed: Transfer → attacker.kh-op-021e.testnet · deposit 1 yocto</p>
+<p class="ledger-line">reached block: no · on-chain tx: none · InvalidTxError › InvalidAccessKeyError › RequiresFullAccess</p>
+<details open><summary>response body, verbatim · testnet.sputnik-v2.refuse-action.json</summary><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:&quot;RequiresFullAccess&quot;}}}},&quot;id&quot;:&quot;keyhole-60&quot;}</pre></details>
+</li>
+<li class="refusal" id="refusal-09">
+<div class="refusal-head"><span class="stamp">PASS</span><span class="verdict">ReceiverMismatch</span></div>
+<p class="what">[09/14] vote in another DAO</p>
+<p class="signed">signed: FunctionCall act_proposal → genesis.sputnik-v2.testnet · deposit 0 · 30 TGas</p>
+<p class="ledger-line">reached block: no · on-chain tx: none · InvalidTxError › InvalidAccessKeyError › ReceiverMismatch</p>
+<details open><summary>response body, verbatim · testnet.sputnik-v2.refuse-receiver.json</summary><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:{&quot;ReceiverMismatch&quot;:{&quot;ak_receiver&quot;:&quot;kh-2c19.sputnik-v2.testnet&quot;,&quot;tx_receiver&quot;:&quot;genesis.sputnik-v2.testnet&quot;}}}}}},&quot;id&quot;:&quot;keyhole-62&quot;}</pre></details>
+</li>
+<li class="refusal" id="refusal-10">
+<div class="refusal-head"><span class="stamp">PASS</span><span class="verdict">DepositWithFunctionCall</span></div>
+<p class="what">[10/14] attach the bond</p>
+<p class="signed">signed: FunctionCall act_proposal → kh-2c19.sputnik-v2.testnet · deposit 1 yocto · 30 TGas</p>
+<p class="ledger-line">reached block: no · on-chain tx: none · InvalidTxError › InvalidAccessKeyError › DepositWithFunctionCall</p>
+<details open><summary>response body, verbatim · testnet.sputnik-v2.refuse-deposit.json</summary><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:&quot;DepositWithFunctionCall&quot;}}}},&quot;id&quot;:&quot;keyhole-64&quot;}</pre></details>
+</li>
+</ol>
+<h3 class="sect-h">5/5 BURN · DeleteKey, then the same key again</h3>
+<ol class="refusals">
+<li class="refusal" id="refusal-14">
+<div class="refusal-head"><span class="stamp">PASS</span><span class="verdict">AccessKeyNotFound</span></div>
+<p class="what">[14/14] vote with the deleted key</p>
+<p class="signed">signed: FunctionCall act_proposal → kh-2c19.sputnik-v2.testnet · deposit 0 · 30 TGas</p>
+<p class="ledger-line">reached block: no · on-chain tx: none · InvalidTxError › InvalidAccessKeyError › AccessKeyNotFound</p>
+<details open><summary>response body, verbatim · testnet.sputnik-v2.after-burn.json</summary><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:{&quot;AccessKeyNotFound&quot;:{&quot;account_id&quot;:&quot;seat.kh-op-021e.testnet&quot;,&quot;public_key&quot;:&quot;ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3&quot;}}}}}},&quot;id&quot;:&quot;keyhole-73&quot;}</pre></details>
+</li>
+</ol>
+</section>
+</div>
+<section class="staircase" aria-labelledby="stair-h">
+<h2 class="sect-h" id="stair-h">REFUSALS 4/4 · rejected at validation — never in a block; the RPC response is the evidence</h2>
+<div class="stair" role="table" aria-label="the rule each refusal broke">
+<div class="stair-row head" role="row"><span class="n" role="columnheader">step</span><span class="slots" role="columnheader">rule broken, one per test, fixed slot order</span><span class="parsed" role="columnheader">parsed from the RPC body</span></div>
+<div class="stair-row" role="row"><span class="n" role="cell">[07]</span><span class="slots" role="cell"><span class="slot hit">[METHOD]</span><span class="slot">action</span><span class="slot">receiver</span><span class="slot">deposit</span><span class="slot">allowance</span></span><span class="parsed" role="cell"><span class="verdict">MethodNameMismatch</span></span></div>
+<div class="stair-row" role="row"><span class="n" role="cell">[08]</span><span class="slots" role="cell"><span class="slot">method</span><span class="slot hit">[ACTION]</span><span class="slot">receiver</span><span class="slot">deposit</span><span class="slot">allowance</span></span><span class="parsed" role="cell"><span class="verdict">RequiresFullAccess</span></span></div>
+<div class="stair-row" role="row"><span class="n" role="cell">[09]</span><span class="slots" role="cell"><span class="slot">method</span><span class="slot">action</span><span class="slot hit">[RECEIVER]</span><span class="slot">deposit</span><span class="slot">allowance</span></span><span class="parsed" role="cell"><span class="verdict">ReceiverMismatch</span></span></div>
+<div class="stair-row" role="row"><span class="n" role="cell">[10]</span><span class="slots" role="cell"><span class="slot">method</span><span class="slot">action</span><span class="slot">receiver</span><span class="slot hit">[DEPOSIT]</span><span class="slot">allowance</span></span><span class="parsed" role="cell"><span class="verdict">DepositWithFunctionCall</span></span></div>
+</div>
+<p class="check"><strong>[11/14] CHAIN CHECK</strong> view_access_key, read before [07] and after [10]</p>
+<p class="check">nonce 276502396000002 → 276502396000002 · allowance left 0.0494 → 0.0494 NEAR</p>
+<p class="check"><strong>PASS: key state unchanged by 4 refusals</strong></p>
+</section>
+<footer class="foot">
+<p>Generated from the DemoRun of the testnet run live-testnet-20261106T150556Z (demo/run.testnet.json, replayed from its fixtures); no keys in this file (public keys and transaction hashes only).</p>
+<p>Nothing on this page was fetched or is live; the explorer links are printed here and never fetched by this page. Regenerate: npm run status:html</p>
+</footer>
+</main>
+</body>
+</html>

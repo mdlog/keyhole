@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","result":{"block_hash":"5xYu4umQy16V9SX8NbQQgz9Rz1L5PXvWkkPYXp5f68zQ","block_height":62,"nonce":52000001,"permission":{"FunctionCall":{"allowance":"49741544084879300000000","method_names":["act_proposal"],"receiver_id":"dao.sandbox"}}},"id":"keyhole-spike-29"}

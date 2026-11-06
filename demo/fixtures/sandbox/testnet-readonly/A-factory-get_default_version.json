@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","result":{"block_hash":"AYnU7iQ57AfXPnoiCZUKZKnLAWA7uKgx5Gv9m7tRjFwZ","block_height":276412894,"error":"wasm execution failed with error: MethodResolveError(MethodNotFound)","logs":[]},"id":"verify"}

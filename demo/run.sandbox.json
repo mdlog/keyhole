@@ -1,0 +1,1077 @@
+{
+  "id": "live-sandbox-20261106T115602Z",
+  "network": "sandbox",
+  "mode": "live",
+  "steps": [
+    {
+      "n": 1,
+      "total": 20,
+      "phase": "setup",
+      "label": "DAO dao.sandbox (vendored sputnikdao2 v2.0.0 + new) · council [seat, cosigner] · 2-of-2",
+      "signer": "operator",
+      "txHash": "7Gm4Qt7hoJ4tDaWXMpvSrnwrjcU9uVchxE2m3guAeHgA",
+      "pass": true,
+      "note": "code_hash ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq = pack pin"
+    },
+    {
+      "n": 2,
+      "total": 20,
+      "phase": "setup",
+      "label": "cosigner adds proposal #0 (grant payout) and #1 (injected description)",
+      "signer": "cosigner",
+      "txHash": "ECGf5bMQT53q3JTvoco2XSQAB4FgFwHXC7V24dsHoxLS",
+      "moreTxHashes": [
+        "8xfziUxSwP627D5HR7kcizHPJefibaNr89ZFuWP6rtoF"
+      ],
+      "pass": true,
+      "note": "ids returned by add_proposal · bond 0.1000 NEAR each"
+    },
+    {
+      "n": 3,
+      "total": 20,
+      "phase": "wrap",
+      "label": "seat.sandbox signs one AddKey: act_proposal only · gas allowance 0.0500 NEAR",
+      "signer": "operator",
+      "txHash": "2FZVNGRCAVybkeLQd4qB97uUtqHnwFFf3cLjhc1x3Eq1",
+      "card": {
+        "session": {
+          "id": "ks-f298",
+          "mode": "on-account",
+          "network": "sandbox",
+          "accountId": "seat.sandbox",
+          "receiverId": "dao.sandbox",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceYocto": "50000000000000000000000",
+          "codeHashPin": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+          "publicKey": "ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE",
+          "createdAt": "2026-11-06T11:56:12.527Z",
+          "status": "live",
+          "packId": "sputnik-v2",
+          "tools": [
+            {
+              "name": "dao_list_proposals",
+              "kind": "view",
+              "method": "get_proposals",
+              "argsSchema": {
+                "type": "object",
+                "properties": {
+                  "from_index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  }
+                },
+                "required": [
+                  "from_index",
+                  "limit"
+                ],
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "dao_get_policy",
+              "kind": "view",
+              "method": "get_policy",
+              "argsSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "dao_vote",
+              "kind": "call",
+              "method": "act_proposal",
+              "argsSchema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ]
+                  },
+                  "memo": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "action"
+                ],
+                "additionalProperties": false
+              },
+              "gasTGas": 30,
+              "classification": "callable",
+              "evidence": "dry-run at wrap: succeeded with 0 deposit"
+            },
+            {
+              "name": "add_proposal",
+              "kind": "call",
+              "method": "add_proposal",
+              "argsSchema": {},
+              "gasTGas": 30,
+              "classification": "not in allowlist",
+              "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+            }
+          ]
+        },
+        "key": {
+          "publicKey": "ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE",
+          "accountId": "seat.sandbox",
+          "receiverId": "dao.sandbox",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceRemainingYocto": "50000000000000000000000",
+          "nonce": 0
+        },
+        "tools": [
+          {
+            "name": "dao_list_proposals",
+            "kind": "view",
+            "method": "get_proposals",
+            "argsSchema": {
+              "type": "object",
+              "properties": {
+                "from_index": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "from_index",
+                "limit"
+              ],
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "dao_get_policy",
+            "kind": "view",
+            "method": "get_policy",
+            "argsSchema": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "dao_vote",
+            "kind": "call",
+            "method": "act_proposal",
+            "argsSchema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "approve",
+                    "reject"
+                  ]
+                },
+                "memo": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "action"
+              ],
+              "additionalProperties": false
+            },
+            "gasTGas": 30,
+            "classification": "callable",
+            "evidence": "dry-run at wrap: succeeded with 0 deposit"
+          },
+          {
+            "name": "add_proposal",
+            "kind": "call",
+            "method": "add_proposal",
+            "argsSchema": {},
+            "gasTGas": 30,
+            "classification": "not in allowlist",
+            "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+          }
+        ],
+        "codeHashNow": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+        "source": "preview",
+        "readAt": "2026-11-06T11:56:13.148Z",
+        "exposure": {
+          "label": "VOTE",
+          "value": "any proposal here, either way, until burn; quorum 2-of-2"
+        }
+      },
+      "pass": true,
+      "note": "key on chain (view_access_key) as planned · session ks-f298"
+    },
+    {
+      "n": 4,
+      "total": 20,
+      "phase": "in-scope",
+      "label": "the session approves #0 (grant payout)",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-f298",
+        "receiverId": "dao.sandbox",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 0,
+          "action": "VoteApprove",
+          "proposal": {
+            "Transfer": {
+              "token_id": "",
+              "receiver_id": "grantee.sandbox",
+              "amount": "10000000000000000000000",
+              "msg": null
+            }
+          },
+          "memo": null
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "none",
+        "outcome": {
+          "kind": "TxSuccess",
+          "txHash": "2if3FBW23BzV5H8dwqEtUzob2g3pNA72GG2C7LSqyJGB",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"result\":{\"final_execution_status\":\"FINAL\",\"receipts_outcome\":[{\"block_hash\":\"EcathuaiTkQKpvJhzpcDKE25XTAxaqrZj37sjUcNihoW\",\"id\":\"FSMd9DqSTrK8C8LB694zM3jDMKsE5MzDEDjqEWx3MjGC\",\"outcome\":{\"executor_id\":\"dao.sandbox\",\"gas_burnt\":2281650838656,\"logs\":[],\"metadata\":{\"contracts\":[{\"local\":\"ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq\"}],\"gas_profile\":[{\"cost\":\"BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"6883970886\"},{\"cost\":\"CONTRACT_LOADING_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"35445963\"},{\"cost\":\"CONTRACT_LOADING_BYTES\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"511755148180\"},{\"cost\":\"READ_CACHED_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"18240000000\"},{\"cost\":\"READ_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"23488768800\"},{\"cost\":\"READ_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"1486321203\"},{\"cost\":\"READ_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"17620156302\"},{\"cost\":\"READ_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"84763320\"},{\"cost\":\"STORAGE_READ_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"281784228745\"},{\"cost\":\"STORAGE_READ_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"1516674117\"},{\"cost\":\"STORAGE_READ_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2872834048\"},{\"cost\":\"STORAGE_WRITE_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"128393472000\"},{\"cost\":\"STORAGE_WRITE_EVICTED_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"8093561364\"},{\"cost\":\"STORAGE_WRITE_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"986760138\"},{\"cost\":\"STORAGE_WRITE_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"10174080792\"},{\"cost\":\"TOUCHING_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"25080000000\"},{\"cost\":\"WASM_INSTRUCTION\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"303972140736\"},{\"cost\":\"WRITE_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"22430358888\"},{\"cost\":\"WRITE_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2386024272\"},{\"cost\":\"WRITE_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"22924179888\"},{\"cost\":\"WRITE_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2995632432\"}],\"version\":4},\"receipt_ids\":[\"Wkm6eEwL8gg3MUM3abtb5t3dxBzcjC24FurETzSwmZz\"],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"228165083865600000000\"},\"proof\":[]},{\"block_hash\":\"6zd2HLk9MbcgFEeD2QxtWhHwPHZjsMczw3dXVpTnn6UR\",\"id\":\"Wkm6eEwL8gg3MUM3abtb5t3dxBzcjC24FurETzSwmZz\",\"outcome\":{\"executor_id\":\"seat.sandbox\",\"gas_burnt\":223182562500,\"logs\":[],\"metadata\":{\"contracts\":[null],\"gas_profile\":[],\"version\":4},\"receipt_ids\":[],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"0\"},\"proof\":[]}],\"status\":{\"SuccessValue\":\"\"},\"transaction\":{\"actions\":[{\"FunctionCall\":{\"args\":\"eyJpZCI6MCwiYWN0aW9uIjoiVm90ZUFwcHJvdmUiLCJwcm9wb3NhbCI6eyJUcmFuc2ZlciI6eyJ0b2tlbl9pZCI6IiIsInJlY2VpdmVyX2lkIjoiZ3JhbnRlZS5zYW5kYm94IiwiYW1vdW50IjoiMTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAiLCJtc2ciOm51bGx9fSwibWVtbyI6bnVsbH0=\",\"deposit\":\"0\",\"gas\":30000000000000,\"method_name\":\"act_proposal\"}}],\"hash\":\"2if3FBW23BzV5H8dwqEtUzob2g3pNA72GG2C7LSqyJGB\",\"nonce\":81000001,\"priority_fee\":0,\"public_key\":\"ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE\",\"receiver_id\":\"dao.sandbox\",\"signature\":\"ed25519:4wBNvWXce8VDA2YbiiEPk1y1rLWtLKAdag94eg2nM2W3fGc1QjBXmLwC74kqfhP49x3dKJGdTo4fnxXreVotdPbr\",\"signer_id\":\"seat.sandbox\"},\"transaction_outcome\":{\"block_hash\":\"4HaspfGUXntmxFw1TtZPjctU9khaenEKCkHVgiV8ZWGC\",\"id\":\"2if3FBW23BzV5H8dwqEtUzob2g3pNA72GG2C7LSqyJGB\",\"outcome\":{\"executor_id\":\"seat.sandbox\",\"gas_burnt\":316308782695,\"logs\":[],\"metadata\":{\"gas_profile\":null,\"version\":1},\"receipt_ids\":[\"FSMd9DqSTrK8C8LB694zM3jDMKsE5MzDEDjqEWx3MjGC\"],\"status\":{\"SuccessReceiptId\":\"FSMd9DqSTrK8C8LB694zM3jDMKsE5MzDEDjqEWx3MjGC\"},\"tokens_burnt\":\"31630878269500000000\"},\"proof\":[]}},\"id\":\"keyhole-43\"}"
+        }
+      },
+      "txHash": "2if3FBW23BzV5H8dwqEtUzob2g3pNA72GG2C7LSqyJGB",
+      "proposal": {
+        "id": 0,
+        "status": "InProgress",
+        "approvals": 1,
+        "required": 2
+      },
+      "pass": true
+    },
+    {
+      "n": 5,
+      "total": 20,
+      "phase": "in-scope",
+      "label": "the cosigner approves #0 with its own full-access key",
+      "signer": "cosigner",
+      "txHash": "6sBp3gFkHodJXzK3KV4BrZdaHJ5gV2chmivtz3G6mTrm",
+      "proposal": {
+        "id": 0,
+        "status": "Approved",
+        "approvals": 2,
+        "required": 2
+      },
+      "pass": true,
+      "note": "payout executed: grantee.sandbox +0.0100 NEAR (view_account before and after)"
+    },
+    {
+      "n": 6,
+      "total": 20,
+      "phase": "in-scope",
+      "label": "the session approves #1 (the injected proposal)",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-f298",
+        "receiverId": "dao.sandbox",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 1,
+          "action": "VoteApprove",
+          "proposal": {
+            "Transfer": {
+              "token_id": "",
+              "receiver_id": "attacker.sandbox",
+              "amount": "5000000000000000000000000",
+              "msg": null
+            }
+          },
+          "memo": null
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "none",
+        "outcome": {
+          "kind": "TxSuccess",
+          "txHash": "5DzYWdrTTn21MdaHVaLGT4YH5WzQ5TF5C616q16Rurez",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"result\":{\"final_execution_status\":\"FINAL\",\"receipts_outcome\":[{\"block_hash\":\"AqLVjBRnjt5sMrM6UUpx9HnNAoEbW4395FhEUxZ3mHCc\",\"id\":\"66mx8c5y6KHGSEEWD6zCh3zzTCVmiuffbHeRu5YQG9eS\",\"outcome\":{\"executor_id\":\"dao.sandbox\",\"gas_burnt\":2317778744433,\"logs\":[],\"metadata\":{\"contracts\":[{\"local\":\"ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq\"}],\"gas_profile\":[{\"cost\":\"BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"6883970886\"},{\"cost\":\"CONTRACT_LOADING_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"35445963\"},{\"cost\":\"CONTRACT_LOADING_BYTES\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"511755148180\"},{\"cost\":\"READ_CACHED_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"18240000000\"},{\"cost\":\"READ_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"23488768800\"},{\"cost\":\"READ_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2364429126\"},{\"cost\":\"READ_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"17620156302\"},{\"cost\":\"READ_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"130594650\"},{\"cost\":\"STORAGE_READ_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"281784228745\"},{\"cost\":\"STORAGE_READ_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"1516674117\"},{\"cost\":\"STORAGE_READ_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"4168975972\"},{\"cost\":\"STORAGE_WRITE_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"128393472000\"},{\"cost\":\"STORAGE_WRITE_EVICTED_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"15512659281\"},{\"cost\":\"STORAGE_WRITE_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"986760138\"},{\"cost\":\"STORAGE_WRITE_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"17339363301\"},{\"cost\":\"TOUCHING_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"25080000000\"},{\"cost\":\"WASM_INSTRUCTION\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"320266000560\"},{\"cost\":\"WRITE_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"22430358888\"},{\"cost\":\"WRITE_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"3652578252\"},{\"cost\":\"WRITE_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"22924179888\"},{\"cost\":\"WRITE_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"4751955000\"}],\"version\":4},\"receipt_ids\":[\"AbN7UEnDz8beUXN8PdmAZGXKy5EHNCbmF72oW9qjpim5\"],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"231777874443300000000\"},\"proof\":[]},{\"block_hash\":\"45nvu2fJhkJS39BzjmydbT6e67vXQjVuSWiBfez9irqY\",\"id\":\"AbN7UEnDz8beUXN8PdmAZGXKy5EHNCbmF72oW9qjpim5\",\"outcome\":{\"executor_id\":\"seat.sandbox\",\"gas_burnt\":223182562500,\"logs\":[],\"metadata\":{\"contracts\":[null],\"gas_profile\":[],\"version\":4},\"receipt_ids\":[],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"0\"},\"proof\":[]}],\"status\":{\"SuccessValue\":\"\"},\"transaction\":{\"actions\":[{\"FunctionCall\":{\"args\":\"eyJpZCI6MSwiYWN0aW9uIjoiVm90ZUFwcHJvdmUiLCJwcm9wb3NhbCI6eyJUcmFuc2ZlciI6eyJ0b2tlbl9pZCI6IiIsInJlY2VpdmVyX2lkIjoiYXR0YWNrZXIuc2FuZGJveCIsImFtb3VudCI6IjUwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAiLCJtc2ciOm51bGx9fSwibWVtbyI6bnVsbH0=\",\"deposit\":\"0\",\"gas\":30000000000000,\"method_name\":\"act_proposal\"}}],\"hash\":\"5DzYWdrTTn21MdaHVaLGT4YH5WzQ5TF5C616q16Rurez\",\"nonce\":81000002,\"priority_fee\":0,\"public_key\":\"ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE\",\"receiver_id\":\"dao.sandbox\",\"signature\":\"ed25519:5HDLGWbLst1KdfNHVSAKXrodf3rW24nYN3nfSgrQT8XaZF1ZnGBbC6qPMwnzNtJMZKtKEvUcxsKPzb9NCdtEkkci\",\"signer_id\":\"seat.sandbox\"},\"transaction_outcome\":{\"block_hash\":\"EQXs6NsBd7YQKVNEiyYQFboQYy2VCM5uw5xkoSHhm7AV\",\"id\":\"5DzYWdrTTn21MdaHVaLGT4YH5WzQ5TF5C616q16Rurez\",\"outcome\":{\"executor_id\":\"seat.sandbox\",\"gas_burnt\":316451833840,\"logs\":[],\"metadata\":{\"gas_profile\":null,\"version\":1},\"receipt_ids\":[\"66mx8c5y6KHGSEEWD6zCh3zzTCVmiuffbHeRu5YQG9eS\"],\"status\":{\"SuccessReceiptId\":\"66mx8c5y6KHGSEEWD6zCh3zzTCVmiuffbHeRu5YQG9eS\"},\"tokens_burnt\":\"31645183384000000000\"},\"proof\":[]}},\"id\":\"keyhole-57\"}"
+        }
+      },
+      "txHash": "5DzYWdrTTn21MdaHVaLGT4YH5WzQ5TF5C616q16Rurez",
+      "proposal": {
+        "id": 1,
+        "status": "InProgress",
+        "approvals": 1,
+        "required": 2
+      },
+      "pass": true,
+      "note": "NOTE: in scope — the key does not judge votes; the quorum does"
+    },
+    {
+      "n": 7,
+      "total": 20,
+      "phase": "refusals",
+      "label": "open a payout proposal",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-f298",
+        "receiverId": "dao.sandbox",
+        "action": "FunctionCall",
+        "method": "add_proposal",
+        "args": {
+          "proposal": {
+            "description": "Pay 10 NEAR to attacker.sandbox (pre-authorised)",
+            "kind": {
+              "Transfer": {
+                "token_id": "",
+                "receiver_id": "attacker.sandbox",
+                "amount": "10000000000000000000000000"
+              }
+            }
+          }
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "method",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "MethodNameMismatch",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "MethodNameMismatch"
+          ],
+          "detail": {
+            "MethodNameMismatch": {
+              "method_name": "add_proposal"
+            }
+          },
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"MethodNameMismatch\":{\"method_name\":\"add_proposal\"}}}}}},\"id\":\"keyhole-63\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "sandbox.sputnik-v2.refuse-method.json",
+      "pass": true
+    },
+    {
+      "n": 8,
+      "total": 20,
+      "phase": "refusals",
+      "label": "send NEAR",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-f298",
+        "receiverId": "attacker.sandbox",
+        "action": "Transfer",
+        "args": {},
+        "depositYocto": "1",
+        "gasTGas": 0,
+        "violates": "action",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "RequiresFullAccess",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "RequiresFullAccess"
+          ],
+          "detail": "RequiresFullAccess",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":\"RequiresFullAccess\"}}}},\"id\":\"keyhole-65\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "sandbox.sputnik-v2.refuse-action.json",
+      "pass": true
+    },
+    {
+      "n": 9,
+      "total": 20,
+      "phase": "refusals",
+      "label": "vote in another DAO",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-f298",
+        "receiverId": "other-dao.sandbox",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 0,
+          "action": "VoteApprove"
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "receiver",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "ReceiverMismatch",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "ReceiverMismatch"
+          ],
+          "detail": {
+            "ReceiverMismatch": {
+              "ak_receiver": "dao.sandbox",
+              "tx_receiver": "other-dao.sandbox"
+            }
+          },
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"ReceiverMismatch\":{\"ak_receiver\":\"dao.sandbox\",\"tx_receiver\":\"other-dao.sandbox\"}}}}}},\"id\":\"keyhole-67\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "sandbox.sputnik-v2.refuse-receiver.json",
+      "pass": true
+    },
+    {
+      "n": 10,
+      "total": 20,
+      "phase": "refusals",
+      "label": "attach the bond",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-f298",
+        "receiverId": "dao.sandbox",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 1,
+          "action": "VoteApprove"
+        },
+        "depositYocto": "1",
+        "gasTGas": 30,
+        "violates": "deposit",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "DepositWithFunctionCall",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "DepositWithFunctionCall"
+          ],
+          "detail": "DepositWithFunctionCall",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":\"DepositWithFunctionCall\"}}}},\"id\":\"keyhole-69\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "sandbox.sputnik-v2.refuse-deposit.json",
+      "pass": true
+    },
+    {
+      "n": 11,
+      "total": 20,
+      "phase": "chain-check",
+      "label": "chain check: view_access_key before [07] and after [10]",
+      "signer": "none",
+      "chainCheck": {
+        "before": {
+          "publicKey": "ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE",
+          "accountId": "seat.sandbox",
+          "receiverId": "dao.sandbox",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceRemainingYocto": "49476780980037600000000",
+          "nonce": 81000002
+        },
+        "after": {
+          "publicKey": "ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE",
+          "accountId": "seat.sandbox",
+          "receiverId": "dao.sandbox",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceRemainingYocto": "49476780980037600000000",
+          "nonce": 81000002
+        }
+      },
+      "pass": true
+    },
+    {
+      "n": 12,
+      "total": 20,
+      "phase": "inspect",
+      "label": "inspect ks-f298: the cage card, read from chain",
+      "signer": "none",
+      "card": {
+        "session": {
+          "id": "ks-f298",
+          "mode": "on-account",
+          "network": "sandbox",
+          "accountId": "seat.sandbox",
+          "receiverId": "dao.sandbox",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceYocto": "50000000000000000000000",
+          "codeHashPin": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+          "publicKey": "ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE",
+          "createdAt": "2026-11-06T11:56:12.527Z",
+          "status": "live",
+          "packId": "sputnik-v2",
+          "tools": [
+            {
+              "name": "dao_list_proposals",
+              "kind": "view",
+              "method": "get_proposals",
+              "argsSchema": {
+                "type": "object",
+                "properties": {
+                  "from_index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  }
+                },
+                "required": [
+                  "from_index",
+                  "limit"
+                ],
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "dao_get_policy",
+              "kind": "view",
+              "method": "get_policy",
+              "argsSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "dao_vote",
+              "kind": "call",
+              "method": "act_proposal",
+              "argsSchema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ]
+                  },
+                  "memo": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "action"
+                ],
+                "additionalProperties": false
+              },
+              "gasTGas": 30,
+              "classification": "callable",
+              "evidence": "dry-run at wrap: succeeded with 0 deposit"
+            },
+            {
+              "name": "add_proposal",
+              "kind": "call",
+              "method": "add_proposal",
+              "argsSchema": {},
+              "gasTGas": 30,
+              "classification": "not in allowlist",
+              "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+            }
+          ]
+        },
+        "key": {
+          "publicKey": "ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE",
+          "accountId": "seat.sandbox",
+          "receiverId": "dao.sandbox",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceRemainingYocto": "49476780980037600000000",
+          "nonce": 81000002
+        },
+        "tools": [
+          {
+            "name": "dao_list_proposals",
+            "kind": "view",
+            "method": "get_proposals",
+            "argsSchema": {
+              "type": "object",
+              "properties": {
+                "from_index": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "from_index",
+                "limit"
+              ],
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "dao_get_policy",
+            "kind": "view",
+            "method": "get_policy",
+            "argsSchema": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "dao_vote",
+            "kind": "call",
+            "method": "act_proposal",
+            "argsSchema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "approve",
+                    "reject"
+                  ]
+                },
+                "memo": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "action"
+              ],
+              "additionalProperties": false
+            },
+            "gasTGas": 30,
+            "classification": "callable",
+            "evidence": "dry-run at wrap: succeeded with 0 deposit"
+          },
+          {
+            "name": "add_proposal",
+            "kind": "call",
+            "method": "add_proposal",
+            "argsSchema": {},
+            "gasTGas": 30,
+            "classification": "not in allowlist",
+            "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+          }
+        ],
+        "codeHashNow": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+        "source": "chain",
+        "readAt": "2026-11-06T11:56:15.531Z",
+        "exposure": {
+          "label": "VOTE",
+          "value": "any proposal here, either way, until burn; quorum 2-of-2"
+        }
+      },
+      "pass": true
+    },
+    {
+      "n": 13,
+      "total": 20,
+      "phase": "burn",
+      "label": "seat.sandbox signs DeleteKey of ks-f298's key",
+      "signer": "operator",
+      "txHash": "8PAQ6K59uMo2HMLNdtCQDPkDcn3HHzQdo8cm2W7Q5PVF",
+      "pass": true
+    },
+    {
+      "n": 14,
+      "total": 20,
+      "phase": "burn",
+      "label": "vote with the deleted key",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-f298",
+        "receiverId": "dao.sandbox",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 1,
+          "action": "VoteReject"
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "none",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "AccessKeyNotFound",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "AccessKeyNotFound"
+          ],
+          "detail": {
+            "AccessKeyNotFound": {
+              "account_id": "seat.sandbox",
+              "public_key": "ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE"
+            }
+          },
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"AccessKeyNotFound\":{\"account_id\":\"seat.sandbox\",\"public_key\":\"ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE\"}}}}}},\"id\":\"keyhole-78\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "sandbox.sputnik-v2.after-burn.json",
+      "pass": true
+    },
+    {
+      "n": 15,
+      "total": 20,
+      "phase": "smoke",
+      "label": "sandbox deploys counter.sandbox and wraps it in a sub-account: increment, reset",
+      "signer": "operator",
+      "txHash": "HQVTi15145RXQCmSki6gdRad8boHCmCKvmZM9Uy6sC16",
+      "moreTxHashes": [
+        "FJhj7y711A7SbLxSUSCu5xzqitdbZ3AMgiLW1WTRXUdk"
+      ],
+      "card": {
+        "session": {
+          "id": "ks-b328",
+          "mode": "subaccount",
+          "network": "sandbox",
+          "accountId": "ks-b328.sandbox",
+          "receiverId": "counter.sandbox",
+          "methodNames": [
+            "increment",
+            "reset"
+          ],
+          "allowanceYocto": "50000000000000000000000",
+          "codeHashPin": "DdBoUCcNATd6UCjyzwGNyQ856j55L3Df876gRmZNsVtA",
+          "publicKey": "ed25519:fBSnKhVu6NYqffwf3SMrJxuMRkjcpRFUYQCwTeuzKyA",
+          "createdAt": "2026-11-06T11:56:22.039Z",
+          "status": "live",
+          "packId": "counter",
+          "tools": [
+            {
+              "name": "counter_contract_source_metadata",
+              "kind": "view",
+              "method": "contract_source_metadata",
+              "argsSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "counter_get_value",
+              "kind": "view",
+              "method": "get_value",
+              "argsSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "counter_increment",
+              "kind": "call",
+              "method": "increment",
+              "argsSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "gasTGas": 30,
+              "classification": "callable",
+              "evidence": "dry-run at wrap: succeeded with 0 deposit"
+            },
+            {
+              "name": "counter_reset",
+              "kind": "call",
+              "method": "reset",
+              "argsSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "gasTGas": 30,
+              "classification": "fails-without-deposit (runtime)",
+              "evidence": "Smart contract panicked: Requires attached deposit of exactly 1 yoctoNEAR"
+            },
+            {
+              "name": "transfer_ownership",
+              "kind": "call",
+              "method": "transfer_ownership",
+              "argsSchema": {},
+              "gasTGas": 30,
+              "classification": "not in allowlist",
+              "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: only the owner"
+            }
+          ]
+        },
+        "key": {
+          "publicKey": "ed25519:fBSnKhVu6NYqffwf3SMrJxuMRkjcpRFUYQCwTeuzKyA",
+          "accountId": "ks-b328.sandbox",
+          "receiverId": "counter.sandbox",
+          "methodNames": [
+            "increment",
+            "reset"
+          ],
+          "allowanceRemainingYocto": "50000000000000000000000",
+          "nonce": 0
+        },
+        "tools": [
+          {
+            "name": "counter_contract_source_metadata",
+            "kind": "view",
+            "method": "contract_source_metadata",
+            "argsSchema": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "counter_get_value",
+            "kind": "view",
+            "method": "get_value",
+            "argsSchema": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "counter_increment",
+            "kind": "call",
+            "method": "increment",
+            "argsSchema": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "gasTGas": 30,
+            "classification": "callable",
+            "evidence": "dry-run at wrap: succeeded with 0 deposit"
+          },
+          {
+            "name": "counter_reset",
+            "kind": "call",
+            "method": "reset",
+            "argsSchema": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "gasTGas": 30,
+            "classification": "fails-without-deposit (runtime)",
+            "evidence": "Smart contract panicked: Requires attached deposit of exactly 1 yoctoNEAR"
+          },
+          {
+            "name": "transfer_ownership",
+            "kind": "call",
+            "method": "transfer_ownership",
+            "argsSchema": {},
+            "gasTGas": 30,
+            "classification": "not in allowlist",
+            "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: only the owner"
+          }
+        ],
+        "codeHashNow": "DdBoUCcNATd6UCjyzwGNyQ856j55L3Df876gRmZNsVtA",
+        "source": "preview",
+        "readAt": "2026-11-06T11:56:22.781Z",
+        "exposure": {
+          "label": "VALUE",
+          "value": "anything the signer owns inside the receiver"
+        }
+      },
+      "pass": true,
+      "note": "WARN  reset — fails-without-deposit (runtime) · key on chain: gas allowance 0.0500 NEAR"
+    },
+    {
+      "n": 16,
+      "total": 20,
+      "phase": "smoke",
+      "label": "the session (ks-b328.sandbox) calls increment",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-b328",
+        "receiverId": "counter.sandbox",
+        "action": "FunctionCall",
+        "method": "increment",
+        "args": {},
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "none",
+        "outcome": {
+          "kind": "TxSuccess",
+          "txHash": "DcuYn5NF4eLKN8RLPDxoocyKYJSSHJSy8Mcpzq2ptY3m",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"result\":{\"final_execution_status\":\"FINAL\",\"receipts_outcome\":[{\"block_hash\":\"GpQpv9dzFBRfWhfqYU9rjt5o4XKprRvdvGnGtyq6i7ha\",\"id\":\"2vzWWoyR4ZqBxc2jxou3mot42dLyGDSYkfZ33uFtu4fG\",\"outcome\":{\"executor_id\":\"counter.sandbox\",\"gas_burnt\":1157143629386,\"logs\":[],\"metadata\":{\"contracts\":[{\"local\":\"DdBoUCcNATd6UCjyzwGNyQ856j55L3Df876gRmZNsVtA\"}],\"gas_profile\":[{\"cost\":\"BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"1588608666\"},{\"cost\":\"CONTRACT_LOADING_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"35445963\"},{\"cost\":\"CONTRACT_LOADING_BYTES\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"100651947295\"},{\"cost\":\"READ_CACHED_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2280000000\"},{\"cost\":\"READ_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"10439452800\"},{\"cost\":\"READ_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"148251987\"},{\"cost\":\"READ_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2517165186\"},{\"cost\":\"READ_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2759736\"},{\"cost\":\"STORAGE_READ_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"56356845749\"},{\"cost\":\"STORAGE_READ_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"154762665\"},{\"cost\":\"STORAGE_READ_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"157108112\"},{\"cost\":\"STORAGE_WRITE_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"64196736000\"},{\"cost\":\"STORAGE_WRITE_EVICTED_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"899284596\"},{\"cost\":\"STORAGE_WRITE_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"352414335\"},{\"cost\":\"STORAGE_WRITE_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"868519092\"},{\"cost\":\"TOUCHING_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"11400000000\"},{\"cost\":\"WASM_INSTRUCTION\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"5338863684\"},{\"cost\":\"WRITE_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"5607589722\"},{\"cost\":\"WRITE_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"119845968\"},{\"cost\":\"WRITE_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"5731044972\"},{\"cost\":\"WRITE_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"212887584\"}],\"version\":4},\"receipt_ids\":[\"J9Scif5BfwRFS4sDX5QPWXZxPKh81hMSfcKsW5zCsyBC\"],\"status\":{\"SuccessValue\":\"MQ==\"},\"tokens_burnt\":\"115714362938600000000\"},\"proof\":[]},{\"block_hash\":\"8eBnarSnnGp49Dggo7Ap1LY78uGrLE7TpzboWPP6QZTS\",\"id\":\"J9Scif5BfwRFS4sDX5QPWXZxPKh81hMSfcKsW5zCsyBC\",\"outcome\":{\"executor_id\":\"ks-b328.sandbox\",\"gas_burnt\":223182562500,\"logs\":[],\"metadata\":{\"contracts\":[null],\"gas_profile\":[],\"version\":4},\"receipt_ids\":[],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"0\"},\"proof\":[]}],\"status\":{\"SuccessValue\":\"MQ==\"},\"transaction\":{\"actions\":[{\"FunctionCall\":{\"args\":\"e30=\",\"deposit\":\"0\",\"gas\":30000000000000,\"method_name\":\"increment\"}}],\"hash\":\"DcuYn5NF4eLKN8RLPDxoocyKYJSSHJSy8Mcpzq2ptY3m\",\"nonce\":159000001,\"priority_fee\":0,\"public_key\":\"ed25519:fBSnKhVu6NYqffwf3SMrJxuMRkjcpRFUYQCwTeuzKyA\",\"receiver_id\":\"counter.sandbox\",\"signature\":\"ed25519:YgNBJPPU4W69hQQvMpinGxpFpgwcRx1SzPHAzmiFD2DJxDpPCQsbrgwY9WkF8zXLntHnhsiu97vrzcuwunSLixe\",\"signer_id\":\"ks-b328.sandbox\"},\"transaction_outcome\":{\"block_hash\":\"4N6QeRXorBodxcMgyLujPGrthuuVBvNswtb6H1BjAZ63\",\"id\":\"DcuYn5NF4eLKN8RLPDxoocyKYJSSHJSy8Mcpzq2ptY3m\",\"outcome\":{\"executor_id\":\"ks-b328.sandbox\",\"gas_burnt\":308584020865,\"logs\":[],\"metadata\":{\"gas_profile\":null,\"version\":1},\"receipt_ids\":[\"2vzWWoyR4ZqBxc2jxou3mot42dLyGDSYkfZ33uFtu4fG\"],\"status\":{\"SuccessReceiptId\":\"2vzWWoyR4ZqBxc2jxou3mot42dLyGDSYkfZ33uFtu4fG\"},\"tokens_burnt\":\"30858402086500000000\"},\"proof\":[]}},\"id\":\"keyhole-109\"}"
+        }
+      },
+      "txHash": "DcuYn5NF4eLKN8RLPDxoocyKYJSSHJSy8Mcpzq2ptY3m",
+      "pass": true,
+      "note": "get_value 0 -> 1 (view before and after)"
+    },
+    {
+      "n": 17,
+      "total": 20,
+      "phase": "smoke",
+      "label": "the session (ks-b328.sandbox) calls reset with no deposit (it needs exactly 1 yocto)",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-b328",
+        "receiverId": "counter.sandbox",
+        "action": "FunctionCall",
+        "method": "reset",
+        "args": {},
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "none",
+        "outcome": {
+          "kind": "ContractPanic",
+          "txHash": "BnLNQu14Y7BrEbQUuYKin6wQHPm1DY9bQkK256E6YCuV",
+          "message": "Smart contract panicked: Requires attached deposit of exactly 1 yoctoNEAR",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"result\":{\"final_execution_status\":\"FINAL\",\"receipts_outcome\":[{\"block_hash\":\"53ddKgu7mMt3JdLe9h15WrJCqQbvbgbZyAddx2qFGgHb\",\"id\":\"3p9ieYSBzM5Ai5zyJ5zeKmrTfKEym2RQ5H9cf84TyxeV\",\"outcome\":{\"executor_id\":\"counter.sandbox\",\"gas_burnt\":1083581198065,\"logs\":[],\"metadata\":{\"contracts\":[{\"local\":\"DdBoUCcNATd6UCjyzwGNyQ856j55L3Df876gRmZNsVtA\"}],\"gas_profile\":[{\"cost\":\"BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"1323840555\"},{\"cost\":\"CONTRACT_LOADING_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"35445963\"},{\"cost\":\"CONTRACT_LOADING_BYTES\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"100651947295\"},{\"cost\":\"READ_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"5219726400\"},{\"cost\":\"READ_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"201470649\"},{\"cost\":\"READ_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2517165186\"},{\"cost\":\"READ_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2759736\"},{\"cost\":\"STORAGE_READ_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"56356845749\"},{\"cost\":\"STORAGE_READ_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"154762665\"},{\"cost\":\"STORAGE_READ_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"157108112\"},{\"cost\":\"UTF8_DECODING_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"3111779061\"},{\"cost\":\"UTF8_DECODING_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"13995862992\"},{\"cost\":\"WASM_INSTRUCTION\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"3077930196\"},{\"cost\":\"WRITE_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"5607589722\"},{\"cost\":\"WRITE_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"119845968\"},{\"cost\":\"WRITE_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2865522486\"},{\"cost\":\"WRITE_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"106443792\"}],\"version\":4},\"receipt_ids\":[\"9TvzRXUP9wqGzEAmTi2rCjTdkKRtEwXwJzp1Y8UTXH9k\"],\"status\":{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"FunctionCallError\":{\"ExecutionError\":\"Smart contract panicked: Requires attached deposit of exactly 1 yoctoNEAR\"}}}}},\"tokens_burnt\":\"108358119806500000000\"},\"proof\":[]},{\"block_hash\":\"AjUX1ZmwEutYF4nvMEJHSVBSX56G5PYzfoCtyyH1Rscw\",\"id\":\"9TvzRXUP9wqGzEAmTi2rCjTdkKRtEwXwJzp1Y8UTXH9k\",\"outcome\":{\"executor_id\":\"ks-b328.sandbox\",\"gas_burnt\":223182562500,\"logs\":[],\"metadata\":{\"contracts\":[null],\"gas_profile\":[],\"version\":4},\"receipt_ids\":[],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"0\"},\"proof\":[]}],\"status\":{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"FunctionCallError\":{\"ExecutionError\":\"Smart contract panicked: Requires attached deposit of exactly 1 yoctoNEAR\"}}}}},\"transaction\":{\"actions\":[{\"FunctionCall\":{\"args\":\"e30=\",\"deposit\":\"0\",\"gas\":30000000000000,\"method_name\":\"reset\"}}],\"hash\":\"BnLNQu14Y7BrEbQUuYKin6wQHPm1DY9bQkK256E6YCuV\",\"nonce\":159000002,\"priority_fee\":0,\"public_key\":\"ed25519:fBSnKhVu6NYqffwf3SMrJxuMRkjcpRFUYQCwTeuzKyA\",\"receiver_id\":\"counter.sandbox\",\"signature\":\"ed25519:E9uQPDYp9kFrrNsvCX8uaKKWQRWv8Lj1fF8bvp9FcpfVHYYgQeWoHtRkKXAGVekFkBPiZgXoD4e43J8uyFJbDn9\",\"signer_id\":\"ks-b328.sandbox\"},\"transaction_outcome\":{\"block_hash\":\"Fbi9BpywbrWv5gVxiMou2uGtpTGZxeZBgpice5U4WU43\",\"id\":\"BnLNQu14Y7BrEbQUuYKin6wQHPm1DY9bQkK256E6YCuV\",\"outcome\":{\"executor_id\":\"ks-b328.sandbox\",\"gas_burnt\":308393286005,\"logs\":[],\"metadata\":{\"gas_profile\":null,\"version\":1},\"receipt_ids\":[\"3p9ieYSBzM5Ai5zyJ5zeKmrTfKEym2RQ5H9cf84TyxeV\"],\"status\":{\"SuccessReceiptId\":\"3p9ieYSBzM5Ai5zyJ5zeKmrTfKEym2RQ5H9cf84TyxeV\"},\"tokens_burnt\":\"30839328600500000000\"},\"proof\":[]}},\"id\":\"keyhole-114\"}"
+        }
+      },
+      "txHash": "BnLNQu14Y7BrEbQUuYKin6wQHPm1DY9bQkK256E6YCuV",
+      "pass": true,
+      "note": "get_value still 1 (view before and after)"
+    },
+    {
+      "n": 18,
+      "total": 20,
+      "phase": "smoke",
+      "label": "call with a key whose allowance is below the prepaid gas",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-b328",
+        "receiverId": "counter.sandbox",
+        "action": "FunctionCall",
+        "method": "increment",
+        "args": {},
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "allowance",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "NotEnoughAllowance",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "NotEnoughAllowance"
+          ],
+          "detail": {
+            "NotEnoughAllowance": {
+              "account_id": "ks-b328.sandbox",
+              "allowance": "10000000000000000000000",
+              "cost": "30918942497360500000000",
+              "public_key": "ed25519:B5birpA4pQfbM63HT4bKD7648GmsTAwdenPKRpMzWBTT"
+            }
+          },
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"NotEnoughAllowance\":{\"account_id\":\"ks-b328.sandbox\",\"allowance\":\"10000000000000000000000\",\"cost\":\"30918942497360500000000\",\"public_key\":\"ed25519:B5birpA4pQfbM63HT4bKD7648GmsTAwdenPKRpMzWBTT\"}}}}}},\"id\":\"keyhole-121\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "sandbox.counter.refuse-allowance.json",
+      "pass": true,
+      "note": "AddKey (0.0100 NEAR) by the operator key · tx 4wvCJQLCvRAwRKjkZetuuKZbKVtLaWnaQeDtSJXL52Gq",
+      "moreTxHashes": [
+        "4wvCJQLCvRAwRKjkZetuuKZbKVtLaWnaQeDtSJXL52Gq"
+      ]
+    },
+    {
+      "n": 19,
+      "total": 20,
+      "phase": "smoke",
+      "label": "ks-b328.sandbox signs DeleteKey + DeleteAccount (to sandbox) with the operator key",
+      "signer": "operator",
+      "txHash": "A2jRaPNEqDsJLEvG4WMPDUU2JX87hW4BRNSqKbudMkRX",
+      "pass": true,
+      "note": "account gone (view_account); both keys went with it (view_access_key)"
+    },
+    {
+      "n": 20,
+      "total": 20,
+      "phase": "smoke",
+      "label": "call after the session sub-account is deleted",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-b328",
+        "receiverId": "counter.sandbox",
+        "action": "FunctionCall",
+        "method": "increment",
+        "args": {},
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "none",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "SignerDoesNotExist",
+          "family": "InvalidTxError",
+          "path": [
+            "InvalidTxError",
+            "SignerDoesNotExist"
+          ],
+          "detail": {
+            "SignerDoesNotExist": {
+              "signer_id": "ks-b328.sandbox"
+            }
+          },
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"SignerDoesNotExist\":{\"signer_id\":\"ks-b328.sandbox\"}}}}},\"id\":\"keyhole-131\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "sandbox.counter.after-burn.json",
+      "pass": true
+    }
+  ],
+  "durationMs": 23889,
+  "exitCode": 0,
+  "transcriptPath": "demo/capture.sandbox.md"
+}

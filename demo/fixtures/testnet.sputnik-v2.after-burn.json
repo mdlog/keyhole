@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","error":{"name":"HANDLER_ERROR","cause":{"info":{},"name":"INVALID_TRANSACTION"},"code":-32000,"message":"Server error","data":{"TxExecutionError":{"InvalidTxError":{"InvalidAccessKeyError":{"AccessKeyNotFound":{"account_id":"seat.kh-op-021e.testnet","public_key":"ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3"}}}}}},"id":"keyhole-73"}

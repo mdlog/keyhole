@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","error":{"name":"HANDLER_ERROR","cause":{"info":{},"name":"INVALID_TRANSACTION"},"code":-32000,"message":"Server error","data":{"TxExecutionError":{"InvalidTxError":{"InvalidAccessKeyError":{"AccessKeyNotFound":{"account_id":"seat.sandbox","public_key":"ed25519:HHcUb8gFWhUHxQbo3ShADJ4c2YWzG3Zd9ix67HwmyXs9"}}}}}},"id":"keyhole-spike-72"}

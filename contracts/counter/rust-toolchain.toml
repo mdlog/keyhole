@@ -1,0 +1,5 @@
+# Same pin as the build plan (Rust 1.95.0, cargo-near 0.22.0). near-sdk 5.30.x declares rust-version 1.95;
+# rustc >= 1.87 emits bulk-memory opcodes, which nearcore accepts from protocol 84 (sandbox 2.14.0 is 88).
+[toolchain]
+channel = "1.95.0"
+targets = ["wasm32-unknown-unknown"]

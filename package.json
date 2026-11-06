@@ -1,0 +1,43 @@
+{
+  "name": "keyhole",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Any NEAR contract as MCP tools behind burnable function-call keys: wrap, serve, inspect, burn, and a demo that proves the refusals on chain.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "bin": {
+    "keyhole": "bin/keyhole.mjs"
+  },
+  "scripts": {
+    "keyhole": "tsx src/cli/index.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "spike": "tsx spike/spike.ts",
+    "verify-vendored": "tsx spike/verify-vendored.ts",
+    "scan:secrets": "tsx scripts/scan-secrets.ts",
+    "test:sandbox": "vitest run --config vitest.sandbox.config.ts",
+    "capture:sandbox": "tsx scripts/capture-sandbox.ts",
+    "bootstrap:testnet": "tsx scripts/bootstrap-testnet.ts",
+    "stage:testnet": "tsx scripts/stage-testnet.ts",
+    "build:counter": "tsx scripts/build-counter.ts",
+    "status:html": "tsx scripts/status-html.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "near-api-js": "7.4.0",
+    "near-sandbox": "0.3.5",
+    "tsx": "4.23.15"
+  },
+  "devDependencies": {
+    "@noble/curves": "2.2.0",
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3",
+    "vitest": "5.1.0"
+  },
+  "overrides": {
+    "tar": "7.5.22"
+  }
+}

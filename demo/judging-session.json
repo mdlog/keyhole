@@ -1,0 +1,14 @@
+{
+  "id": "ks-70aa",
+  "network": "testnet",
+  "accountId": "seat.kh-op-021e.testnet",
+  "receiverId": "kh-2c19.sputnik-v2.testnet",
+  "methodNames": [
+    "act_proposal"
+  ],
+  "allowanceYocto": "50000000000000000000000",
+  "publicKey": "ed25519:C4M3YfYSuVQf74MwUqVA2WdNmesZZ8X3ZYzrdy6tQ3Gj",
+  "codeHashPin": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+  "createdAt": "2026-11-06T16:00:35.740Z",
+  "wrapTxHash": "2YZBpMAQV5HhmoNjDCxVJ7aoNkwLvdN1RHXw5z8ydtxq"
+}

@@ -1,0 +1,237 @@
+{
+  "generated": "2026-11-06T00:04:50.166Z",
+  "rpc": "https://rpc.testnet.near.org",
+  "rpcBulk": "https://test.rpc.fastnear.com",
+  "factoryA": {
+    "account": "sputnik-v2.testnet",
+    "codeHash": "D7dxhAZvwPQ9aUfpXANGXQdWGy9pkQ4UKM4v2YGe7yVE",
+    "exports": [
+      "create",
+      "get_dao_list",
+      "new",
+      "on_create"
+    ],
+    "views": {
+      "get_default_code_hash": "ERROR wasm execution failed with error: MethodResolveError(MethodNotFound)",
+      "get_default_version": "ERROR wasm execution failed with error: MethodResolveError(MethodNotFound)",
+      "get_contracts_metadata": "ERROR wasm execution failed with error: MethodResolveError(MethodNotFound)",
+      "get_owner": "ERROR wasm execution failed with error: MethodResolveError(MethodNotFound)",
+      "get_number_daos": "ERROR wasm execution failed with error: MethodResolveError(MethodNotFound)"
+    },
+    "embeddedDao": {
+      "offset": 142134,
+      "length": 469804
+    },
+    "daoCount": 78,
+    "daoCodeHashes": {
+      "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq": [
+        "genesis.sputnik-v2.testnet",
+        "dao.sputnik-v2.testnet",
+        "simodao.sputnik-v2.testnet",
+        "clg-1.sputnik-v2.testnet",
+        "nearuaguild.sputnik-v2.testnet",
+        "nearuaguild2.sputnik-v2.testnet",
+        "shrek.sputnik-v2.testnet",
+        "testdao.sputnik-v2.testnet",
+        "daotest.sputnik-v2.testnet",
+        "infludao.sputnik-v2.testnet",
+        "infludao2.sputnik-v2.testnet",
+        "daolast.sputnik-v2.testnet",
+        "denbite.sputnik-v2.testnet",
+        "shrek2.sputnik-v2.testnet",
+        "shrek3.sputnik-v2.testnet",
+        "shrek4.sputnik-v2.testnet",
+        "412421412421kf.sputnik-v2.testnet",
+        "1224241421.sputnik-v2.testnet",
+        "gui.sputnik-v2.testnet",
+        "gdfsgdfsgdfsg.sputnik-v2.testnet",
+        "solv-multisig.sputnik-v2.testnet",
+        "maguila.sputnik-v2.testnet",
+        "hot-dao.sputnik-v2.testnet",
+        "cityhall.sputnik-v2.testnet",
+        "poc-demo-1779360396.sputnik-v2.testnet",
+        "poc-v3-1779372932.sputnik-v2.testnet",
+        "omni-e2e.sputnik-v2.testnet",
+        "peace2020.sputnik-v2.testnet",
+        "routr-owner.sputnik-v2.testnet",
+        "demo-1791909695.sputnik-v2.testnet",
+        "e2e-1791915130.sputnik-v2.testnet",
+        "e2e-1791915929.sputnik-v2.testnet",
+        "bursar-bursar-mvgent6v.sputnik-v2.testnet",
+        "bursar-bursar-itlecew5.sputnik-v2.testnet",
+        "bursar-bursar-c34d05b8.sputnik-v2.testnet",
+        "bursar-bursar-b48563e6.sputnik-v2.testnet",
+        "bursar-bursar-7a821dc8.sputnik-v2.testnet",
+        "bursar-bursar-0ca634a1.sputnik-v2.testnet",
+        "bursar-bursar-66235736.sputnik-v2.testnet",
+        "guardian-e2e-mvl64jfn.sputnik-v2.testnet",
+        "nhspike925078.sputnik-v2.testnet",
+        "bursar-judge-d2e4b718.sputnik-v2.testnet",
+        "bursar-judge-bc879820.sputnik-v2.testnet",
+        "bursar-judge-b218e187.sputnik-v2.testnet",
+        "bondbursar-bond-3e9cd2ed.sputnik-v2.testnet",
+        "probedao45849.sputnik-v2.testnet",
+        "kd-demo-83e785.sputnik-v2.testnet",
+        "bridle-hq.sputnik-v2.testnet",
+        "verdict-panel-p8n6.sputnik-v2.testnet",
+        "kdd1793327513.sputnik-v2.testnet",
+        "kdoncall.sputnik-v2.testnet",
+        "kdpg347643.sputnik-v2.testnet",
+        "kdpg347643b.sputnik-v2.testnet",
+        "opendoor-vw50k1.sputnik-v2.testnet",
+        "miron-ap-nova.sputnik-v2.testnet",
+        "mirc-ap-nova.sputnik-v2.testnet",
+        "kdg1793591704.sputnik-v2.testnet",
+        "kdg1793603660.sputnik-v2.testnet",
+        "kdg1793607117.sputnik-v2.testnet",
+        "zf-chat-room.sputnik-v2.testnet",
+        "nearevents-community.sputnik-v2.testnet",
+        "ne-dao-mvzdgxmb.sputnik-v2.testnet",
+        "lqos-166d50.sputnik-v2.testnet",
+        "herald-pilot.sputnik-v2.testnet",
+        "herald-dao.sputnik-v2.testnet",
+        "hack-dao.sputnik-v2.testnet",
+        "bursar-judge5-1c47f239.sputnik-v2.testnet",
+        "ne-dao-mw23pytm.sputnik-v2.testnet",
+        "acme-dao.sputnik-v2.testnet",
+        "bursar-coldjudge-93469618.sputnik-v2.testnet",
+        "bursar-bjudge-m4k7.sputnik-v2.testnet",
+        "bursar-jcold3b70918.sputnik-v2.testnet",
+        "bursar-jc4-b3e8935d.sputnik-v2.testnet",
+        "bursar-jc5x20686.sputnik-v2.testnet",
+        "bloqvia-dao.sputnik-v2.testnet",
+        "bursar-bjudge886562.sputnik-v2.testnet",
+        "bursar-jc791112.sputnik-v2.testnet",
+        "bursar-jc8.sputnik-v2.testnet"
+      ]
+    }
+  },
+  "factoryB": {
+    "account": "sputnikv2.testnet",
+    "defaultCodeHash": "AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH",
+    "defaultVersion": [
+      3,
+      31
+    ],
+    "numberDaos": 5429,
+    "metadata": [
+      [
+        "8RMeZ5cXDap6TENxaJKtigRYf3n139iHmTRe8ZUNey6N",
+        {
+          "version": [
+            2,
+            0
+          ],
+          "commit_id": "c2cf1553b070d04eed8f659571440b27d398c588",
+          "changelog_url": null
+        }
+      ],
+      [
+        "8LN56HLNjvwtiNb6pRVNSTMtPgJYqGjAgkVSHRiK5Wfv",
+        {
+          "version": [
+            2,
+            1
+          ],
+          "commit_id": "UNOFFICIAL_SCRIPT_DATA",
+          "changelog_url": null
+        }
+      ],
+      [
+        "783vth3Fg8MBBGGFmRqrytQCWBpYzUcmHoCq4Mo8QqF5",
+        {
+          "version": [
+            3,
+            0
+          ],
+          "commit_id": "640495ba572345ca356376989738fbd5462e1ff8",
+          "changelog_url": null
+        }
+      ],
+      [
+        "49J3TShwWwajZGXhghYXbmwtuoYPQ81kxuj6KKMdYTav",
+        {
+          "version": [
+            3,
+            1
+          ],
+          "commit_id": "dcf65615d4f083c4ed83188f01d331eaf903fb29",
+          "changelog_url": null
+        }
+      ],
+      [
+        "12wLinsPX8V1C2ytx6XeXELUJgo66oxbuhY8o2YfmN2J",
+        {
+          "version": [
+            3,
+            2
+          ],
+          "commit_id": "24d415dd18cead76f6918d59b22f0b842adc13ab",
+          "changelog_url": null
+        }
+      ],
+      [
+        "xJQXQqHWiL4d88Df73Dq9JS1BevArkdxLkFWbUfxJMG",
+        {
+          "version": [
+            3,
+            3
+          ],
+          "commit_id": "3b61e6225aceb508de31efbf2f524fd3440d2a62",
+          "changelog_url": null
+        }
+      ],
+      [
+        "AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH",
+        {
+          "version": [
+            3,
+            31
+          ],
+          "commit_id": "7764926cfd3c47f62b5fcde231c251f3c3892887",
+          "changelog_url": null
+        }
+      ]
+    ],
+    "defaultCodeExports": [
+      "act_proposal",
+      "add_proposal",
+      "bounty_claim",
+      "bounty_done",
+      "bounty_giveup",
+      "delegate",
+      "delegation_balance_of",
+      "delegation_balance_ratio",
+      "delegation_total_supply",
+      "get_available_amount",
+      "get_bounties",
+      "get_bounty",
+      "get_bounty_claims",
+      "get_bounty_number_of_claims",
+      "get_config",
+      "get_factory_info",
+      "get_last_bounty_id",
+      "get_last_proposal_id",
+      "get_locked_storage_amount",
+      "get_policy",
+      "get_proposal",
+      "get_proposals",
+      "get_staking_contract",
+      "has_blob",
+      "migrate",
+      "new",
+      "on_proposal_callback",
+      "register_delegation",
+      "remove_blob",
+      "store_blob",
+      "undelegate",
+      "update",
+      "version"
+    ]
+  },
+  "vendored": {
+    "file": "vendor/sputnikdao2-v2.0.0.wasm",
+    "sha256": "084441471c11099d78e2eecda571dd4d8c29153282807edd415935c97355dd56",
+    "codeHash": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq"
+  }
+}

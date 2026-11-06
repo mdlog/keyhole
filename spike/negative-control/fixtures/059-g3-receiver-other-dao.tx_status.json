@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","error":{"name":"HANDLER_ERROR","cause":{"info":{"requested_transaction_hash":"DFuEndDttQFaZCPMENyWRWXVT6EfbeiuHMk7iwy6hzSU"},"name":"UNKNOWN_TRANSACTION"},"code":-32000,"message":"Server error","data":"Transaction DFuEndDttQFaZCPMENyWRWXVT6EfbeiuHMk7iwy6hzSU doesn't exist"},"id":"keyhole-spike-59"}

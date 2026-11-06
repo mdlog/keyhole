@@ -1,0 +1,11 @@
+{
+  "refusals": [
+    { "network": "testnet", "pack": "sputnik-v2", "test": "refuse-method" },
+    { "network": "testnet", "pack": "sputnik-v2", "test": "refuse-action" },
+    { "network": "testnet", "pack": "sputnik-v2", "test": "refuse-receiver" },
+    { "network": "testnet", "pack": "sputnik-v2", "test": "refuse-deposit" },
+    { "network": "testnet", "pack": "sputnik-v2", "test": "after-burn" },
+    { "network": "sandbox", "pack": "counter", "test": "refuse-allowance" },
+    { "network": "sandbox", "pack": "counter", "test": "after-burn" }
+  ]
+}

@@ -1,0 +1,13 @@
+# OPTIONAL: attach `keyhole serve` to Codex. Merge this table into ~/.codex/config.toml.
+# Replace <ABSOLUTE PATH> with this repo's absolute path and ks-XXXX with the session id that
+# `keyhole wrap` prints. The command is node, never `npm run`: npm's banner would corrupt the MCP
+# stdio channel.
+# Codex starts an MCP server with a short allow-listed environment plus the `env` table below, so
+# the KEYHOLE_* variables of your shell never reach serve. serve reads the session key from the
+# keychain file that `keyhole wrap` wrote; never put a key (KEYHOLE_SESSION_KEY) in this file.
+# Set the RPC in `env` (KEYHOLE_SANDBOX_RPC for a sandbox session), and KEYHOLE_HOME or
+# KEYHOLE_CREDENTIALS_DIR too if you moved them from their defaults.
+[mcp_servers.keyhole]
+command = "node"
+args = ["<ABSOLUTE PATH>/bin/keyhole.mjs", "serve", "ks-XXXX"]
+env = { KEYHOLE_TESTNET_RPC = "https://rpc.testnet.near.org" }

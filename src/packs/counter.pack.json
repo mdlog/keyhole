@@ -1,0 +1,73 @@
+{
+  "id": "counter",
+  "abiSource": "near-abi",
+  "description": "Sandbox smoke-test contract (contracts/counter, built in-repo by cargo-near with its near-abi embedded; sub-account mode): increment; reset, which requires exactly 1 yoctoNEAR; transfer_ownership, owner only. Wrap reads the tools live from the receiver's __contract_abi view; the tools below are that ABI-derived set (contract_source_metadata is near-sdk's NEP-330 view), plus the dry-run inputs the ABI cannot give. Placeholders {seat}, {cosigner} and {attacker} are account ids filled in by the classifier.",
+  "notEnforced": "how often the agent calls increment → nothing guards it (smoke test only)",
+  "tools": [
+    {
+      "name": "counter_contract_source_metadata",
+      "kind": "view",
+      "method": "contract_source_metadata",
+      "argsSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "gasTGas": 0
+    },
+    {
+      "name": "counter_get_value",
+      "kind": "view",
+      "method": "get_value",
+      "argsSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "gasTGas": 0
+    },
+    {
+      "name": "counter_increment",
+      "kind": "call",
+      "method": "increment",
+      "argsSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "gasTGas": 30,
+      "dryRun": { "args": {}, "depositYocto": null }
+    },
+    {
+      "name": "counter_reset",
+      "kind": "call",
+      "method": "reset",
+      "argsSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "gasTGas": 30,
+      "dryRun": { "args": {}, "depositYocto": "1" }
+    }
+  ],
+  "outOfScope": [{ "method": "transfer_ownership", "dryRun": { "args": { "new_owner": "{attacker}" }, "depositYocto": null } }],
+  "sandboxFixture": {
+    "wasmPath": "contracts/counter/res/counter.wasm",
+    "sha256": "bb915d7cdafe0058a46666748ff8728f14da38e3f8db4c891664d606d17e85a7",
+    "codeHash": "DdBoUCcNATd6UCjyzwGNyQ856j55L3Df876gRmZNsVtA",
+    "init": { "method": "new", "args": { "owner": "{cosigner}" } }
+  },
+  "negativeTests": [
+    {
+      "id": "refuse-allowance",
+      "label": "call with a key whose allowance is below the prepaid gas",
+      "violates": "allowance",
+      "keyState": "tiny-allowance-key",
+      "receiver": "receiver",
+      "action": "FunctionCall",
+      "method": "increment",
+      "args": {},
+      "depositYocto": "0",
+      "gasTGas": 30,
+      "expected": "NotEnoughAllowance"
+    },
+    {
+      "id": "after-burn",
+      "label": "call after the session sub-account is deleted",
+      "violates": "none",
+      "keyState": "after-burn",
+      "receiver": "receiver",
+      "action": "FunctionCall",
+      "method": "increment",
+      "args": {},
+      "depositYocto": "0",
+      "gasTGas": 30,
+      "expected": "SignerDoesNotExist"
+    }
+  ]
+}

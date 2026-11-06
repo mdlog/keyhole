@@ -1,0 +1,9 @@
+{
+  "_comment": "OPTIONAL: attach keyhole serve to Claude Code. Merge mcpServers into your project's .mcp.json. Replace <ABSOLUTE PATH> with this repo's absolute path and ks-XXXX with the session id that keyhole wrap prints. The command is node, never npm run: npm's banner would corrupt the MCP stdio channel. The session key comes from KEYHOLE_SESSION_KEY or the session's keychain file; serve loads no other key.",
+  "mcpServers": {
+    "keyhole": {
+      "command": "node",
+      "args": ["<ABSOLUTE PATH>/bin/keyhole.mjs", "serve", "ks-XXXX"]
+    }
+  }
+}

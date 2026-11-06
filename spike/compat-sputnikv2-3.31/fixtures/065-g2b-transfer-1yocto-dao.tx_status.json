@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","error":{"name":"HANDLER_ERROR","cause":{"info":{"requested_transaction_hash":"61JQyazrCk3otHRBve9x2bDU4vcgkR9VELR5TWGQaLWm"},"name":"UNKNOWN_TRANSACTION"},"code":-32000,"message":"Server error","data":"Transaction 61JQyazrCk3otHRBve9x2bDU4vcgkR9VELR5TWGQaLWm doesn't exist"},"id":"keyhole-spike-65"}

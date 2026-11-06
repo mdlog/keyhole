@@ -1,0 +1,33 @@
+node_modules/
+
+# near-sandbox: prebuilt nearcore binary cache (~90 MB, fetched on first Sandbox.start)
+.sandbox-bin/
+# near-sandbox home: genesis + validator keys and port locks; never commit
+.sandbox-home/
+
+# cargo build output of the counter contract (npm run build:counter); the pinned wasm is res/counter.wasm
+contracts/counter/target/
+
+# spike output (default SPIKE_OUT); the committed capture lives in demo/fixtures/sandbox/
+spike/out*/
+
+# local session metadata if KEYHOLE_HOME points into the repo
+.keyhole/
+
+# keys belong in env, never in files
+.env
+.env.*
+
+# logs and coverage
+logs/
+*.log
+# ...except the two clean-clone screener logs, which are deliverables (R5a)
+!demo/screeners/*.log
+npm-debug.log*
+coverage/
+
+# vitest json reporter output (generated)
+.vitest/
+
+# a judge's own demo run (README step 3 sends its evidence to KEYHOLE_DEMO_OUT=./my-run)
+my-run/

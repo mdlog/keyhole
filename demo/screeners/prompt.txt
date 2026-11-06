@@ -1,0 +1,1 @@
+Read README.md. Run the steps tagged [offline] and [network] in 'Try it' exactly as written. For each step report the command, the exit code, the wall time, and whether the output contains the text the README says it shows. Then check one row of 'Verification — negative tests' against its evidence file. Do not modify files.

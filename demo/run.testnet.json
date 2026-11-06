@@ -1,0 +1,770 @@
+{
+  "id": "live-testnet-20261106T150556Z",
+  "network": "testnet",
+  "mode": "live",
+  "steps": [
+    {
+      "n": 1,
+      "total": 14,
+      "phase": "setup",
+      "label": "DAO kh-2c19.sputnik-v2.testnet (via sputnik-v2.testnet) · council [seat, cosigner] · 2-of-2",
+      "signer": "operator",
+      "txHash": "Ek1APr5joscLK3cRL9DPuesjGpvSLZ1cQPs9uRJEX9WT",
+      "pass": true,
+      "note": "created 2026-11-06 · code_hash ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq = pack pin"
+    },
+    {
+      "n": 2,
+      "total": 14,
+      "phase": "setup",
+      "label": "cosigner adds proposal #0 (grant payout) and #1 (injected description)",
+      "signer": "cosigner",
+      "txHash": "9F3ctuo8a6T1uGNrcp23dLhP4mvH22SY1tbTByEf5kzX",
+      "moreTxHashes": [
+        "97132WVdw8F9BtH84EzRZmhdUKHRnCVJG7uU6VxYnq6r"
+      ],
+      "pass": true,
+      "note": "ids returned by add_proposal · bond 0.1000 NEAR each"
+    },
+    {
+      "n": 3,
+      "total": 14,
+      "phase": "wrap",
+      "label": "seat.kh-op-021e.testnet signs one AddKey: act_proposal only · gas allowance 0.0500 NEAR",
+      "signer": "operator",
+      "txHash": "3t1xgoYTxaiddjUJCXmkQbqhPECm4UbstKYbMqBxzVWm",
+      "card": {
+        "session": {
+          "id": "ks-16e5",
+          "mode": "on-account",
+          "network": "testnet",
+          "accountId": "seat.kh-op-021e.testnet",
+          "receiverId": "kh-2c19.sputnik-v2.testnet",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceYocto": "50000000000000000000000",
+          "codeHashPin": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+          "publicKey": "ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3",
+          "createdAt": "2026-11-06T15:06:45.117Z",
+          "status": "live",
+          "packId": "sputnik-v2",
+          "tools": [
+            {
+              "name": "dao_list_proposals",
+              "kind": "view",
+              "method": "get_proposals",
+              "argsSchema": {
+                "type": "object",
+                "properties": {
+                  "from_index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  }
+                },
+                "required": [
+                  "from_index",
+                  "limit"
+                ],
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "dao_get_policy",
+              "kind": "view",
+              "method": "get_policy",
+              "argsSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "dao_vote",
+              "kind": "call",
+              "method": "act_proposal",
+              "argsSchema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ]
+                  },
+                  "memo": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "action"
+                ],
+                "additionalProperties": false
+              },
+              "gasTGas": 30,
+              "classification": "callable",
+              "evidence": "dry-run at wrap: succeeded with 0 deposit"
+            },
+            {
+              "name": "add_proposal",
+              "kind": "call",
+              "method": "add_proposal",
+              "argsSchema": {},
+              "gasTGas": 30,
+              "classification": "not in allowlist",
+              "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+            }
+          ]
+        },
+        "key": {
+          "publicKey": "ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3",
+          "accountId": "seat.kh-op-021e.testnet",
+          "receiverId": "kh-2c19.sputnik-v2.testnet",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceRemainingYocto": "50000000000000000000000",
+          "nonce": 0
+        },
+        "tools": [
+          {
+            "name": "dao_list_proposals",
+            "kind": "view",
+            "method": "get_proposals",
+            "argsSchema": {
+              "type": "object",
+              "properties": {
+                "from_index": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "from_index",
+                "limit"
+              ],
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "dao_get_policy",
+            "kind": "view",
+            "method": "get_policy",
+            "argsSchema": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "dao_vote",
+            "kind": "call",
+            "method": "act_proposal",
+            "argsSchema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "approve",
+                    "reject"
+                  ]
+                },
+                "memo": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "action"
+              ],
+              "additionalProperties": false
+            },
+            "gasTGas": 30,
+            "classification": "callable",
+            "evidence": "dry-run at wrap: succeeded with 0 deposit"
+          },
+          {
+            "name": "add_proposal",
+            "kind": "call",
+            "method": "add_proposal",
+            "argsSchema": {},
+            "gasTGas": 30,
+            "classification": "not in allowlist",
+            "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+          }
+        ],
+        "codeHashNow": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+        "source": "preview",
+        "readAt": "2026-11-06T15:07:01.390Z",
+        "exposure": {
+          "label": "VOTE",
+          "value": "any proposal here, either way, until burn; quorum 2-of-2"
+        }
+      },
+      "pass": true,
+      "note": "key on chain (view_access_key) as planned · session ks-16e5"
+    },
+    {
+      "n": 4,
+      "total": 14,
+      "phase": "in-scope",
+      "label": "the session approves #0 (grant payout)",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-16e5",
+        "receiverId": "kh-2c19.sputnik-v2.testnet",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 0,
+          "action": "VoteApprove",
+          "proposal": {
+            "Transfer": {
+              "token_id": "",
+              "receiver_id": "grantee.kh-op-021e.testnet",
+              "amount": "10000000000000000000000",
+              "msg": null
+            }
+          },
+          "memo": null
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "none",
+        "outcome": {
+          "kind": "TxSuccess",
+          "txHash": "9kTGibv726GGerm7Ebk316wFu1qC1sp8CFXXis8Y5T2d",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"result\":{\"final_execution_status\":\"FINAL\",\"receipts_outcome\":[{\"block_hash\":\"76QQ19ZnXxUwdT57WGjuYMjVtKEkHqaJd9AzbsbPfaKJ\",\"id\":\"8y5XnYmMFJtCUPfm4KxjrruNc3PQdhxUDB84QqSBPARS\",\"outcome\":{\"executor_id\":\"kh-2c19.sputnik-v2.testnet\",\"gas_burnt\":2305170941467,\"logs\":[],\"metadata\":{\"contracts\":[{\"local\":\"ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq\"}],\"gas_profile\":[{\"cost\":\"BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"6883970886\"},{\"cost\":\"CONTRACT_LOADING_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"35445963\"},{\"cost\":\"CONTRACT_LOADING_BYTES\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"511755148180\"},{\"cost\":\"READ_CACHED_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"25080000000\"},{\"cost\":\"READ_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"23488768800\"},{\"cost\":\"READ_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"1737209181\"},{\"cost\":\"READ_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"17620156302\"},{\"cost\":\"READ_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"96689322\"},{\"cost\":\"STORAGE_READ_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"281784228745\"},{\"cost\":\"STORAGE_READ_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2197629843\"},{\"cost\":\"STORAGE_READ_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"3181439268\"},{\"cost\":\"STORAGE_WRITE_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"128393472000\"},{\"cost\":\"STORAGE_WRITE_EVICTED_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"9153432495\"},{\"cost\":\"STORAGE_WRITE_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"986760138\"},{\"cost\":\"STORAGE_WRITE_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"11538896508\"},{\"cost\":\"TOUCHING_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"31920000000\"},{\"cost\":\"WASM_INSTRUCTION\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"309362838048\"},{\"cost\":\"WRITE_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"22430358888\"},{\"cost\":\"WRITE_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2715600684\"},{\"cost\":\"WRITE_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"22924179888\"},{\"cost\":\"WRITE_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"3413804472\"}],\"version\":4},\"receipt_ids\":[\"9tz36yVwUVFw3UZwTTWaPKBAC4kpuRLdCT3UbKmw58JB\"],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"230517094146700000000\"},\"proof\":[]},{\"block_hash\":\"5m26w8VirbReZKgvLdLG51iZS2VhbtDFkNM1sGkLLMp3\",\"id\":\"9tz36yVwUVFw3UZwTTWaPKBAC4kpuRLdCT3UbKmw58JB\",\"outcome\":{\"executor_id\":\"seat.kh-op-021e.testnet\",\"gas_burnt\":223182562500,\"logs\":[],\"metadata\":{\"contracts\":[null],\"gas_profile\":[],\"version\":4},\"receipt_ids\":[],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"0\"},\"proof\":[]}],\"status\":{\"SuccessValue\":\"\"},\"transaction\":{\"actions\":[{\"FunctionCall\":{\"args\":\"eyJpZCI6MCwiYWN0aW9uIjoiVm90ZUFwcHJvdmUiLCJwcm9wb3NhbCI6eyJUcmFuc2ZlciI6eyJ0b2tlbl9pZCI6IiIsInJlY2VpdmVyX2lkIjoiZ3JhbnRlZS5raC1vcC0wMjFlLnRlc3RuZXQiLCJhbW91bnQiOiIxMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCIsIm1zZyI6bnVsbH19LCJtZW1vIjpudWxsfQ==\",\"deposit\":\"0\",\"gas\":30000000000000,\"method_name\":\"act_proposal\"}}],\"hash\":\"9kTGibv726GGerm7Ebk316wFu1qC1sp8CFXXis8Y5T2d\",\"nonce\":276502396000001,\"priority_fee\":0,\"public_key\":\"ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3\",\"receiver_id\":\"kh-2c19.sputnik-v2.testnet\",\"signature\":\"ed25519:54xqVQWJmYYnKWjRSkYfYmeHTToT8E65zKVcw8KPxpX7FwdfJ7NhJrGZxSB1vqPqYkwjpTSsYpiCNa1HSa9Wz1CL\",\"signer_id\":\"seat.kh-op-021e.testnet\"},\"transaction_outcome\":{\"block_hash\":\"7Tq6UrYTHzmtwq419J6GJYV7LVcij7Kv8oq3qUAcAGKL\",\"id\":\"9kTGibv726GGerm7Ebk316wFu1qC1sp8CFXXis8Y5T2d\",\"outcome\":{\"executor_id\":\"seat.kh-op-021e.testnet\",\"gas_burnt\":316833303560,\"logs\":[],\"metadata\":{\"gas_profile\":null,\"version\":1},\"receipt_ids\":[\"8y5XnYmMFJtCUPfm4KxjrruNc3PQdhxUDB84QqSBPARS\"],\"status\":{\"SuccessReceiptId\":\"8y5XnYmMFJtCUPfm4KxjrruNc3PQdhxUDB84QqSBPARS\"},\"tokens_burnt\":\"31683330356000000000\"},\"proof\":[{\"direction\":\"Right\",\"hash\":\"Ayk7SVUdvRWAiydpCBceqwC8JahpQwvcMj9CwaeNeFuz\"},{\"direction\":\"Right\",\"hash\":\"CRrySadAksTEHxbWvQcPvMsbsJeDLuHQwKXnYBR5y8NB\"}]}},\"id\":\"keyhole-38\"}"
+        }
+      },
+      "txHash": "9kTGibv726GGerm7Ebk316wFu1qC1sp8CFXXis8Y5T2d",
+      "proposal": {
+        "id": 0,
+        "status": "InProgress",
+        "approvals": 1,
+        "required": 2
+      },
+      "pass": true
+    },
+    {
+      "n": 5,
+      "total": 14,
+      "phase": "in-scope",
+      "label": "the cosigner approves #0 with its own full-access key",
+      "signer": "cosigner",
+      "txHash": "GfzC2xPK7BNGnGVT7dwWwc4jJZ6LvCKzjq68GzWVtw2Y",
+      "proposal": {
+        "id": 0,
+        "status": "Approved",
+        "approvals": 2,
+        "required": 2
+      },
+      "pass": true,
+      "note": "payout executed: grantee.kh-op-021e.testnet +0.0100 NEAR (view_account before and after)"
+    },
+    {
+      "n": 6,
+      "total": 14,
+      "phase": "in-scope",
+      "label": "the session approves #1 (the injected proposal)",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-16e5",
+        "receiverId": "kh-2c19.sputnik-v2.testnet",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 1,
+          "action": "VoteApprove",
+          "proposal": {
+            "Transfer": {
+              "token_id": "",
+              "receiver_id": "attacker.kh-op-021e.testnet",
+              "amount": "5000000000000000000000000",
+              "msg": null
+            }
+          },
+          "memo": null
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "none",
+        "outcome": {
+          "kind": "TxSuccess",
+          "txHash": "2qPWeYkeQ6zdhh455gpr2hZx39byKHwbCXzMXphiqEVx",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"result\":{\"final_execution_status\":\"FINAL\",\"receipts_outcome\":[{\"block_hash\":\"8hsRfBo45VTX9pGZoubw2UqYA4cWMTrYYv5ArXyiHsYE\",\"id\":\"6Pj2UC534NhVrFcFfMjic4GhwZ2rmC8xbgedtruZPCET\",\"outcome\":{\"executor_id\":\"kh-2c19.sputnik-v2.testnet\",\"gas_burnt\":2344443071240,\"logs\":[],\"metadata\":{\"contracts\":[{\"local\":\"ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq\"}],\"gas_profile\":[{\"cost\":\"BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"6883970886\"},{\"cost\":\"CONTRACT_LOADING_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"35445963\"},{\"cost\":\"CONTRACT_LOADING_BYTES\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"511755148180\"},{\"cost\":\"READ_CACHED_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"25080000000\"},{\"cost\":\"READ_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"23488768800\"},{\"cost\":\"READ_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2691343764\"},{\"cost\":\"READ_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"17620156302\"},{\"cost\":\"READ_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"146463132\"},{\"cost\":\"STORAGE_READ_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"281784228745\"},{\"cost\":\"STORAGE_READ_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"2197629843\"},{\"cost\":\"STORAGE_READ_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"4589801272\"},{\"cost\":\"STORAGE_WRITE_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"128393472000\"},{\"cost\":\"STORAGE_WRITE_EVICTED_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"17214876552\"},{\"cost\":\"STORAGE_WRITE_KEY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"986760138\"},{\"cost\":\"STORAGE_WRITE_VALUE_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"19324549797\"},{\"cost\":\"TOUCHING_TRIE_NODE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"31920000000\"},{\"cost\":\"WASM_INSTRUCTION\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"327085002288\"},{\"cost\":\"WRITE_MEMORY_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"22430358888\"},{\"cost\":\"WRITE_MEMORY_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"4091105544\"},{\"cost\":\"WRITE_REGISTER_BASE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"22924179888\"},{\"cost\":\"WRITE_REGISTER_BYTE\",\"cost_category\":\"WASM_HOST_COST\",\"gas_used\":\"5322189600\"}],\"version\":4},\"receipt_ids\":[\"EHKjMesELh4RL8gZA9aZT3v9HyCWJhF61tdZbiLMcwCB\"],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"234444307124000000000\"},\"proof\":[]},{\"block_hash\":\"FypHa8649zS7MnSQUrdhcsdpryLC1K1bfZihvF9r2u1M\",\"id\":\"EHKjMesELh4RL8gZA9aZT3v9HyCWJhF61tdZbiLMcwCB\",\"outcome\":{\"executor_id\":\"seat.kh-op-021e.testnet\",\"gas_burnt\":223182562500,\"logs\":[],\"metadata\":{\"contracts\":[null],\"gas_profile\":[],\"version\":4},\"receipt_ids\":[],\"status\":{\"SuccessValue\":\"\"},\"tokens_burnt\":\"0\"},\"proof\":[]}],\"status\":{\"SuccessValue\":\"\"},\"transaction\":{\"actions\":[{\"FunctionCall\":{\"args\":\"eyJpZCI6MSwiYWN0aW9uIjoiVm90ZUFwcHJvdmUiLCJwcm9wb3NhbCI6eyJUcmFuc2ZlciI6eyJ0b2tlbl9pZCI6IiIsInJlY2VpdmVyX2lkIjoiYXR0YWNrZXIua2gtb3AtMDIxZS50ZXN0bmV0IiwiYW1vdW50IjoiNTAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCIsIm1zZyI6bnVsbH19LCJtZW1vIjpudWxsfQ==\",\"deposit\":\"0\",\"gas\":30000000000000,\"method_name\":\"act_proposal\"}}],\"hash\":\"2qPWeYkeQ6zdhh455gpr2hZx39byKHwbCXzMXphiqEVx\",\"nonce\":276502396000002,\"priority_fee\":0,\"public_key\":\"ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3\",\"receiver_id\":\"kh-2c19.sputnik-v2.testnet\",\"signature\":\"ed25519:4Jb15Yv6ka4251CxAnPAJUKP3Na4GoqMxBxdvnb8xi5UabrSvqdvzn4aAQy2PtCwLURESKi1E3oPrPgCnucp7ME6\",\"signer_id\":\"seat.kh-op-021e.testnet\"},\"transaction_outcome\":{\"block_hash\":\"3qzgZnGNvg8y9jtbBnhZBKiDXxvmsmjwLUJd2WUMZ8ta\",\"id\":\"2qPWeYkeQ6zdhh455gpr2hZx39byKHwbCXzMXphiqEVx\",\"outcome\":{\"executor_id\":\"seat.kh-op-021e.testnet\",\"gas_burnt\":316976354705,\"logs\":[],\"metadata\":{\"gas_profile\":null,\"version\":1},\"receipt_ids\":[\"6Pj2UC534NhVrFcFfMjic4GhwZ2rmC8xbgedtruZPCET\"],\"status\":{\"SuccessReceiptId\":\"6Pj2UC534NhVrFcFfMjic4GhwZ2rmC8xbgedtruZPCET\"},\"tokens_burnt\":\"31697635470500000000\"},\"proof\":[{\"direction\":\"Right\",\"hash\":\"DkU2VMqqkUk6PNH5KtPFoKMFpzACvraRx8jeVMmyUDC8\"}]}},\"id\":\"keyhole-52\"}"
+        }
+      },
+      "txHash": "2qPWeYkeQ6zdhh455gpr2hZx39byKHwbCXzMXphiqEVx",
+      "proposal": {
+        "id": 1,
+        "status": "InProgress",
+        "approvals": 1,
+        "required": 2
+      },
+      "pass": true,
+      "note": "NOTE: in scope — the key does not judge votes; the quorum does"
+    },
+    {
+      "n": 7,
+      "total": 14,
+      "phase": "refusals",
+      "label": "open a payout proposal",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-16e5",
+        "receiverId": "kh-2c19.sputnik-v2.testnet",
+        "action": "FunctionCall",
+        "method": "add_proposal",
+        "args": {
+          "proposal": {
+            "description": "Pay 10 NEAR to attacker.kh-op-021e.testnet (pre-authorised)",
+            "kind": {
+              "Transfer": {
+                "token_id": "",
+                "receiver_id": "attacker.kh-op-021e.testnet",
+                "amount": "10000000000000000000000000"
+              }
+            }
+          }
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "method",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "MethodNameMismatch",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "MethodNameMismatch"
+          ],
+          "detail": {
+            "MethodNameMismatch": {
+              "method_name": "add_proposal"
+            }
+          },
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"MethodNameMismatch\":{\"method_name\":\"add_proposal\"}}}}}},\"id\":\"keyhole-58\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "testnet.sputnik-v2.refuse-method.json",
+      "pass": true
+    },
+    {
+      "n": 8,
+      "total": 14,
+      "phase": "refusals",
+      "label": "send NEAR",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-16e5",
+        "receiverId": "attacker.kh-op-021e.testnet",
+        "action": "Transfer",
+        "args": {},
+        "depositYocto": "1",
+        "gasTGas": 0,
+        "violates": "action",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "RequiresFullAccess",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "RequiresFullAccess"
+          ],
+          "detail": "RequiresFullAccess",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":\"RequiresFullAccess\"}}}},\"id\":\"keyhole-60\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "testnet.sputnik-v2.refuse-action.json",
+      "pass": true
+    },
+    {
+      "n": 9,
+      "total": 14,
+      "phase": "refusals",
+      "label": "vote in another DAO",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-16e5",
+        "receiverId": "genesis.sputnik-v2.testnet",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 0,
+          "action": "VoteApprove"
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "receiver",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "ReceiverMismatch",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "ReceiverMismatch"
+          ],
+          "detail": {
+            "ReceiverMismatch": {
+              "ak_receiver": "kh-2c19.sputnik-v2.testnet",
+              "tx_receiver": "genesis.sputnik-v2.testnet"
+            }
+          },
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"ReceiverMismatch\":{\"ak_receiver\":\"kh-2c19.sputnik-v2.testnet\",\"tx_receiver\":\"genesis.sputnik-v2.testnet\"}}}}}},\"id\":\"keyhole-62\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "testnet.sputnik-v2.refuse-receiver.json",
+      "pass": true
+    },
+    {
+      "n": 10,
+      "total": 14,
+      "phase": "refusals",
+      "label": "attach the bond",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-16e5",
+        "receiverId": "kh-2c19.sputnik-v2.testnet",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 1,
+          "action": "VoteApprove"
+        },
+        "depositYocto": "1",
+        "gasTGas": 30,
+        "violates": "deposit",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "DepositWithFunctionCall",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "DepositWithFunctionCall"
+          ],
+          "detail": "DepositWithFunctionCall",
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":\"DepositWithFunctionCall\"}}}},\"id\":\"keyhole-64\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "testnet.sputnik-v2.refuse-deposit.json",
+      "pass": true
+    },
+    {
+      "n": 11,
+      "total": 14,
+      "phase": "chain-check",
+      "label": "chain check: view_access_key before [07] and after [10]",
+      "signer": "none",
+      "chainCheck": {
+        "before": {
+          "publicKey": "ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3",
+          "accountId": "seat.kh-op-021e.testnet",
+          "receiverId": "kh-2c19.sputnik-v2.testnet",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceRemainingYocto": "49471657632902800000000",
+          "nonce": 276502396000002
+        },
+        "after": {
+          "publicKey": "ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3",
+          "accountId": "seat.kh-op-021e.testnet",
+          "receiverId": "kh-2c19.sputnik-v2.testnet",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceRemainingYocto": "49471657632902800000000",
+          "nonce": 276502396000002
+        }
+      },
+      "pass": true
+    },
+    {
+      "n": 12,
+      "total": 14,
+      "phase": "inspect",
+      "label": "inspect ks-16e5: the cage card, read from chain",
+      "signer": "none",
+      "card": {
+        "session": {
+          "id": "ks-16e5",
+          "mode": "on-account",
+          "network": "testnet",
+          "accountId": "seat.kh-op-021e.testnet",
+          "receiverId": "kh-2c19.sputnik-v2.testnet",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceYocto": "50000000000000000000000",
+          "codeHashPin": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+          "publicKey": "ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3",
+          "createdAt": "2026-11-06T15:06:45.117Z",
+          "status": "live",
+          "packId": "sputnik-v2",
+          "tools": [
+            {
+              "name": "dao_list_proposals",
+              "kind": "view",
+              "method": "get_proposals",
+              "argsSchema": {
+                "type": "object",
+                "properties": {
+                  "from_index": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100
+                  }
+                },
+                "required": [
+                  "from_index",
+                  "limit"
+                ],
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "dao_get_policy",
+              "kind": "view",
+              "method": "get_policy",
+              "argsSchema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              },
+              "gasTGas": 0
+            },
+            {
+              "name": "dao_vote",
+              "kind": "call",
+              "method": "act_proposal",
+              "argsSchema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "approve",
+                      "reject"
+                    ]
+                  },
+                  "memo": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "action"
+                ],
+                "additionalProperties": false
+              },
+              "gasTGas": 30,
+              "classification": "callable",
+              "evidence": "dry-run at wrap: succeeded with 0 deposit"
+            },
+            {
+              "name": "add_proposal",
+              "kind": "call",
+              "method": "add_proposal",
+              "argsSchema": {},
+              "gasTGas": 30,
+              "classification": "not in allowlist",
+              "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+            }
+          ]
+        },
+        "key": {
+          "publicKey": "ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3",
+          "accountId": "seat.kh-op-021e.testnet",
+          "receiverId": "kh-2c19.sputnik-v2.testnet",
+          "methodNames": [
+            "act_proposal"
+          ],
+          "allowanceRemainingYocto": "49471657632902800000000",
+          "nonce": 276502396000002
+        },
+        "tools": [
+          {
+            "name": "dao_list_proposals",
+            "kind": "view",
+            "method": "get_proposals",
+            "argsSchema": {
+              "type": "object",
+              "properties": {
+                "from_index": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "from_index",
+                "limit"
+              ],
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "dao_get_policy",
+            "kind": "view",
+            "method": "get_policy",
+            "argsSchema": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "gasTGas": 0
+          },
+          {
+            "name": "dao_vote",
+            "kind": "call",
+            "method": "act_proposal",
+            "argsSchema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "approve",
+                    "reject"
+                  ]
+                },
+                "memo": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "action"
+              ],
+              "additionalProperties": false
+            },
+            "gasTGas": 30,
+            "classification": "callable",
+            "evidence": "dry-run at wrap: succeeded with 0 deposit"
+          },
+          {
+            "name": "add_proposal",
+            "kind": "call",
+            "method": "add_proposal",
+            "argsSchema": {},
+            "gasTGas": 30,
+            "classification": "not in allowlist",
+            "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+          }
+        ],
+        "codeHashNow": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+        "source": "chain",
+        "readAt": "2026-11-06T15:08:55.908Z",
+        "exposure": {
+          "label": "VOTE",
+          "value": "any proposal here, either way, until burn; quorum 2-of-2"
+        }
+      },
+      "pass": true
+    },
+    {
+      "n": 13,
+      "total": 14,
+      "phase": "burn",
+      "label": "seat.kh-op-021e.testnet signs DeleteKey of ks-16e5's key",
+      "signer": "operator",
+      "txHash": "5gYFWwJ3qpLBaSUgK6jui9dUFPSoktwyfwo72KtrMjBS",
+      "pass": true
+    },
+    {
+      "n": 14,
+      "total": 14,
+      "phase": "burn",
+      "label": "vote with the deleted key",
+      "signer": "session",
+      "attempt": {
+        "sessionId": "ks-16e5",
+        "receiverId": "kh-2c19.sputnik-v2.testnet",
+        "action": "FunctionCall",
+        "method": "act_proposal",
+        "args": {
+          "id": 1,
+          "action": "VoteReject"
+        },
+        "depositYocto": "0",
+        "gasTGas": 30,
+        "violates": "none",
+        "outcome": {
+          "kind": "Refusal",
+          "errorName": "AccessKeyNotFound",
+          "family": "InvalidTxError::InvalidAccessKeyError",
+          "path": [
+            "InvalidTxError",
+            "InvalidAccessKeyError",
+            "AccessKeyNotFound"
+          ],
+          "detail": {
+            "AccessKeyNotFound": {
+              "account_id": "seat.kh-op-021e.testnet",
+              "public_key": "ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3"
+            }
+          },
+          "rawRpcJson": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"AccessKeyNotFound\":{\"account_id\":\"seat.kh-op-021e.testnet\",\"public_key\":\"ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3\"}}}}}},\"id\":\"keyhole-73\"}",
+          "reachedBlock": false
+        }
+      },
+      "fixture": "testnet.sputnik-v2.after-burn.json",
+      "pass": true
+    }
+  ],
+  "durationMs": 202544,
+  "exitCode": 0,
+  "transcriptPath": "demo/transcript.md"
+}
