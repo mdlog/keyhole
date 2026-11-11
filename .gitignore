@@ -31,3 +31,4 @@ coverage/
 
 # a judge's own demo run (README step 3 sends its evidence to KEYHOLE_DEMO_OUT=./my-run)
 my-run/
+*.tsbuildinfo

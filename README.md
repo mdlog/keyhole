@@ -11,7 +11,7 @@
 
 Next to the NEAR docs Shade-Agent AI-DAO tutorial, which gives an agent its own account, Keyhole gives the member's seat a key that can only vote.\
 NEARpedia (what NEAR looks like today, written for agents) is complementary. [near-hydra](https://github.com/nikshepsvn/near-hydra) mints agent keys; Keyhole binds MCP tools to the key's on-chain scope and makes that scope inspectable, testable and burnable.\
-Live page: <https://mdlog.github.io/keyhole/>, which reads the judging session's key from testnet in the browser ([`docs/index.html`](docs/index.html)) · X post: `X_POST_URL` · 90 s video: `VIDEO_URL`
+Live console: <https://mdlog.github.io/keyhole/>, the operator console ([`dashboard/`](dashboard/)), which reads the judging session's key and the DAO's proposals from testnet in the browser and shows both recorded runs and the seven refusals · X post: `X_POST_URL` · 90 s video: `VIDEO_URL`
 
 The cage card of the live judging session, as `npm run keyhole -- inspect ks-70aa` printed it on the operator's machine, which holds the session file. The key's scope and the target's code hash are read from chain, and the right-hand column names what enforces each row:
 
@@ -156,8 +156,9 @@ The rule order on screen (method · action · receiver · deposit · allowance) 
 | `test/`, `test-sandbox/` | `npm test` (offline) and `npm run test:sandbox` (near-sandbox) |
 | `contracts/counter/` | the smoke-test contract, in Rust (`npm run build:counter`) |
 | `spike/`, `vendor/` | the Day-1 spike and the vendored DAO wasm |
-| `scripts/` | the secret scan, the testnet bootstrap, the sandbox captures, the video staging and the hosted page's data (`npm run site:html`) |
-| `docs/` | the hosted page (GitHub Pages, branch `main`, folder `/docs`): a live `view_access_key` inspector and the refusal ledger, built from `demo/` |
+| `scripts/` | the secret scan, the testnet bootstrap, the sandbox captures, the video staging and the console's data (`npm run site:data`; `npm run site:build` rebuilds `docs/`) |
+| `dashboard/` | the operator console (React + Vite): sessions, a live `view_access_key` inspector, the DAO's proposals, the refusal ledger and the run log, read-only, data from `demo/` |
+| `docs/` | the console's build, served by GitHub Pages (branch `main`, folder `/docs`) |
 
 ## Limits
 

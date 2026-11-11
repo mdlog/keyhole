@@ -25,11 +25,12 @@ function* walk(dir: string): Generator<string> {
   }
 }
 
-/** README.md, docs/index.html, src/**\/*.{ts,json}, examples/**, demo/*.md (not demo/fixtures: RPC bodies are verbatim chain data). */
+/** README.md, docs/index.html, dashboard/src/**\/*.{ts,tsx}, src/**\/*.{ts,json}, examples/**, demo/*.md (not demo/fixtures: RPC bodies are verbatim chain data). */
 function scannedFiles(): string[] {
   return [
     join(REPO, "README.md"),
     join(REPO, "docs/index.html"),
+    ...[...walk(join(REPO, "dashboard/src"))].filter((f) => /\.(ts|tsx)$/.test(f)),
     ...[...walk(join(REPO, "src"))].filter((f) => /\.(ts|json)$/.test(f)),
     ...walk(join(REPO, "examples")),
     ...readdirSync(join(REPO, "demo"))

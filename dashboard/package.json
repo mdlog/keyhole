@@ -1,0 +1,29 @@
+{
+  "name": "keyhole-dashboard",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Keyhole's operator console: a read-only React app built into ../docs for GitHub Pages.",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lucide-react": "0.468.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "7.18.5"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "@vitejs/plugin-react": "4.7.0",
+    "typescript": "5.7.3",
+    "vite": "5.4.21"
+  }
+}

@@ -1,0 +1,1258 @@
+{
+  "repo": "https://github.com/mdlog/keyhole",
+  "judgingSessionId": "ks-70aa",
+  "sessions": [
+    {
+      "id": "ks-70aa",
+      "network": "testnet",
+      "mode": "on-account",
+      "accountId": "seat.kh-op-021e.testnet",
+      "receiverId": "kh-2c19.sputnik-v2.testnet",
+      "methodNames": [
+        "act_proposal"
+      ],
+      "allowanceYocto": "50000000000000000000000",
+      "publicKey": "ed25519:C4M3YfYSuVQf74MwUqVA2WdNmesZZ8X3ZYzrdy6tQ3Gj",
+      "codeHashPin": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+      "packId": "sputnik-v2",
+      "createdAt": "2026-11-06T16:00:35.740Z",
+      "role": "judging session",
+      "source": "demo/judging-session.json",
+      "runId": null,
+      "wrap": {
+        "txHash": "2YZBpMAQV5HhmoNjDCxVJ7aoNkwLvdN1RHXw5z8ydtxq",
+        "step": null
+      },
+      "burn": null,
+      "lastRead": null,
+      "tools": null
+    },
+    {
+      "id": "ks-16e5",
+      "network": "testnet",
+      "mode": "on-account",
+      "accountId": "seat.kh-op-021e.testnet",
+      "receiverId": "kh-2c19.sputnik-v2.testnet",
+      "methodNames": [
+        "act_proposal"
+      ],
+      "allowanceYocto": "50000000000000000000000",
+      "publicKey": "ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3",
+      "codeHashPin": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+      "packId": "sputnik-v2",
+      "createdAt": "2026-11-06T15:06:45.117Z",
+      "role": "testnet demo run",
+      "source": "demo/run.testnet.json step 3",
+      "runId": "live-testnet-20261106T150556Z",
+      "wrap": {
+        "txHash": "3t1xgoYTxaiddjUJCXmkQbqhPECm4UbstKYbMqBxzVWm",
+        "step": 3
+      },
+      "burn": {
+        "txHash": "5gYFWwJ3qpLBaSUgK6jui9dUFPSoktwyfwo72KtrMjBS",
+        "step": 13,
+        "label": "seat.kh-op-021e.testnet signs DeleteKey of ks-16e5's key",
+        "note": null
+      },
+      "lastRead": {
+        "allowanceRemainingYocto": "49471657632902800000000",
+        "codeHashNow": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+        "readAt": "2026-11-06T15:08:55.908Z",
+        "step": 12
+      },
+      "tools": [
+        {
+          "name": "dao_list_proposals",
+          "kind": "view",
+          "method": "get_proposals",
+          "gasTGas": 0
+        },
+        {
+          "name": "dao_get_policy",
+          "kind": "view",
+          "method": "get_policy",
+          "gasTGas": 0
+        },
+        {
+          "name": "dao_vote",
+          "kind": "call",
+          "method": "act_proposal",
+          "gasTGas": 30,
+          "classification": "callable",
+          "evidence": "dry-run at wrap: succeeded with 0 deposit"
+        },
+        {
+          "name": "add_proposal",
+          "kind": "call",
+          "method": "add_proposal",
+          "gasTGas": 30,
+          "classification": "not in allowlist",
+          "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+        }
+      ]
+    },
+    {
+      "id": "ks-f298",
+      "network": "sandbox",
+      "mode": "on-account",
+      "accountId": "seat.sandbox",
+      "receiverId": "dao.sandbox",
+      "methodNames": [
+        "act_proposal"
+      ],
+      "allowanceYocto": "50000000000000000000000",
+      "publicKey": "ed25519:BvfnbXcu6LZGC1XrAjzpyVJF8wX7kwwu584dWcSfxXcE",
+      "codeHashPin": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+      "packId": "sputnik-v2",
+      "createdAt": "2026-11-06T11:56:12.527Z",
+      "role": "sandbox demo run",
+      "source": "demo/run.sandbox.json step 3",
+      "runId": "live-sandbox-20261106T115602Z",
+      "wrap": {
+        "txHash": "2FZVNGRCAVybkeLQd4qB97uUtqHnwFFf3cLjhc1x3Eq1",
+        "step": 3
+      },
+      "burn": {
+        "txHash": "8PAQ6K59uMo2HMLNdtCQDPkDcn3HHzQdo8cm2W7Q5PVF",
+        "step": 13,
+        "label": "seat.sandbox signs DeleteKey of ks-f298's key",
+        "note": null
+      },
+      "lastRead": {
+        "allowanceRemainingYocto": "49476780980037600000000",
+        "codeHashNow": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+        "readAt": "2026-11-06T11:56:15.531Z",
+        "step": 12
+      },
+      "tools": [
+        {
+          "name": "dao_list_proposals",
+          "kind": "view",
+          "method": "get_proposals",
+          "gasTGas": 0
+        },
+        {
+          "name": "dao_get_policy",
+          "kind": "view",
+          "method": "get_policy",
+          "gasTGas": 0
+        },
+        {
+          "name": "dao_vote",
+          "kind": "call",
+          "method": "act_proposal",
+          "gasTGas": 30,
+          "classification": "callable",
+          "evidence": "dry-run at wrap: succeeded with 0 deposit"
+        },
+        {
+          "name": "add_proposal",
+          "kind": "call",
+          "method": "add_proposal",
+          "gasTGas": 30,
+          "classification": "not in allowlist",
+          "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: panicked at 'ERR_MIN_BOND', src/proposals.rs:392:9"
+        }
+      ]
+    },
+    {
+      "id": "ks-b328",
+      "network": "sandbox",
+      "mode": "subaccount",
+      "accountId": "ks-b328.sandbox",
+      "receiverId": "counter.sandbox",
+      "methodNames": [
+        "increment",
+        "reset"
+      ],
+      "allowanceYocto": "50000000000000000000000",
+      "publicKey": "ed25519:fBSnKhVu6NYqffwf3SMrJxuMRkjcpRFUYQCwTeuzKyA",
+      "codeHashPin": "DdBoUCcNATd6UCjyzwGNyQ856j55L3Df876gRmZNsVtA",
+      "packId": "counter",
+      "createdAt": "2026-11-06T11:56:22.039Z",
+      "role": "sandbox smoke test (counter pack)",
+      "source": "demo/run.sandbox.json step 15",
+      "runId": "live-sandbox-20261106T115602Z",
+      "wrap": {
+        "txHash": "HQVTi15145RXQCmSki6gdRad8boHCmCKvmZM9Uy6sC16",
+        "step": 15
+      },
+      "burn": {
+        "txHash": "A2jRaPNEqDsJLEvG4WMPDUU2JX87hW4BRNSqKbudMkRX",
+        "step": 19,
+        "label": "ks-b328.sandbox signs DeleteKey + DeleteAccount (to sandbox) with the operator key",
+        "note": "account gone (view_account); both keys went with it (view_access_key)"
+      },
+      "lastRead": null,
+      "tools": [
+        {
+          "name": "counter_contract_source_metadata",
+          "kind": "view",
+          "method": "contract_source_metadata",
+          "gasTGas": 0
+        },
+        {
+          "name": "counter_get_value",
+          "kind": "view",
+          "method": "get_value",
+          "gasTGas": 0
+        },
+        {
+          "name": "counter_increment",
+          "kind": "call",
+          "method": "increment",
+          "gasTGas": 30,
+          "classification": "callable",
+          "evidence": "dry-run at wrap: succeeded with 0 deposit"
+        },
+        {
+          "name": "counter_reset",
+          "kind": "call",
+          "method": "reset",
+          "gasTGas": 30,
+          "classification": "fails-without-deposit (runtime)",
+          "evidence": "Smart contract panicked: Requires attached deposit of exactly 1 yoctoNEAR"
+        },
+        {
+          "name": "transfer_ownership",
+          "kind": "call",
+          "method": "transfer_ownership",
+          "gasTGas": 30,
+          "classification": "not in allowlist",
+          "evidence": "absent from the key's method_names (chain); 0-deposit dry-run: Smart contract panicked: only the owner"
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "id": "live-testnet-20261106T150556Z",
+      "label": "Testnet run",
+      "network": "testnet",
+      "file": "demo/run.testnet.json",
+      "transcript": "demo/transcript.md",
+      "startedAt": "2026-11-06T15:05:56Z",
+      "durationMs": 202544,
+      "exitCode": 0,
+      "result": {
+        "pass": "14/14 PASS",
+        "parts": [
+          "5 protocol refusals",
+          "8 tx hashes",
+          "3m23s",
+          "exit 0"
+        ]
+      },
+      "steps": [
+        {
+          "n": 1,
+          "total": 14,
+          "phase": "setup",
+          "label": "DAO kh-2c19.sputnik-v2.testnet (via sputnik-v2.testnet) · council [seat, cosigner] · 2-of-2",
+          "signer": "operator",
+          "pass": true,
+          "txHashes": [
+            "Ek1APr5joscLK3cRL9DPuesjGpvSLZ1cQPs9uRJEX9WT"
+          ],
+          "note": "created 2026-11-06 · code_hash ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq = pack pin",
+          "fixture": null,
+          "sessionId": null,
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 2,
+          "total": 14,
+          "phase": "setup",
+          "label": "cosigner adds proposal #0 (grant payout) and #1 (injected description)",
+          "signer": "cosigner",
+          "pass": true,
+          "txHashes": [
+            "9F3ctuo8a6T1uGNrcp23dLhP4mvH22SY1tbTByEf5kzX",
+            "97132WVdw8F9BtH84EzRZmhdUKHRnCVJG7uU6VxYnq6r"
+          ],
+          "note": "ids returned by add_proposal · bond 0.1000 NEAR each",
+          "fixture": null,
+          "sessionId": null,
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 3,
+          "total": 14,
+          "phase": "wrap",
+          "label": "seat.kh-op-021e.testnet signs one AddKey: act_proposal only · gas allowance 0.0500 NEAR",
+          "signer": "operator",
+          "pass": true,
+          "txHashes": [
+            "3t1xgoYTxaiddjUJCXmkQbqhPECm4UbstKYbMqBxzVWm"
+          ],
+          "note": "key on chain (view_access_key) as planned · session ks-16e5",
+          "fixture": null,
+          "sessionId": "ks-16e5",
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 4,
+          "total": 14,
+          "phase": "in-scope",
+          "label": "the session approves #0 (grant payout)",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [
+            "9kTGibv726GGerm7Ebk316wFu1qC1sp8CFXXis8Y5T2d"
+          ],
+          "note": null,
+          "fixture": null,
+          "sessionId": "ks-16e5",
+          "proposal": {
+            "id": 0,
+            "status": "InProgress",
+            "approvals": 1,
+            "required": 2
+          },
+          "attempt": {
+            "receiverId": "kh-2c19.sputnik-v2.testnet",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "none"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 5,
+          "total": 14,
+          "phase": "in-scope",
+          "label": "the cosigner approves #0 with its own full-access key",
+          "signer": "cosigner",
+          "pass": true,
+          "txHashes": [
+            "GfzC2xPK7BNGnGVT7dwWwc4jJZ6LvCKzjq68GzWVtw2Y"
+          ],
+          "note": "payout executed: grantee.kh-op-021e.testnet +0.0100 NEAR (view_account before and after)",
+          "fixture": null,
+          "sessionId": null,
+          "proposal": {
+            "id": 0,
+            "status": "Approved",
+            "approvals": 2,
+            "required": 2
+          },
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 6,
+          "total": 14,
+          "phase": "in-scope",
+          "label": "the session approves #1 (the injected proposal)",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [
+            "2qPWeYkeQ6zdhh455gpr2hZx39byKHwbCXzMXphiqEVx"
+          ],
+          "note": "NOTE: in scope — the key does not judge votes; the quorum does",
+          "fixture": null,
+          "sessionId": "ks-16e5",
+          "proposal": {
+            "id": 1,
+            "status": "InProgress",
+            "approvals": 1,
+            "required": 2
+          },
+          "attempt": {
+            "receiverId": "kh-2c19.sputnik-v2.testnet",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "none"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 7,
+          "total": 14,
+          "phase": "refusals",
+          "label": "open a payout proposal",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "testnet.sputnik-v2.refuse-method.json",
+          "sessionId": "ks-16e5",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "kh-2c19.sputnik-v2.testnet",
+            "action": "FunctionCall",
+            "method": "add_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "method"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 8,
+          "total": 14,
+          "phase": "refusals",
+          "label": "send NEAR",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "testnet.sputnik-v2.refuse-action.json",
+          "sessionId": "ks-16e5",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "attacker.kh-op-021e.testnet",
+            "action": "Transfer",
+            "method": null,
+            "depositYocto": "1",
+            "gasTGas": 0,
+            "violates": "action"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 9,
+          "total": 14,
+          "phase": "refusals",
+          "label": "vote in another DAO",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "testnet.sputnik-v2.refuse-receiver.json",
+          "sessionId": "ks-16e5",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "genesis.sputnik-v2.testnet",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "receiver"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 10,
+          "total": 14,
+          "phase": "refusals",
+          "label": "attach the bond",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "testnet.sputnik-v2.refuse-deposit.json",
+          "sessionId": "ks-16e5",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "kh-2c19.sputnik-v2.testnet",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "1",
+            "gasTGas": 30,
+            "violates": "deposit"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 11,
+          "total": 14,
+          "phase": "chain-check",
+          "label": "chain check: view_access_key before [07] and after [10]",
+          "signer": "none",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": null,
+          "sessionId": null,
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": {
+            "before": "49471657632902800000000",
+            "after": "49471657632902800000000"
+          }
+        },
+        {
+          "n": 12,
+          "total": 14,
+          "phase": "inspect",
+          "label": "inspect ks-16e5: the cage card, read from chain",
+          "signer": "none",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": null,
+          "sessionId": "ks-16e5",
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 13,
+          "total": 14,
+          "phase": "burn",
+          "label": "seat.kh-op-021e.testnet signs DeleteKey of ks-16e5's key",
+          "signer": "operator",
+          "pass": true,
+          "txHashes": [
+            "5gYFWwJ3qpLBaSUgK6jui9dUFPSoktwyfwo72KtrMjBS"
+          ],
+          "note": null,
+          "fixture": null,
+          "sessionId": null,
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 14,
+          "total": 14,
+          "phase": "burn",
+          "label": "vote with the deleted key",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "testnet.sputnik-v2.after-burn.json",
+          "sessionId": "ks-16e5",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "kh-2c19.sputnik-v2.testnet",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "none"
+          },
+          "chainCheck": null
+        }
+      ]
+    },
+    {
+      "id": "live-sandbox-20261106T115602Z",
+      "label": "Sandbox run",
+      "network": "sandbox",
+      "file": "demo/run.sandbox.json",
+      "transcript": "demo/capture.sandbox.md",
+      "startedAt": "2026-11-06T11:56:02Z",
+      "durationMs": 23889,
+      "exitCode": 0,
+      "result": {
+        "pass": "20/20 PASS",
+        "parts": [
+          "7 protocol refusals",
+          "14 tx hashes",
+          "24s",
+          "exit 0"
+        ]
+      },
+      "steps": [
+        {
+          "n": 1,
+          "total": 20,
+          "phase": "setup",
+          "label": "DAO dao.sandbox (vendored sputnikdao2 v2.0.0 + new) · council [seat, cosigner] · 2-of-2",
+          "signer": "operator",
+          "pass": true,
+          "txHashes": [
+            "7Gm4Qt7hoJ4tDaWXMpvSrnwrjcU9uVchxE2m3guAeHgA"
+          ],
+          "note": "code_hash ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq = pack pin",
+          "fixture": null,
+          "sessionId": null,
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 2,
+          "total": 20,
+          "phase": "setup",
+          "label": "cosigner adds proposal #0 (grant payout) and #1 (injected description)",
+          "signer": "cosigner",
+          "pass": true,
+          "txHashes": [
+            "ECGf5bMQT53q3JTvoco2XSQAB4FgFwHXC7V24dsHoxLS",
+            "8xfziUxSwP627D5HR7kcizHPJefibaNr89ZFuWP6rtoF"
+          ],
+          "note": "ids returned by add_proposal · bond 0.1000 NEAR each",
+          "fixture": null,
+          "sessionId": null,
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 3,
+          "total": 20,
+          "phase": "wrap",
+          "label": "seat.sandbox signs one AddKey: act_proposal only · gas allowance 0.0500 NEAR",
+          "signer": "operator",
+          "pass": true,
+          "txHashes": [
+            "2FZVNGRCAVybkeLQd4qB97uUtqHnwFFf3cLjhc1x3Eq1"
+          ],
+          "note": "key on chain (view_access_key) as planned · session ks-f298",
+          "fixture": null,
+          "sessionId": "ks-f298",
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 4,
+          "total": 20,
+          "phase": "in-scope",
+          "label": "the session approves #0 (grant payout)",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [
+            "2if3FBW23BzV5H8dwqEtUzob2g3pNA72GG2C7LSqyJGB"
+          ],
+          "note": null,
+          "fixture": null,
+          "sessionId": "ks-f298",
+          "proposal": {
+            "id": 0,
+            "status": "InProgress",
+            "approvals": 1,
+            "required": 2
+          },
+          "attempt": {
+            "receiverId": "dao.sandbox",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "none"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 5,
+          "total": 20,
+          "phase": "in-scope",
+          "label": "the cosigner approves #0 with its own full-access key",
+          "signer": "cosigner",
+          "pass": true,
+          "txHashes": [
+            "6sBp3gFkHodJXzK3KV4BrZdaHJ5gV2chmivtz3G6mTrm"
+          ],
+          "note": "payout executed: grantee.sandbox +0.0100 NEAR (view_account before and after)",
+          "fixture": null,
+          "sessionId": null,
+          "proposal": {
+            "id": 0,
+            "status": "Approved",
+            "approvals": 2,
+            "required": 2
+          },
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 6,
+          "total": 20,
+          "phase": "in-scope",
+          "label": "the session approves #1 (the injected proposal)",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [
+            "5DzYWdrTTn21MdaHVaLGT4YH5WzQ5TF5C616q16Rurez"
+          ],
+          "note": "NOTE: in scope — the key does not judge votes; the quorum does",
+          "fixture": null,
+          "sessionId": "ks-f298",
+          "proposal": {
+            "id": 1,
+            "status": "InProgress",
+            "approvals": 1,
+            "required": 2
+          },
+          "attempt": {
+            "receiverId": "dao.sandbox",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "none"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 7,
+          "total": 20,
+          "phase": "refusals",
+          "label": "open a payout proposal",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "sandbox.sputnik-v2.refuse-method.json",
+          "sessionId": "ks-f298",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "dao.sandbox",
+            "action": "FunctionCall",
+            "method": "add_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "method"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 8,
+          "total": 20,
+          "phase": "refusals",
+          "label": "send NEAR",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "sandbox.sputnik-v2.refuse-action.json",
+          "sessionId": "ks-f298",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "attacker.sandbox",
+            "action": "Transfer",
+            "method": null,
+            "depositYocto": "1",
+            "gasTGas": 0,
+            "violates": "action"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 9,
+          "total": 20,
+          "phase": "refusals",
+          "label": "vote in another DAO",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "sandbox.sputnik-v2.refuse-receiver.json",
+          "sessionId": "ks-f298",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "other-dao.sandbox",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "receiver"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 10,
+          "total": 20,
+          "phase": "refusals",
+          "label": "attach the bond",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "sandbox.sputnik-v2.refuse-deposit.json",
+          "sessionId": "ks-f298",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "dao.sandbox",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "1",
+            "gasTGas": 30,
+            "violates": "deposit"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 11,
+          "total": 20,
+          "phase": "chain-check",
+          "label": "chain check: view_access_key before [07] and after [10]",
+          "signer": "none",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": null,
+          "sessionId": null,
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": {
+            "before": "49476780980037600000000",
+            "after": "49476780980037600000000"
+          }
+        },
+        {
+          "n": 12,
+          "total": 20,
+          "phase": "inspect",
+          "label": "inspect ks-f298: the cage card, read from chain",
+          "signer": "none",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": null,
+          "sessionId": "ks-f298",
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 13,
+          "total": 20,
+          "phase": "burn",
+          "label": "seat.sandbox signs DeleteKey of ks-f298's key",
+          "signer": "operator",
+          "pass": true,
+          "txHashes": [
+            "8PAQ6K59uMo2HMLNdtCQDPkDcn3HHzQdo8cm2W7Q5PVF"
+          ],
+          "note": null,
+          "fixture": null,
+          "sessionId": null,
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 14,
+          "total": 20,
+          "phase": "burn",
+          "label": "vote with the deleted key",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "sandbox.sputnik-v2.after-burn.json",
+          "sessionId": "ks-f298",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "dao.sandbox",
+            "action": "FunctionCall",
+            "method": "act_proposal",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "none"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 15,
+          "total": 20,
+          "phase": "smoke",
+          "label": "sandbox deploys counter.sandbox and wraps it in a sub-account: increment, reset",
+          "signer": "operator",
+          "pass": true,
+          "txHashes": [
+            "HQVTi15145RXQCmSki6gdRad8boHCmCKvmZM9Uy6sC16",
+            "FJhj7y711A7SbLxSUSCu5xzqitdbZ3AMgiLW1WTRXUdk"
+          ],
+          "note": "WARN  reset — fails-without-deposit (runtime) · key on chain: gas allowance 0.0500 NEAR",
+          "fixture": null,
+          "sessionId": "ks-b328",
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 16,
+          "total": 20,
+          "phase": "smoke",
+          "label": "the session (ks-b328.sandbox) calls increment",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [
+            "DcuYn5NF4eLKN8RLPDxoocyKYJSSHJSy8Mcpzq2ptY3m"
+          ],
+          "note": "get_value 0 -> 1 (view before and after)",
+          "fixture": null,
+          "sessionId": "ks-b328",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "counter.sandbox",
+            "action": "FunctionCall",
+            "method": "increment",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "none"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 17,
+          "total": 20,
+          "phase": "smoke",
+          "label": "the session (ks-b328.sandbox) calls reset with no deposit (it needs exactly 1 yocto)",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [
+            "BnLNQu14Y7BrEbQUuYKin6wQHPm1DY9bQkK256E6YCuV"
+          ],
+          "note": "get_value still 1 (view before and after)",
+          "fixture": null,
+          "sessionId": "ks-b328",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "counter.sandbox",
+            "action": "FunctionCall",
+            "method": "reset",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "none"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 18,
+          "total": 20,
+          "phase": "smoke",
+          "label": "call with a key whose allowance is below the prepaid gas",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [
+            "4wvCJQLCvRAwRKjkZetuuKZbKVtLaWnaQeDtSJXL52Gq"
+          ],
+          "note": "AddKey (0.0100 NEAR) by the operator key · tx 4wvCJQLCvRAwRKjkZetuuKZbKVtLaWnaQeDtSJXL52Gq",
+          "fixture": "sandbox.counter.refuse-allowance.json",
+          "sessionId": "ks-b328",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "counter.sandbox",
+            "action": "FunctionCall",
+            "method": "increment",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "allowance"
+          },
+          "chainCheck": null
+        },
+        {
+          "n": 19,
+          "total": 20,
+          "phase": "smoke",
+          "label": "ks-b328.sandbox signs DeleteKey + DeleteAccount (to sandbox) with the operator key",
+          "signer": "operator",
+          "pass": true,
+          "txHashes": [
+            "A2jRaPNEqDsJLEvG4WMPDUU2JX87hW4BRNSqKbudMkRX"
+          ],
+          "note": "account gone (view_account); both keys went with it (view_access_key)",
+          "fixture": null,
+          "sessionId": null,
+          "proposal": null,
+          "attempt": null,
+          "chainCheck": null
+        },
+        {
+          "n": 20,
+          "total": 20,
+          "phase": "smoke",
+          "label": "call after the session sub-account is deleted",
+          "signer": "session",
+          "pass": true,
+          "txHashes": [],
+          "note": null,
+          "fixture": "sandbox.counter.after-burn.json",
+          "sessionId": "ks-b328",
+          "proposal": null,
+          "attempt": {
+            "receiverId": "counter.sandbox",
+            "action": "FunctionCall",
+            "method": "increment",
+            "depositYocto": "0",
+            "gasTGas": 30,
+            "violates": "none"
+          },
+          "chainCheck": null
+        }
+      ]
+    }
+  ],
+  "refusals": [
+    {
+      "n": 1,
+      "fixture": "testnet.sputnik-v2.refuse-method.json",
+      "network": "testnet",
+      "pack": "sputnik-v2",
+      "test": "refuse-method",
+      "attempt": "`add_proposal` on the DAO",
+      "rule": "method: the key names `act_proposal` only",
+      "boundary": "method",
+      "errorName": "MethodNameMismatch",
+      "family": "InvalidTxError::InvalidAccessKeyError",
+      "path": [
+        "InvalidTxError",
+        "InvalidAccessKeyError",
+        "MethodNameMismatch"
+      ],
+      "body": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"MethodNameMismatch\":{\"method_name\":\"add_proposal\"}}}}}},\"id\":\"keyhole-58\"}",
+      "runId": "live-testnet-20261106T150556Z",
+      "step": 7,
+      "sessionId": "ks-16e5"
+    },
+    {
+      "n": 2,
+      "fixture": "testnet.sputnik-v2.refuse-action.json",
+      "network": "testnet",
+      "pack": "sputnik-v2",
+      "test": "refuse-action",
+      "attempt": "Transfer of 1 yoctoNEAR to `attacker.kh-op-021e.testnet`",
+      "rule": "action: a function-call key signs one FunctionCall, nothing else",
+      "boundary": "action",
+      "errorName": "RequiresFullAccess",
+      "family": "InvalidTxError::InvalidAccessKeyError",
+      "path": [
+        "InvalidTxError",
+        "InvalidAccessKeyError",
+        "RequiresFullAccess"
+      ],
+      "body": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":\"RequiresFullAccess\"}}}},\"id\":\"keyhole-60\"}",
+      "runId": "live-testnet-20261106T150556Z",
+      "step": 8,
+      "sessionId": "ks-16e5"
+    },
+    {
+      "n": 3,
+      "fixture": "testnet.sputnik-v2.refuse-receiver.json",
+      "network": "testnet",
+      "pack": "sputnik-v2",
+      "test": "refuse-receiver",
+      "attempt": "`act_proposal` on `genesis.sputnik-v2.testnet`, another DAO",
+      "rule": "receiver: the key names `kh-2c19.sputnik-v2.testnet` only",
+      "boundary": "receiver",
+      "errorName": "ReceiverMismatch",
+      "family": "InvalidTxError::InvalidAccessKeyError",
+      "path": [
+        "InvalidTxError",
+        "InvalidAccessKeyError",
+        "ReceiverMismatch"
+      ],
+      "body": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"ReceiverMismatch\":{\"ak_receiver\":\"kh-2c19.sputnik-v2.testnet\",\"tx_receiver\":\"genesis.sputnik-v2.testnet\"}}}}}},\"id\":\"keyhole-62\"}",
+      "runId": "live-testnet-20261106T150556Z",
+      "step": 9,
+      "sessionId": "ks-16e5"
+    },
+    {
+      "n": 4,
+      "fixture": "testnet.sputnik-v2.refuse-deposit.json",
+      "network": "testnet",
+      "pack": "sputnik-v2",
+      "test": "refuse-deposit",
+      "attempt": "`act_proposal` with 1 yoctoNEAR attached",
+      "rule": "deposit: a function-call key attaches 0",
+      "boundary": "deposit",
+      "errorName": "DepositWithFunctionCall",
+      "family": "InvalidTxError::InvalidAccessKeyError",
+      "path": [
+        "InvalidTxError",
+        "InvalidAccessKeyError",
+        "DepositWithFunctionCall"
+      ],
+      "body": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":\"DepositWithFunctionCall\"}}}},\"id\":\"keyhole-64\"}",
+      "runId": "live-testnet-20261106T150556Z",
+      "step": 10,
+      "sessionId": "ks-16e5"
+    },
+    {
+      "n": 5,
+      "fixture": "sandbox.counter.refuse-allowance.json",
+      "network": "sandbox",
+      "pack": "counter",
+      "test": "refuse-allowance",
+      "attempt": "`increment` from a second key whose 0.0100 NEAR allowance is below the up-front cost of 30 TGas (0.0309 NEAR)",
+      "rule": "allowance: it must cover the gas bought up front",
+      "boundary": "allowance",
+      "errorName": "NotEnoughAllowance",
+      "family": "InvalidTxError::InvalidAccessKeyError",
+      "path": [
+        "InvalidTxError",
+        "InvalidAccessKeyError",
+        "NotEnoughAllowance"
+      ],
+      "body": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"NotEnoughAllowance\":{\"account_id\":\"ks-b328.sandbox\",\"allowance\":\"10000000000000000000000\",\"cost\":\"30918942497360500000000\",\"public_key\":\"ed25519:B5birpA4pQfbM63HT4bKD7648GmsTAwdenPKRpMzWBTT\"}}}}}},\"id\":\"keyhole-121\"}",
+      "runId": "live-sandbox-20261106T115602Z",
+      "step": 18,
+      "sessionId": "ks-b328"
+    },
+    {
+      "n": 6,
+      "fixture": "testnet.sputnik-v2.after-burn.json",
+      "network": "testnet",
+      "pack": "sputnik-v2",
+      "test": "after-burn",
+      "attempt": "`act_proposal` after the key was deleted (burn, on-account mode)",
+      "rule": "none: the key is gone",
+      "boundary": "burn",
+      "errorName": "AccessKeyNotFound",
+      "family": "InvalidTxError::InvalidAccessKeyError",
+      "path": [
+        "InvalidTxError",
+        "InvalidAccessKeyError",
+        "AccessKeyNotFound"
+      ],
+      "body": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"InvalidAccessKeyError\":{\"AccessKeyNotFound\":{\"account_id\":\"seat.kh-op-021e.testnet\",\"public_key\":\"ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3\"}}}}}},\"id\":\"keyhole-73\"}",
+      "runId": "live-testnet-20261106T150556Z",
+      "step": 14,
+      "sessionId": "ks-16e5"
+    },
+    {
+      "n": 7,
+      "fixture": "sandbox.counter.after-burn.json",
+      "network": "sandbox",
+      "pack": "counter",
+      "test": "after-burn",
+      "attempt": "`increment` after the session sub-account was deleted (burn, sub-account mode)",
+      "rule": "none: the account is gone",
+      "boundary": "burn",
+      "errorName": "SignerDoesNotExist",
+      "family": "InvalidTxError",
+      "path": [
+        "InvalidTxError",
+        "SignerDoesNotExist"
+      ],
+      "body": "{\"jsonrpc\":\"2.0\",\"error\":{\"name\":\"HANDLER_ERROR\",\"cause\":{\"info\":{},\"name\":\"INVALID_TRANSACTION\"},\"code\":-32000,\"message\":\"Server error\",\"data\":{\"TxExecutionError\":{\"InvalidTxError\":{\"SignerDoesNotExist\":{\"signer_id\":\"ks-b328.sandbox\"}}}}},\"id\":\"keyhole-131\"}",
+      "runId": "live-sandbox-20261106T115602Z",
+      "step": 20,
+      "sessionId": "ks-b328"
+    }
+  ],
+  "packs": [
+    {
+      "id": "counter",
+      "description": "Sandbox smoke-test contract (contracts/counter, built in-repo by cargo-near with its near-abi embedded; sub-account mode): increment; reset, which requires exactly 1 yoctoNEAR; transfer_ownership, owner only. Wrap reads the tools live from the receiver's __contract_abi view; the tools below are that ABI-derived set (contract_source_metadata is near-sdk's NEP-330 view), plus the dry-run inputs the ABI cannot give. Placeholders {seat}, {cosigner} and {attacker} are account ids filled in by the classifier.",
+      "codeHash": "DdBoUCcNATd6UCjyzwGNyQ856j55L3Df876gRmZNsVtA",
+      "notEnforced": "how often the agent calls increment → nothing guards it (smoke test only)",
+      "exposure": null,
+      "tools": [
+        {
+          "name": "counter_contract_source_metadata",
+          "kind": "view",
+          "method": "contract_source_metadata",
+          "gasTGas": 0
+        },
+        {
+          "name": "counter_get_value",
+          "kind": "view",
+          "method": "get_value",
+          "gasTGas": 0
+        },
+        {
+          "name": "counter_increment",
+          "kind": "call",
+          "method": "increment",
+          "gasTGas": 30
+        },
+        {
+          "name": "counter_reset",
+          "kind": "call",
+          "method": "reset",
+          "gasTGas": 30
+        }
+      ],
+      "outOfScope": [
+        "transfer_ownership"
+      ]
+    },
+    {
+      "id": "sputnik-v2",
+      "description": "Sputnik DAO v2 (sputnikdao2; no embedded ABI, so this pack declares the tools). The hero key allows act_proposal only. Placeholders {seat}, {cosigner} and {attacker} are account ids filled in by the demo driver.",
+      "codeHash": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+      "notEnforced": "how the agent votes → the DAO's quorum (read from its get_policy)",
+      "exposure": {
+        "label": "VOTE",
+        "value": "any proposal here, either way, until burn"
+      },
+      "tools": [
+        {
+          "name": "dao_list_proposals",
+          "kind": "view",
+          "method": "get_proposals",
+          "gasTGas": 0
+        },
+        {
+          "name": "dao_get_policy",
+          "kind": "view",
+          "method": "get_policy",
+          "gasTGas": 0
+        },
+        {
+          "name": "dao_vote",
+          "kind": "call",
+          "method": "act_proposal",
+          "gasTGas": 30
+        }
+      ],
+      "outOfScope": [
+        "add_proposal"
+      ]
+    },
+    {
+      "id": "sputnik-v2-331",
+      "description": "Sputnik DAO v2 at the sputnikv2.testnet factory's default DAO code, version 3.31 (commit 7764926c, fetched read-only; no embedded ABI, so this pack declares the tools). The same tools, scope and tests as sputnik-v2; only the pinned code differs. Placeholders {seat}, {cosigner} and {attacker} are account ids filled in by the demo driver.",
+      "codeHash": "AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH",
+      "notEnforced": "how the agent votes → the DAO's quorum (read from its get_policy)",
+      "exposure": {
+        "label": "VOTE",
+        "value": "any proposal here, either way, until burn"
+      },
+      "tools": [
+        {
+          "name": "dao_list_proposals",
+          "kind": "view",
+          "method": "get_proposals",
+          "gasTGas": 0
+        },
+        {
+          "name": "dao_get_policy",
+          "kind": "view",
+          "method": "get_policy",
+          "gasTGas": 0
+        },
+        {
+          "name": "dao_vote",
+          "kind": "call",
+          "method": "act_proposal",
+          "gasTGas": 30
+        }
+      ],
+      "outOfScope": [
+        "add_proposal"
+      ]
+    }
+  ],
+  "dao": {
+    "accountId": "kh-2c19.sputnik-v2.testnet",
+    "network": "testnet",
+    "packId": "sputnik-v2",
+    "codeHashPin": "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq",
+    "create": {
+      "txHash": "Ek1APr5joscLK3cRL9DPuesjGpvSLZ1cQPs9uRJEX9WT",
+      "runId": "live-testnet-20261106T150556Z",
+      "step": 1,
+      "label": "DAO kh-2c19.sputnik-v2.testnet (via sputnik-v2.testnet) · council [seat, cosigner] · 2-of-2"
+    },
+    "seeded": [
+      {
+        "id": 0,
+        "note": "grant payout"
+      },
+      {
+        "id": 1,
+        "note": "injected description"
+      }
+    ]
+  }
+}
