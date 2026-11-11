@@ -6,7 +6,7 @@ import type { Tone } from '../components/StatusBadge'
 import { useData } from '../data/DataContext'
 
 /** The README's boundary table (lines 3–10), row for row. */
-const BOUNDARIES: { boundary: string; owner: string; tone: Tone; how: string; check: string }[] = [
+export const BOUNDARIES: { boundary: string; owner: string; tone: Tone; how: string; check: string }[] = [
   { boundary: 'method · action · receiver · deposit 0 · gas allowance', owner: 'PROTOCOL', tone: 'protocol', how: 'at transaction validation', check: 'view_access_key; the refusal ledger' },
   { boundary: 'the value the agent can move', owner: 'NOT A KEY LIMIT', tone: 'warning', how: 'only what the session account owns in the target', check: 'target views' },
   { boundary: 'target code unchanged (code_hash pin)', owner: 'KEYHOLE server-side', tone: 'violet', how: 'serve, before each pack call (dao_vote)', check: 'keyhole inspect' },

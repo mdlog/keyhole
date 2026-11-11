@@ -154,10 +154,26 @@ describe("dashboard source", () => {
     expect(page).toContain(`htmlFor="kh-key"`);
   });
 
-  it("every `npm run SCRIPT` the command guide names exists in package.json", () => {
+  it("every `npm run SCRIPT` the site names exists in package.json", () => {
     const scripts = Object.keys((JSON.parse(read("package.json")) as { scripts: Record<string, string> }).scripts);
-    const named = [...read("dashboard/src/pages/CommandsPage.tsx").matchAll(/npm run ([a-z:-]+)/g)].map((m) => m[1]);
+    const named = [...ALL.matchAll(/npm run ([a-z:-]+)/g)].map((m) => m[1]);
     expect(named).toContain("keyhole");
-    for (const s of named) expect(scripts, s).toContain(s);
+    for (const s of new Set(named)) expect(scripts, s).toContain(s);
+  });
+
+  it("the root is the landing page, and every in-app link goes to a declared route", () => {
+    const app = read("dashboard/src/App.tsx");
+    expect(app).toContain(`<Route path="/" element={<LandingPage />} />`);
+    const routes = new Set([...app.matchAll(/path="\/([a-z]*)/g)].map((m) => m[1]));
+    expect(routes).toContain("overview");
+    const links = [...ALL.matchAll(/\bto(?:=\{?|: )["'`]\/([a-z]*)/g)].map((m) => m[1]);
+    expect(links.length).toBeGreaterThan(20);
+    for (const l of links) expect(routes, `/${l}`).toContain(l);
+  });
+
+  it("the landing page takes its records from the data file and the chain: no RESULT line, hash or session id written into it", () => {
+    const page = read("dashboard/src/pages/LandingPage.tsx");
+    expect(page).not.toMatch(/\d+\/\d+ PASS|[1-9A-HJ-NP-Za-km-z]{43,44}|ks-[0-9a-f]{4}\b/);
+    for (const source of ["data.runs", "data.refusals", "data.packs", "useAccessKey(", "useProposals(", "usePolicy(", "useCodeHash("]) expect(page, source).toContain(source);
   });
 });

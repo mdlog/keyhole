@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   Activity, ArrowUpRight, BookOpen, Command, FileSearch2, Fingerprint, Github,
   LayoutDashboard, Menu, RefreshCw, ScanSearch, Search, ShieldCheck, X, Vote, KeyRound,
@@ -12,7 +12,7 @@ const navSections = [
   {
     label: 'WORKSPACE',
     items: [
-      { to: '/', label: 'Overview', icon: LayoutDashboard },
+      { to: '/overview', label: 'Overview', icon: LayoutDashboard },
       { to: '/sessions', label: 'Sessions', icon: Fingerprint },
       { to: '/inspect', label: 'Key inspector', icon: ScanSearch },
       { to: '/proposals', label: 'DAO proposals', icon: Vote },
@@ -79,8 +79,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const sidebar = (
     <>
       <div className="brand-lockup">
-        <div className="brand-mark"><KeyRound size={19} strokeWidth={2.2} /></div>
-        <div className="brand-copy"><strong>keyhole</strong><span>OPERATOR CONSOLE</span></div>
+        <Link to="/" className="brand-home" aria-label="Keyhole home"><span className="brand-mark"><KeyRound size={19} strokeWidth={2.2} /></span><span className="brand-copy"><strong>keyhole</strong><span>OPERATOR CONSOLE</span></span></Link>
         <button className="icon-button mobile-close" aria-label="Close navigation" onClick={() => setMobileOpen(false)}><X size={18} /></button>
       </div>
       <div className="workspace-select" aria-label="Workspace">
@@ -92,7 +91,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <div className="nav-section" key={section.label}>
             <p className="nav-section-label">{section.label}</p>
             {section.items.map(({ to, label, icon: Icon }) => (
-              <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
+              <NavLink key={to} to={to} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
                 <Icon size={17} strokeWidth={1.8} />
                 <span>{label}</span>
                 {to === '/sessions' && <span className="nav-count">{data.sessions.length}</span>}
@@ -121,7 +120,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <header className="topbar">
           <div className="topbar-left">
             <button className="icon-button mobile-menu" aria-label="Open navigation" onClick={() => setMobileOpen(true)}><Menu size={20} /></button>
-            <div className="breadcrumb"><span>Keyhole</span><span className="crumb-sep">/</span><strong>{getPageName(location.pathname)}</strong></div>
+            <div className="breadcrumb"><Link to="/" className="crumb-home">Keyhole</Link><span className="crumb-sep">/</span><strong>{getPageName(location.pathname)}</strong></div>
           </div>
           <div className="topbar-right">
             <div className="global-search">
@@ -147,7 +146,6 @@ export default function AppShell({ children }: { children: ReactNode }) {
 }
 
 function getPageName(path: string) {
-  if (path === '/') return 'Overview'
   if (path.startsWith('/sessions/')) return 'Session detail'
   const route = pageTargets.find((item) => item.to === path)
   return route?.label ?? 'Overview'

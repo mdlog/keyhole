@@ -20,7 +20,7 @@ export const COMMANDS: { id: string; label: string; tag: string; tone: Tone; com
   { id: 'burn', label: 'Burn the session', tag: 'SIGNS · OPERATOR KEY', tone: 'warning', command: 'npm run keyhole -- burn ks-XXXX', description: 'Deletes the session key (on-account mode) or the session sub-account (sub-account mode). After it, any attempt with the key comes back AccessKeyNotFound or SignerDoesNotExist.', needs: 'The operator\'s full-access key' },
 ]
 
-const MCP_TOOLS: { name: string; tag: string; tone: Tone; note: string }[] = [
+export const MCP_TOOLS: { name: string; tag: string; tone: Tone; note: string }[] = [
   { name: 'keyhole_inspect', tag: 'READ', tone: 'verified', note: 'the cage card, read from chain' },
   { name: 'dao_list_proposals', tag: 'VIEW', tone: 'verified', note: 'get_proposals' },
   { name: 'dao_get_policy', tag: 'VIEW', tone: 'verified', note: 'get_policy' },
