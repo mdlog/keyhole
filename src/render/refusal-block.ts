@@ -36,7 +36,7 @@ import { formatNear } from "../core/amounts.js";
 import type { Attempt, AttemptOutcome, DemoPhase, DemoStep, Violation } from "../core/types.js";
 import { renderRawJsonBlock } from "./raw-json-block.js";
 import { renderRuleStrip } from "./rule-strip.js";
-import { NOTE_SIGNER_GONE, passRefused } from "./strings.js";
+import { NOTE_SIGNER_GONE, RPC_NOT_SAVED, passRefused } from "./strings.js";
 import { displayWidth, glyphs, neutralizeControls, sgr } from "./style.js";
 import type { SgrKind } from "./style.js";
 import type { TermCaps } from "./term.js";
@@ -265,7 +265,7 @@ const requireAttempt = (step: DemoStep): Attempt => {
 // ---------------------------------------------------------------------------------------------------
 // The two styles
 
-function fullBlock(step: DemoStep, caps: TermCaps, withCounter: boolean): string[] {
+function fullBlock(step: DemoStep, caps: TermCaps, withCounter: boolean, saved: boolean): string[] {
   const a = requireAttempt(step);
   const o = a.outcome;
   const lead = " ".repeat(INDENT);
@@ -279,7 +279,9 @@ function fullBlock(step: DemoStep, caps: TermCaps, withCounter: boolean): string
   lines.push(row([["signed", "bold"], ["   "], ...signedRow(a, caps)]));
   const room = caps.width - INDENT;
   // C-T14b: the fixture file is named whole; where `rpc … · demo/fixtures/NAME` does not fit, the path takes the next row, after `· ` (a spike capture's long names made it 109 cells).
-  const rpc: Span[][] = [[["rpc", "bold"], ["      "], ["response body, verbatim"]], ...(step.fixture === undefined ? [] : [[[`demo/fixtures/${safe(step.fixture)}`] as Span]])];
+  // M3 (final review): a run that writes no files names none; the row says the body is not saved instead.
+  const where: Span[][] = step.fixture === undefined ? [] : [[[saved ? `demo/fixtures/${safe(step.fixture)}` : RPC_NOT_SAVED]]];
+  const rpc: Span[][] = [[["rpc", "bold"], ["      "], ["response body, verbatim"]], ...where];
   for (const r of packSegments(rpc, room)) lines.push(row(r));
   lines.push(...renderRawJsonBlock(o.rawRpcJson, caps, { highlight: o.kind === "Refusal" ? o.errorName : undefined }));
   for (const r of verdictRows(step, o, room)) lines.push(row(r));
@@ -322,7 +324,9 @@ function beatBlock(step: DemoStep, caps: TermCaps): string[] {
  * `step.pass` says so (the driver compared the parsed name to the pack's expectation); otherwise the FAIL
  * note takes the place of the PASS line and the raw body is still printed. `counter: false` leaves the `[NN/TT]`
  * off the full style's header, for a block that is one proof and not a step of a run (the burn PROOF, C-T18a).
+ * `saved: false` is for a run that writes no files (`demo --sandbox`, final review M3): the full style's `rpc` row
+ * then names no fixture file (RPC_NOT_SAVED instead); the default names `demo/fixtures/FIXTURE`.
  */
-export function renderRefusalBlock(step: DemoStep, caps: TermCaps, style: StepStyle = "full", opts: { counter?: boolean } = {}): string {
-  return (style === "beat" ? beatBlock(step, caps) : fullBlock(step, caps, opts.counter !== false)).join("\n");
+export function renderRefusalBlock(step: DemoStep, caps: TermCaps, style: StepStyle = "full", opts: { counter?: boolean; saved?: boolean } = {}): string {
+  return (style === "beat" ? beatBlock(step, caps) : fullBlock(step, caps, opts.counter !== false, opts.saved !== false)).join("\n");
 }

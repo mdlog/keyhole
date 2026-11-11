@@ -43,7 +43,7 @@ import { loadTargetPack } from "../src/packs/index.js";
 import { addProposal, councilInitArgs, deployDaoSandbox } from "../src/packs/sputnik-setup.js";
 import { rpcUrlFor, useRpcUrl } from "../src/core/config.js";
 import { createStepPrinter, noRefusalEarned } from "../src/render/demo-log.js";
-import { counter } from "../src/render/refusal-block.js";
+import { counter, fitRows } from "../src/render/refusal-block.js";
 import { NOTE_IN_SCOPE, OFFLINE_ALTERNATIVE } from "../src/render/strings.js";
 import { displayWidth } from "../src/render/style.js";
 import { SANDBOX_FIXTURES, plain100, readFixture, sampleCageCard } from "./helpers.js";
@@ -540,7 +540,12 @@ describe("runDemo on testnet (chain mocked)", () => {
     expect(steps[2]).toMatchObject({ txHash: hash("wrap") }); // the wrap landed: its hash is still printed
     expect(steps[12].note).toContain("ERROR (environment): burn ks-7f3a: DeleteKey failed in a block · read the tx");
     // The key may still be live, so the after-burn attempt (an in-scope vote) is not sent: 2 votes + 4 refusals.
-    expect(steps[13]).toEqual({ n: 14, total: 14, phase: "burn", label: "vote with the deleted key", signer: "session", pass: false, note: "FAIL: not sent: the burn [13] did not finish, so the key may still be on chain" });
+    // T21c: and the note names the session and the command that deletes its key (npm run keyhole --, never npx: the npm name `keyhole` is another package).
+    const burnNote = "FAIL: not sent: the burn [13] did not finish, so the key may still be on chain · burn it: npm run keyhole -- burn ks-7f3a";
+    expect(steps[13]).toEqual({ n: 14, total: 14, phase: "burn", label: "vote with the deleted key", signer: "session", pass: false, note: burnNote });
+    expect(steps[13].note).not.toMatch(/npx/);
+    // On a 100-column terminal the note breaks at its ` · `, so the command stays whole on one row (copyable).
+    expect(fitRows(burnNote, 100, "      ").some(([prefix, text]) => `${prefix}${text}`.includes("npm run keyhole -- burn ks-7f3a"))).toBe(true);
     expect(sendAttempt).toHaveBeenCalledTimes(6);
     expect(signBurn).toHaveBeenCalledTimes(1);
     expect(run.exitCode).toBe(1);
@@ -814,6 +819,19 @@ describe("runDemo on sandbox (chain mocked)", () => {
   it("a deploy that fails ends the run, and the sandbox is still stopped", async () => {
     vi.mocked(deployDaoSandbox).mockRejectedValue(new EnvironmentError("create dao.sandbox: failed in a block", "check"));
     await expect(runDemo({ network: "sandbox", env: {} }).next()).rejects.toThrow(/failed in a block/);
+    expect(stop).toHaveBeenCalledTimes(1);
+  });
+
+  it("a burn that did not finish keeps the sandbox wording: the node stops with the run, so there is nothing to burn (T21c)", async () => {
+    vi.mocked(signBurn).mockRejectedValue(new EnvironmentError("burn ks-7f3a: DeleteKey failed in a block", "read the tx"));
+    const steps: DemoStep[] = [];
+    for await (const s of runDemo({ network: "sandbox", env: {} })) {
+      steps.push(s);
+      if (s.n === 14) break;
+    }
+    expect(steps[12]).toMatchObject({ n: 13, pass: false });
+    expect(steps[13]).toEqual({ n: 14, total: 20, phase: "burn", label: "vote with the deleted key", signer: "session", pass: false, note: "FAIL: not sent: the burn [13] did not finish, so the key may still be on chain" });
+    expect(steps[13].note).not.toContain("npm run keyhole");
     expect(stop).toHaveBeenCalledTimes(1);
   });
 

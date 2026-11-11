@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-cyD9SSJrovLxc5vpzUTnelIeiJE3RahIY2I7Yd/IpM8=' 'sha256-UrS16qUfZAW0INCwE+yhTkbqv+wEFJqm2SRIJIC/Nz0='; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://rpc.testnet.near.org https://rpc.testnet.fastnear.com; img-src data:; base-uri 'none'; form-action 'none'">
+<title>keyhole · one burnable function-call key per agent session</title>
+<meta name="description" content="Keyhole puts any NEAR contract's methods behind one function-call key, served to an MCP agent as tools. Inspect the judging session's key live on testnet and read the protocol's refusals.">
+<meta property="og:title" content="keyhole">
+<meta property="og:description" content="Any NEAR contract's methods as MCP tools, behind one burnable function-call key. The protocol refuses everything else.">
+<meta property="og:type" content="website">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23111110'/%3E%3Ccircle cx='16' cy='12' r='5' fill='%23F2F0E9'/%3E%3Cpath d='M13.5 15h5l2 11h-9z' fill='%23F2F0E9'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&amp;family=Barlow+Condensed:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap">
+<script>try{var t=localStorage.getItem('kh-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{
+  --ink:#111110;--paper:#F2F0E9;--graphite:#5C5A52;--mint:#00EC97;--amber:#E8B100;--fault:#B3261E;
+  --f-label:'D-DIN Condensed','Barlow Condensed','Arial Narrow',sans-serif;
+  --f-body:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'Iosevka Term','JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#F2F0E9;--paper:#111110;--graphite:#A9A69B;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#F2F0E9;--paper:#111110;--graphite:#A9A69B;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 var(--f-body);text-rendering:optimizeLegibility}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:4px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+code,pre,.mono{font-family:var(--f-mono);font-size:.94em}
+code{overflow-wrap:anywhere}
+.wrap{max-width:1440px;margin:0 auto;padding:0 clamp(16px,3.4vw,48px)}
+.label,.lbl,.c-l,.row.hd>div,.led-hd,.tag,.badge,.chip,.enf,.btn,.stamp,.runtime,.warn-chip,th{font-family:var(--f-label);letter-spacing:.11em;text-transform:uppercase}
+.lbl{font-weight:600;font-size:13px;color:var(--graphite)}
+.muted{color:var(--graphite)}
+.skip{position:absolute;left:-9999px;top:8px;background:var(--paper);border:2px solid var(--ink);padding:8px 12px;z-index:9}
+.skip:focus{left:16px}
+/* top bar */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;padding:16px 0;border-bottom:2px solid var(--ink)}
+.brand{display:flex;align-items:center;gap:14px}
+.word{font:700 32px/1 var(--f-label);letter-spacing:-.01em;text-decoration:none}
+.badge{font-weight:700;font-size:14px;border:2px solid var(--ink);padding:2px 8px;line-height:1.3}
+.nav{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;font:600 18px var(--f-label);letter-spacing:.04em}
+.theme{font:700 14px var(--f-label);letter-spacing:.12em;background:transparent;color:var(--ink);border:1px solid var(--ink);padding:4px 10px;min-height:32px;cursor:pointer}
+/* hero */
+.hero{padding:clamp(56px,8vw,112px) 0 0}
+.scope{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline}
+h1{font:700 clamp(46px,8.6vw,124px)/1 var(--f-mono);letter-spacing:-.035em;margin:14px 0 0;overflow-wrap:anywhere}
+.sub{font-size:clamp(20px,2vw,28px);line-height:1.38;max-width:1120px;margin:24px 0 0}
+.sub code{font-size:.86em}
+.cta{margin-top:48px;padding-top:24px;border-top:1px solid var(--ink);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px}
+.cta p{margin:0;font-size:19px;max-width:640px}
+.actions{display:flex;flex-wrap:wrap;gap:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:56px;padding:0 24px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);font-weight:700;font-size:20px;letter-spacing:.08em;text-decoration:none;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translate(-3px,-3px);box-shadow:3px 3px 0 var(--ink)}
+.btn:disabled{cursor:progress;transform:none;box-shadow:none}
+.btn.sm{min-height:40px;padding:0 14px;font-size:15px;border-width:1px}
+.cmd{display:flex;border:2px solid var(--ink);min-height:56px;max-width:100%}
+.cmd code{display:flex;align-items:center;gap:12px;padding:10px 18px;font-size:15px}
+.cmd code::before{content:'$';color:var(--graphite)}
+.cmd button{border:0;border-left:2px solid var(--ink);background:transparent;color:var(--ink);font:700 15px var(--f-label);letter-spacing:.12em;padding:0 16px;min-width:92px;cursor:pointer}
+.cmd button:hover{text-decoration:underline}
+/* sections */
+section.sec{padding-top:clamp(64px,8vw,120px)}
+.sh{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 20px;border-top:2px solid var(--ink);padding-top:16px}
+.sh .num{font:700 16px var(--f-label);letter-spacing:.12em;color:var(--graphite)}
+h2{margin:0;font:700 clamp(32px,3.4vw,48px)/1 var(--f-label);letter-spacing:.02em;text-transform:uppercase}
+.sh .aside{margin-left:auto;font-size:15px;color:var(--graphite)}
+.note{margin:16px 0 0;font-size:16px;color:var(--graphite);max-width:920px}
+/* inspector form */
+.insp{margin-top:24px;display:flex;flex-wrap:wrap;gap:2px;background:var(--ink);border:2px solid var(--ink)}
+.field{flex:1 1 300px;background:var(--paper);padding:12px 16px;display:flex;flex-direction:column;gap:4px}
+.field.key{flex:2 1 460px}
+.field input{border:0;background:transparent;color:var(--ink);font:500 16px/1.5 var(--f-mono);padding:0;width:100%;min-width:0}
+.field input:focus-visible{outline:none;box-shadow:0 2px 0 var(--ink)}
+.field input[aria-invalid="true"]{box-shadow:0 2px 0 var(--fault)}
+.insp .btn{flex:1 0 220px;border:0;min-height:76px}
+.insp .btn:hover{transform:none;box-shadow:inset 0 0 0 3px var(--ink)}
+.msg{margin:8px 0 0;font-size:15px;color:var(--graphite);min-height:1.5em}
+.msg.bad{color:var(--ink);font-weight:700}
+.msg.bad::before{content:'';display:inline-block;width:10px;height:10px;background:var(--fault);margin-right:8px}
+/* cage card */
+.card{margin-top:24px;border:2px solid var(--ink);background:var(--paper)}
+.card-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;padding:16px 20px;border-bottom:2px solid var(--ink)}
+.card-title{font:700 22px var(--f-label);letter-spacing:.08em}
+.card-sub{color:var(--graphite);font-size:15px}
+.tag{margin-left:auto;font-weight:700;font-size:16px;border:2px solid var(--ink);padding:3px 10px;line-height:1.3}
+.rows{display:flex;flex-direction:column;gap:1px;background:var(--ink)}
+.row{display:grid;grid-template-columns:150px minmax(0,1fr) 230px;grid-template-areas:"l v e";gap:1px}
+.row>div{background:var(--paper);padding:14px 20px;min-width:0}
+.row.hd>div{padding:8px 20px;font-weight:600;font-size:13px;color:var(--graphite)}
+.c-l{grid-area:l;font-weight:700;font-size:16px}
+.c-v{grid-area:v;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.c-e{grid-area:e;display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.c-v code{font-weight:500}
+.c-v code.hash{word-break:break-all}
+.inv{background:var(--ink);color:var(--paper);padding:3px 10px}
+code.inv{padding:3px 8px;font-weight:500;display:inline-block;max-width:100%}
+.out{border:1px solid var(--ink);padding:2px 9px}
+.enf{font-weight:700;font-size:15px}
+.chip{font-weight:700;font-size:13px;border:1px solid var(--ink);padding:1px 8px}
+.warn-chip,.runtime{background:var(--amber);color:#111110;font-weight:700;font-size:13px;padding:2px 8px}
+.m{display:flex;align-items:baseline;gap:12px;width:100%}
+.m code.b{font-size:18px;font-weight:700}
+.m.other{color:var(--graphite)}
+.lead{flex:1 1 24px;min-width:24px;border-bottom:2px dotted currentColor;transform:translateY(-5px)}
+.m .lbl{color:inherit;font-weight:700;font-size:15px}
+.bar{display:flex;gap:3px;width:100%;max-width:520px}
+.bar i{flex:1;height:18px;border:1px solid var(--ink)}
+.bar i.on{background:var(--ink)}
+.bar.loading i{animation:seg 1.2s ease-in-out infinite;animation-delay:calc(var(--i) * 50ms);background:var(--ink)}
+@keyframes seg{0%,100%{opacity:.12}50%{opacity:1}}
+.card-foot{border-top:2px solid var(--ink);padding:12px 20px;font:14px var(--f-mono);overflow-wrap:anywhere}
+.warn{background:var(--amber);color:#111110;padding:16px 20px;border-bottom:2px solid var(--ink);display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px}
+.warn strong{font:700 22px var(--f-label);letter-spacing:.08em}
+.warn .btn{margin-left:auto;background:transparent;color:#111110;border-color:#111110}
+.nf{padding:24px 20px;display:flex;flex-direction:column;gap:14px}
+.nf-line{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.nf-text{font:700 24px var(--f-label);letter-spacing:.02em;flex:1 1 100%}
+.nf code.inv{white-space:normal;word-break:break-word}
+pre{margin:0;padding:14px 16px;border:1px solid var(--ink);font-size:13.5px;line-height:1.6;white-space:pre-wrap;word-break:break-all}
+.loading-line{padding:24px 20px;display:flex;flex-direction:column;gap:12px}
+.curl{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+.curl details{flex:1 1 100%}
+.curl summary{cursor:pointer;font:700 15px var(--f-label);letter-spacing:.1em;list-style:none;display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid var(--ink)}
+.curl summary::-webkit-details-marker{display:none}
+.curl summary::after{content:'+';margin-left:10px}
+.curl details[open] summary::after{content:'−'}
+.curl pre{margin-top:8px}
+/* runs + ledger */
+.runs{margin-top:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:2px;background:var(--ink);border:2px solid var(--ink)}
+.run{background:var(--paper);padding:14px 20px;display:flex;flex-direction:column;gap:10px}
+.run-line{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;font-size:16px}
+.stamp{display:inline-block;background:var(--mint);color:#111110;font-weight:700;font-size:16px;letter-spacing:.12em;padding:3px 10px;box-shadow:inset 0 0 0 2px #111110;line-height:1.3;white-space:nowrap}
+.run .stamp{font-size:20px}
+.ledger{margin-top:16px;border:2px solid var(--ink);display:flex;flex-direction:column;gap:1px;background:var(--ink)}
+.led-hd,.led-row{display:grid;grid-template-columns:44px 96px minmax(0,2fr) minmax(0,1.5fr) minmax(0,1.35fr) 78px 92px;gap:1px}
+.led-hd span{background:var(--paper);padding:8px 14px;font-weight:600;font-size:13px;color:var(--graphite)}
+.led{background:var(--ink)}
+.led-row{cursor:pointer;list-style:none}
+.led-row::-webkit-details-marker{display:none}
+.led-row>span{background:var(--paper);padding:16px 14px;min-width:0}
+.led-row:hover>span{background:color-mix(in srgb,var(--paper) 92%,var(--ink))}
+.led-row .n{font:14px var(--f-mono);color:var(--graphite)}
+.led-row .net .out{font:700 13px var(--f-label);letter-spacing:.1em}
+.led-row .att{font-size:16px;line-height:1.45}
+.led-row .att code{font-weight:700}
+.led-row .rule{font-size:15px;line-height:1.45;color:var(--graphite);overflow-wrap:anywhere}
+.led-row .tog{display:flex;justify-content:flex-end;align-items:flex-start}
+.led-row .tog::after{content:'BODY +';font:700 14px var(--f-label);letter-spacing:.1em;border:1px solid var(--ink);padding:6px 10px;white-space:nowrap}
+.led[open] .tog::after{content:'BODY −'}
+.led-body{background:var(--paper);padding:14px 20px 18px;display:flex;flex-direction:column;gap:10px;margin-top:1px}
+/* how + boundary + why */
+.steps{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2px;background:var(--ink);border:2px solid var(--ink)}
+.steps li{background:var(--paper);display:flex;flex-direction:column}
+.steps .s-top{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.steps .verb{font:700 30px/1.1 var(--f-mono)}
+.steps p{margin:0;font-size:17px}
+.steps .s-key{border-top:1px solid var(--ink);padding:10px 20px;display:flex;flex-direction:column;gap:2px}
+.steps .s-key strong{font-size:16px}
+table{width:100%;border-collapse:collapse;margin-top:24px;border:2px solid var(--ink)}
+th,td{border:1px solid var(--ink);padding:14px 20px;text-align:left;vertical-align:top}
+th{font-weight:600;font-size:13px;color:var(--graphite);padding:8px 20px}
+td:first-child{font-weight:700;font-size:18px}
+td.who{white-space:nowrap}
+td.who span+span{display:block;margin-top:6px;white-space:normal;font:15px var(--f-body);letter-spacing:0;text-transform:none;color:var(--graphite)}
+td:last-child{color:var(--graphite);font-size:16px}
+.try{list-style:none;margin:24px 0 0;padding:0;display:flex;flex-direction:column;gap:2px;background:var(--ink);border:2px solid var(--ink)}
+.try li{background:var(--paper);padding:18px 20px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 24px}
+.try .cmd{width:fit-content}
+.try p{margin:8px 0 0;font-size:16px;color:var(--graphite)}
+.facts{margin-top:24px;border:2px solid var(--ink);display:flex;flex-direction:column;gap:1px;background:var(--ink)}
+.facts>div{background:var(--paper);padding:18px 20px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:4px 24px;align-items:baseline}
+.facts .lbl{color:var(--ink);font-weight:700;font-size:15px}
+.facts p{margin:0;font-size:clamp(18px,1.6vw,22px)}
+.facts small{display:block;margin-top:4px;font-size:15px;color:var(--graphite)}
+footer{margin-top:clamp(64px,8vw,120px);border-top:2px solid var(--ink);padding:20px 0 40px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:24px}
+footer .word{font-size:28px}
+footer dl{margin:0;display:flex;flex-wrap:wrap;gap:16px 40px}
+footer dl>div{display:flex;flex-direction:column;gap:2px}
+footer dd{margin:0;font-size:16px}
+footer .fine{flex:1 1 100%;margin:0;font-size:14px;color:var(--graphite)}
+@media (max-width:760px){
+  .row{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"l e" "v v"}
+  .row.hd{display:none}
+  .row>.c-v{padding-top:0}
+  .row>div{padding:12px 16px}
+  .c-e{justify-content:flex-end}
+  .led-hd{display:none}
+  .led-row{grid-template-columns:44px minmax(0,1fr) auto;grid-template-areas:"n net res" "att att att" "rule rule rule" "err err tog"}
+  .led-row .n{grid-area:n}.led-row .net{grid-area:net}.led-row .att{grid-area:att}.led-row .rule{grid-area:rule}.led-row .err{grid-area:err}.led-row .res{grid-area:res}.led-row .tog{grid-area:tog}
+  .try li,.facts>div{grid-template-columns:1fr}
+  .sh .aside{margin-left:0}
+  .tag{margin-left:0}
+  td.who{white-space:normal}
+  th,td{padding:12px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#inspector">Skip to the live inspector</a>
+<div class="wrap">
+
+<header class="top">
+  <div class="brand"><a class="word" href="#top">keyhole</a><span class="badge">TESTNET</span></div>
+  <nav class="nav" aria-label="Page and project">
+    <a href="#inspector">Inspector</a>
+    <a href="#ledger">Evidence</a>
+    <a href="https://github.com/mdlog/keyhole">GitHub</a>
+    <a href="https://github.com/mdlog/keyhole#readme">README</a>
+    <button type="button" class="theme" id="kh-theme" aria-label="Switch theme">DARK</button>
+  </nav>
+</header>
+
+<main>
+<section id="top" class="hero" aria-labelledby="kh-h1">
+  <div class="scope"><span class="lbl">SCOPE</span><code class="muted">permission.FunctionCall.method_names</code></div>
+  <h1 id="kh-h1">act_proposal</h1>
+  <p class="sub">is the only method this key can call — on <code>kh-2c19.sputnik-v2.testnet</code>, as <code>seat.kh-op-021e.testnet</code>.</p>
+  <div class="cta">
+    <p>Keyhole puts any NEAR contract's methods behind one function-call key, served to an MCP agent as tools. The NEAR protocol refuses anything outside the key's scope before it reaches a block.</p>
+    <div class="actions">
+      <a class="btn" href="#inspector">Inspect the key live <span aria-hidden="true">→</span></a>
+      <div class="cmd"><code>npm ci &amp;&amp; npm test</code><button type="button" data-copy="npm ci &amp;&amp; npm test" aria-label="Copy the command npm ci and npm test">COPY</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="inspector" class="sec" aria-labelledby="kh-s1">
+  <div class="sh"><span class="num">01</span><h2 id="kh-s1">Live cage inspector</h2><span class="aside">Read-only <code>view_access_key</code> over testnet RPC. No wallet, no keys.</span></div>
+  <form class="insp" id="kh-form" novalidate>
+    <div class="field"><label for="kh-acc" class="lbl">Account ID</label><input id="kh-acc" name="account" type="text" value="seat.kh-op-021e.testnet" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="kh-msg"></div>
+    <div class="field key"><label for="kh-key" class="lbl">Public key</label><input id="kh-key" name="key" type="text" value="ed25519:C4M3YfYSuVQf74MwUqVA2WdNmesZZ8X3ZYzrdy6tQ3Gj" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="kh-msg"></div>
+    <button type="submit" class="btn" id="kh-read">READ FROM CHAIN</button>
+  </form>
+  <p class="msg" id="kh-msg" aria-live="polite">Prefilled with the judging session <code>ks-70aa</code>, which stays un-burned through judging. Any account and public key work.</p>
+  <noscript><p class="note">Script is off, so the card below is the key as recorded at wrap. The curl command under it reads the same key from chain.</p></noscript>
+  <div>
+<!-- kh:card -->
+<div class="card" id="kh-card">
+  <div class="card-head"><span class="card-title">CAGE CARD</span><code class="card-sub">seat.kh-op-021e.testnet</code><span class="tag" id="kh-tag">[RECORDED]</span></div>
+  <div class="rows" id="kh-rows">
+      <div class="row hd" aria-hidden="true"><div class="c-l">LABEL</div><div class="c-v">VALUE</div><div class="c-e">ENFORCED BY</div></div>
+      <div class="row"><div class="c-l">RECEIVER</div><div class="c-v"><code>kh-2c19.sputnik-v2.testnet</code></div><div class="c-e"><span class="inv enf">PROTOCOL</span></div></div>
+      <div class="row"><div class="c-l">SIGNER</div><div class="c-v"><code>seat.kh-op-021e.testnet</code><span class="chip">ON-ACCOUNT</span></div><div class="c-e"><span class="muted mono" aria-label="no enforcer: identity row">—</span></div></div>
+      <div class="row"><div class="c-l">METHOD</div><div class="c-v"><span class="m"><code class="b">act_proposal</code><span class="lead"></span><span class="lbl">IN ALLOWLIST</span></span><span class="m other"><span>every other method</span><span class="lead"></span><span class="lbl">NOT IN ALLOWLIST</span></span></div><div class="c-e"><span class="inv enf">PROTOCOL</span></div></div>
+      <div class="row"><div class="c-l">ACTIONS</div><div class="c-v">one FunctionCall per transaction; no Transfer, no AddKey</div><div class="c-e"><span class="inv enf">PROTOCOL</span></div></div>
+      <div class="row"><div class="c-l">DEPOSIT</div><div class="c-v">0 only; methods that demand one fail at runtime <span class="runtime">RUNTIME</span></div><div class="c-e"><span class="inv enf">PROTOCOL</span></div></div>
+      <div class="row"><div class="c-l">GAS</div><div class="c-v"><span class="bar" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="mono">0.0500 NEAR allowance at wrap · gas only</span></div><div class="c-e"><span class="inv enf">PROTOCOL</span></div></div>
+      <div class="row"><div class="c-l">CODE HASH</div><div class="c-v"><code class="hash">ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq</code><span class="chip">PINNED AT WRAP</span></div><div class="c-e"><span class="out enf">KEYHOLE</span><span class="muted">server-side</span></div></div>
+      <div class="row"><div class="c-l">VALUE</div><div class="c-v">anything the signer owns inside the receiver</div><div class="c-e"><span class="out enf">NOT A KEY LIMIT</span></div></div>
+      <div class="row"><div class="c-l">EXPIRY</div><div class="c-v">none in the protocol; ends at <code>keyhole burn ks-70aa</code></div><div class="c-e"><span class="out enf">OPERATOR</span></div></div>
+      <div class="row"><div class="c-l">KEY</div><div class="c-v"><code class="hash">ed25519:C4M3YfYSuVQf74MwUqVA2WdNmesZZ8X3ZYzrdy6tQ3Gj</code></div><div class="c-e"><span class="muted mono" aria-label="no enforcer: identity row">—</span></div></div>
+  </div>
+  <div class="card-foot" id="kh-foot">recorded at wrap · 2026-11-06T16:00:35.740Z · tx <a href="https://testnet.nearblocks.io/txns/2YZBpMAQV5HhmoNjDCxVJ7aoNkwLvdN1RHXw5z8ydtxq">2YZBpMAQV5HhmoNjDCxVJ7aoNkwLvdN1RHXw5z8ydtxq</a></div>
+</div>
+<!-- /kh:card -->
+  </div>
+  <div class="curl">
+    <details><summary>Reproduce with curl</summary><pre id="kh-curl">curl -s https://rpc.testnet.near.org \
+  -H 'content-type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"query","params":{"request_type":"view_access_key","finality":"final","account_id":"seat.kh-op-021e.testnet","public_key":"ed25519:C4M3YfYSuVQf74MwUqVA2WdNmesZZ8X3ZYzrdy6tQ3Gj"}}'</pre></details>
+    <button type="button" class="btn sm" id="kh-curl-copy">COPY CURL</button>
+  </div>
+</section>
+
+<section id="ledger" class="sec" aria-labelledby="kh-s2">
+  <div class="sh"><span class="num">02</span><h2 id="kh-s2">Refused by protocol</h2><span class="aside">Each body is the RPC response, byte for byte. A refused transaction never reaches a block.</span></div>
+  <div class="runs">
+<!-- kh:runs -->
+<div class="run">
+  <div class="lbl">TESTNET RUN · <a href="https://github.com/mdlog/keyhole/blob/main/demo/transcript.md">demo/transcript.md</a></div>
+  <div class="run-line"><span class="stamp">14/14 PASS</span><span class="mono">5 protocol refusals</span><span class="mono">8 tx hashes</span><span class="mono">3m23s</span><span class="mono">exit 0</span></div>
+</div>
+<div class="run">
+  <div class="lbl">SANDBOX RUN · <a href="https://github.com/mdlog/keyhole/blob/main/demo/capture.sandbox.md">demo/capture.sandbox.md</a></div>
+  <div class="run-line"><span class="stamp">20/20 PASS</span><span class="mono">7 protocol refusals</span><span class="mono">14 tx hashes</span><span class="mono">24s</span><span class="mono">exit 0</span></div>
+</div>
+<!-- /kh:runs -->
+  </div>
+  <div class="ledger">
+<!-- kh:ledger -->
+<div class="led-hd" aria-hidden="true"><span>#</span><span>NETWORK</span><span>ATTEMPT, SIGNED WITH THE SESSION KEY</span><span>RULE IT BREAKS</span><span>ERROR FROM RPC</span><span>RESULT</span><span></span></div>
+<details class="led" data-fixture="testnet.sputnik-v2.refuse-method.json">
+  <summary class="led-row"><span class="n">01</span><span class="net"><span class="out">TESTNET</span></span><span class="att"><code>add_proposal</code> on the DAO</span><span class="rule">method: the key names <code>act_proposal</code> only</span><span class="err"><code class="inv">MethodNameMismatch</code></span><span class="res"><span class="stamp">PASS</span></span><span class="tog" aria-hidden="true"></span></summary>
+  <div class="led-body"><div class="lbl">RPC RESPONSE BODY · VERBATIM · never reached a block · <a href="https://github.com/mdlog/keyhole/blob/main/demo/fixtures/testnet.sputnik-v2.refuse-method.json">demo/fixtures/testnet.sputnik-v2.refuse-method.json</a></div><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:{&quot;MethodNameMismatch&quot;:{&quot;method_name&quot;:&quot;add_proposal&quot;}}}}}},&quot;id&quot;:&quot;keyhole-58&quot;}</pre></div>
+</details>
+<details class="led" data-fixture="testnet.sputnik-v2.refuse-action.json">
+  <summary class="led-row"><span class="n">02</span><span class="net"><span class="out">TESTNET</span></span><span class="att">Transfer of 1 yoctoNEAR to <code>attacker.kh-op-021e.testnet</code></span><span class="rule">action: a function-call key signs one FunctionCall, nothing else</span><span class="err"><code class="inv">RequiresFullAccess</code></span><span class="res"><span class="stamp">PASS</span></span><span class="tog" aria-hidden="true"></span></summary>
+  <div class="led-body"><div class="lbl">RPC RESPONSE BODY · VERBATIM · never reached a block · <a href="https://github.com/mdlog/keyhole/blob/main/demo/fixtures/testnet.sputnik-v2.refuse-action.json">demo/fixtures/testnet.sputnik-v2.refuse-action.json</a></div><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:&quot;RequiresFullAccess&quot;}}}},&quot;id&quot;:&quot;keyhole-60&quot;}</pre></div>
+</details>
+<details class="led" data-fixture="testnet.sputnik-v2.refuse-receiver.json">
+  <summary class="led-row"><span class="n">03</span><span class="net"><span class="out">TESTNET</span></span><span class="att"><code>act_proposal</code> on <code>genesis.sputnik-v2.testnet</code>, another DAO</span><span class="rule">receiver: the key names <code>kh-2c19.sputnik-v2.testnet</code> only</span><span class="err"><code class="inv">ReceiverMismatch</code></span><span class="res"><span class="stamp">PASS</span></span><span class="tog" aria-hidden="true"></span></summary>
+  <div class="led-body"><div class="lbl">RPC RESPONSE BODY · VERBATIM · never reached a block · <a href="https://github.com/mdlog/keyhole/blob/main/demo/fixtures/testnet.sputnik-v2.refuse-receiver.json">demo/fixtures/testnet.sputnik-v2.refuse-receiver.json</a></div><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:{&quot;ReceiverMismatch&quot;:{&quot;ak_receiver&quot;:&quot;kh-2c19.sputnik-v2.testnet&quot;,&quot;tx_receiver&quot;:&quot;genesis.sputnik-v2.testnet&quot;}}}}}},&quot;id&quot;:&quot;keyhole-62&quot;}</pre></div>
+</details>
+<details class="led" data-fixture="testnet.sputnik-v2.refuse-deposit.json">
+  <summary class="led-row"><span class="n">04</span><span class="net"><span class="out">TESTNET</span></span><span class="att"><code>act_proposal</code> with 1 yoctoNEAR attached</span><span class="rule">deposit: a function-call key attaches 0</span><span class="err"><code class="inv">DepositWithFunctionCall</code></span><span class="res"><span class="stamp">PASS</span></span><span class="tog" aria-hidden="true"></span></summary>
+  <div class="led-body"><div class="lbl">RPC RESPONSE BODY · VERBATIM · never reached a block · <a href="https://github.com/mdlog/keyhole/blob/main/demo/fixtures/testnet.sputnik-v2.refuse-deposit.json">demo/fixtures/testnet.sputnik-v2.refuse-deposit.json</a></div><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:&quot;DepositWithFunctionCall&quot;}}}},&quot;id&quot;:&quot;keyhole-64&quot;}</pre></div>
+</details>
+<details class="led" data-fixture="sandbox.counter.refuse-allowance.json">
+  <summary class="led-row"><span class="n">05</span><span class="net"><span class="out">SANDBOX</span></span><span class="att"><code>increment</code> from a second key whose 0.0100 NEAR allowance is below the up-front cost of 30 TGas (0.0309 NEAR)</span><span class="rule">allowance: it must cover the gas bought up front</span><span class="err"><code class="inv">NotEnoughAllowance</code></span><span class="res"><span class="stamp">PASS</span></span><span class="tog" aria-hidden="true"></span></summary>
+  <div class="led-body"><div class="lbl">RPC RESPONSE BODY · VERBATIM · never reached a block · <a href="https://github.com/mdlog/keyhole/blob/main/demo/fixtures/sandbox.counter.refuse-allowance.json">demo/fixtures/sandbox.counter.refuse-allowance.json</a></div><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:{&quot;NotEnoughAllowance&quot;:{&quot;account_id&quot;:&quot;ks-b328.sandbox&quot;,&quot;allowance&quot;:&quot;10000000000000000000000&quot;,&quot;cost&quot;:&quot;30918942497360500000000&quot;,&quot;public_key&quot;:&quot;ed25519:B5birpA4pQfbM63HT4bKD7648GmsTAwdenPKRpMzWBTT&quot;}}}}}},&quot;id&quot;:&quot;keyhole-121&quot;}</pre></div>
+</details>
+<details class="led" data-fixture="testnet.sputnik-v2.after-burn.json">
+  <summary class="led-row"><span class="n">06</span><span class="net"><span class="out">TESTNET</span></span><span class="att"><code>act_proposal</code> after the key was deleted (burn, on-account mode)</span><span class="rule">none: the key is gone</span><span class="err"><code class="inv">AccessKeyNotFound</code></span><span class="res"><span class="stamp">PASS</span></span><span class="tog" aria-hidden="true"></span></summary>
+  <div class="led-body"><div class="lbl">RPC RESPONSE BODY · VERBATIM · never reached a block · <a href="https://github.com/mdlog/keyhole/blob/main/demo/fixtures/testnet.sputnik-v2.after-burn.json">demo/fixtures/testnet.sputnik-v2.after-burn.json</a></div><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;InvalidAccessKeyError&quot;:{&quot;AccessKeyNotFound&quot;:{&quot;account_id&quot;:&quot;seat.kh-op-021e.testnet&quot;,&quot;public_key&quot;:&quot;ed25519:FnG3gzeGxFVGbSZeZre6pht1key6qWYNi1DPNdbhrTe3&quot;}}}}}},&quot;id&quot;:&quot;keyhole-73&quot;}</pre></div>
+</details>
+<details class="led" data-fixture="sandbox.counter.after-burn.json">
+  <summary class="led-row"><span class="n">07</span><span class="net"><span class="out">SANDBOX</span></span><span class="att"><code>increment</code> after the session sub-account was deleted (burn, sub-account mode)</span><span class="rule">none: the account is gone</span><span class="err"><code class="inv">SignerDoesNotExist</code></span><span class="res"><span class="stamp">PASS</span></span><span class="tog" aria-hidden="true"></span></summary>
+  <div class="led-body"><div class="lbl">RPC RESPONSE BODY · VERBATIM · never reached a block · <a href="https://github.com/mdlog/keyhole/blob/main/demo/fixtures/sandbox.counter.after-burn.json">demo/fixtures/sandbox.counter.after-burn.json</a></div><pre>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;error&quot;:{&quot;name&quot;:&quot;HANDLER_ERROR&quot;,&quot;cause&quot;:{&quot;info&quot;:{},&quot;name&quot;:&quot;INVALID_TRANSACTION&quot;},&quot;code&quot;:-32000,&quot;message&quot;:&quot;Server error&quot;,&quot;data&quot;:{&quot;TxExecutionError&quot;:{&quot;InvalidTxError&quot;:{&quot;SignerDoesNotExist&quot;:{&quot;signer_id&quot;:&quot;ks-b328.sandbox&quot;}}}}},&quot;id&quot;:&quot;keyhole-131&quot;}</pre></div>
+</details>
+<!-- /kh:ledger -->
+  </div>
+  <p class="note">Rows 1–5 each break exactly one rule of the key that signs them. The refusals cover six of eight InvalidAccessKeyError variants; the two gas-key variants are out of scope. <code>SignerDoesNotExist</code> is an InvalidTxError outside that enum: after a sub-account burn the signer itself is gone.</p>
+</section>
+
+<section id="how" class="sec" aria-labelledby="kh-s3">
+  <div class="sh"><span class="num">03</span><h2 id="kh-s3">How it works</h2></div>
+  <ol class="steps">
+    <li><div class="s-top"><span class="lbl">STEP 1</span><code class="verb">wrap</code><p>Dry-runs each method on a near-sandbox copy of the target, then signs one AddKey: a function-call key scoped to the receiver, the allowed methods and a gas allowance.</p></div><div class="s-key"><span class="lbl">KEY LOADED</span><strong>operator full-access key, 1 tx</strong></div></li>
+    <li><div class="s-top"><span class="lbl">STEP 2</span><code class="verb">serve</code><p>Serves the allowed methods to an MCP client as tools, and signs each call with the session's function-call key.</p></div><div class="s-key"><span class="lbl">KEY LOADED</span><strong>one function-call key</strong></div></li>
+    <li><div class="s-top"><span class="lbl">STEP 3</span><code class="verb">inspect</code><p>Reads the key's scope with <code>view_access_key</code> and the target's code hash, and prints the cage card.</p></div><div class="s-key"><span class="lbl">KEY LOADED</span><strong>none</strong></div></li>
+    <li><div class="s-top"><span class="lbl">STEP 4</span><code class="verb">burn</code><p>Deletes the key, or the whole session sub-account. Later calls are refused: <code>AccessKeyNotFound</code> or <code>SignerDoesNotExist</code>.</p></div><div class="s-key"><span class="lbl">KEY LOADED</span><strong>operator full-access key, 1 tx</strong></div></li>
+  </ol>
+  <p class="note">The RPC node validates every transaction before anything reaches a block. Keyhole never holds a full-access key while it serves the agent.</p>
+</section>
+
+<section id="boundary" class="sec" aria-labelledby="kh-s4">
+  <div class="sh"><span class="num">04</span><h2 id="kh-s4">Who enforces what</h2></div>
+  <table>
+    <thead><tr><th scope="col">Boundary</th><th scope="col">Enforced by</th><th scope="col">Check it with</th></tr></thead>
+    <tbody>
+      <tr><td>method · action · receiver · deposit 0 · gas allowance</td><td class="who"><span class="inv enf">PROTOCOL</span><span>at transaction validation</span></td><td><code>view_access_key</code>; the ledger above</td></tr>
+      <tr><td>the value the agent can move</td><td class="who"><span class="out enf">NOT A KEY LIMIT</span><span>only what the session account owns in the target</span></td><td>target views</td></tr>
+      <tr><td>target code unchanged (<code>code_hash</code> pin)</td><td class="who"><span class="out enf">KEYHOLE</span><span>server-side: <code>serve</code>, before each pack call (<code>dao_vote</code>)</span></td><td><code>keyhole inspect</code></td></tr>
+      <tr><td>key lifetime</td><td class="who"><span class="out enf">OPERATOR</span><span><code>keyhole burn</code>; no protocol expiry</span></td><td><code>AccessKeyNotFound</code> after burn</td></tr>
+      <tr><td>refused attempts</td><td class="who"><span class="muted">—</span><span>nothing on-chain; the RPC response is the evidence</span></td><td><code>demo/fixtures/</code></td></tr>
+      <tr><td>how the agent votes</td><td class="who"><span class="out enf">NOT A KEY LIMIT</span><span>the prompt; the DAO's quorum (2-of-2 in the demo DAO) is the control</span></td><td>proposal status</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="try" class="sec" aria-labelledby="kh-s5">
+  <div class="sh"><span class="num">05</span><h2 id="kh-s5">Run it yourself</h2><span class="aside">Node 22.22.2 or newer. Clone <a href="https://github.com/mdlog/keyhole">github.com/mdlog/keyhole</a>, then from the repo root:</span></div>
+  <ol class="try">
+    <li><span class="lbl">1 · OFFLINE</span><div><div class="cmd"><code>npm ci &amp;&amp; npm test</code><button type="button" data-copy="npm ci &amp;&amp; npm test" aria-label="Copy the command npm ci and npm test">COPY</button></div><p>Replays the recorded evidence with no NEAR node and no network request. See seven <code>REPLAY [</code> lines ending <code>PASS: refused by protocol (NAME)</code>, then <code>secret scan: 0 keys in repo</code>.</p></div></li>
+    <li><span class="lbl">2 · NETWORK</span><div><div class="cmd"><code>npm run keyhole -- demo --sandbox</code><button type="button" data-copy="npm run keyhole -- demo --sandbox" aria-label="Copy the command npm run keyhole demo sandbox">COPY</button></div><p>Boots a private near-sandbox node (about 90 MB on first run), wraps a key, votes, makes four out-of-scope attempts and burns the key. See <code>RESULT 20/20 PASS</code> and exit 0.</p></div></li>
+    <li><span class="lbl">3 · TESTNET</span><div><div class="cmd"><code>npm run keyhole -- demo --testnet</code><button type="button" data-copy="npm run keyhole -- demo --testnet" aria-label="Copy the command npm run keyhole demo testnet">COPY</button></div><p>Needs <code>KEYHOLE_OPERATOR</code> set to a funded testnet account. See 14 steps, each landed transaction linked to the explorer, and <code>RESULT 14/14 PASS</code>.</p></div></li>
+  </ol>
+</section>
+
+<section id="near-mcp" class="sec" aria-labelledby="kh-s6">
+  <div class="sh"><span class="num">06</span><h2 id="kh-s6">Why not <code>near-mcp</code></h2></div>
+  <div class="facts">
+    <div><span class="lbl">SIGNING</span><p><code>near-mcp</code> signs with whichever keystore key matches the account id.<small>Source: <a href="https://cdn.jsdelivr.net/gh/nearai/near-mcp@main/TOOLS.md">near-mcp TOOLS.md</a></small></p></div>
+    <div><span class="lbl">KEY INTAKE</span><p>Its <code>import_account</code> tool takes a private key from the model.<small>Source: <a href="https://github.com/nearai/near-mcp">near-mcp README</a></small></p></div>
+    <div><span class="lbl">KEYHOLE</span><p>The agent holds one key that can call only the methods you allowed, and one <code>keyhole burn</code> deletes the key.</p></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <a class="word" href="#top">keyhole</a>
+  <dl>
+    <div><dt class="lbl">License</dt><dd><a href="https://github.com/mdlog/keyhole/blob/main/LICENSE">MIT</a></dd></div>
+    <div><dt class="lbl">Built at</dt><dd>NEAR HACKATHON 2026</dd></div>
+    <div><dt class="lbl">Source</dt><dd><a href="https://github.com/mdlog/keyhole">github.com/mdlog/keyhole</a></dd></div>
+    <div><dt class="lbl">Sibling project</dt><dd><a href="https://github.com/mdlog/verdict">Verdict</a></dd></div>
+  </dl>
+  <p class="fine">This page sends two read-only queries to a public testnet RPC, <code>view_access_key</code> and <code>view_account</code>. It holds no key and signs nothing. Testnet and near-sandbox only.</p>
+</footer>
+</div>
+
+<!-- kh:data -->
+<script id="kh-data" type="application/json">{"session":{"id":"ks-70aa","network":"testnet","accountId":"seat.kh-op-021e.testnet","receiverId":"kh-2c19.sputnik-v2.testnet","methodNames":["act_proposal"],"allowanceYocto":"50000000000000000000000","publicKey":"ed25519:C4M3YfYSuVQf74MwUqVA2WdNmesZZ8X3ZYzrdy6tQ3Gj","codeHashPin":"ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq","createdAt":"2026-11-06T16:00:35.740Z","wrapTxHash":"2YZBpMAQV5HhmoNjDCxVJ7aoNkwLvdN1RHXw5z8ydtxq"},"pins":[{"id":"counter","codeHash":"DdBoUCcNATd6UCjyzwGNyQ856j55L3Df876gRmZNsVtA"},{"id":"sputnik-v2","codeHash":"ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq"},{"id":"sputnik-v2-331","codeHash":"AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH"}]}</script>
+<!-- /kh:data -->
+<script>
+(() => {
+  'use strict';
+  const D = JSON.parse(document.getElementById('kh-data').textContent);
+  const S = D.session;
+  const RPCS = ['https://rpc.testnet.near.org', 'https://rpc.testnet.fastnear.com'];
+  const EXPLORER = 'https://testnet.nearblocks.io';
+  const SEG = 20;
+  const NO_CODE = '11111111111111111111111111111111';
+  const $ = (s) => document.querySelector(s);
+  const h = (tag, cls, ...kids) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    for (const k of kids.flat()) if (k !== null && k !== undefined && k !== false) n.append(k);
+    return n;
+  };
+  const code = (t, cls) => h('code', cls, t);
+  const chip = (t, cls) => h('span', cls || 'chip', t);
+  const host = (u) => new URL(u).host;
+
+  /* theme */
+  const root = document.documentElement;
+  const dark = matchMedia('(prefers-color-scheme: dark)');
+  const themeBtn = $('#kh-theme');
+  const effective = () => root.dataset.theme || (dark.matches ? 'dark' : 'light');
+  const syncTheme = () => {
+    const next = effective() === 'dark' ? 'light' : 'dark';
+    themeBtn.textContent = next.toUpperCase();
+    themeBtn.setAttribute('aria-label', 'Switch to the ' + next + ' theme');
+  };
+  themeBtn.addEventListener('click', () => {
+    const next = effective() === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('kh-theme', next); } catch (e) { /* storage off: the choice lasts this visit */ }
+    syncTheme();
+  });
+  if (dark.addEventListener) dark.addEventListener('change', syncTheme);
+  syncTheme();
+
+  /* copy */
+  const copy = async (text, btn) => {
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {
+      const ta = h('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.append(ta); ta.select();
+      try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+      ta.remove();
+    }
+    const label = btn.dataset.label || btn.textContent;
+    btn.dataset.label = label;
+    btn.textContent = ok ? 'COPIED' : 'SELECT AND COPY';
+    setTimeout(() => { btn.textContent = label; }, 1600);
+  };
+  document.querySelectorAll('[data-copy]').forEach((b) => b.addEventListener('click', () => copy(b.getAttribute('data-copy'), b)));
+
+  /* inspector */
+  const form = $('#kh-form'), accIn = $('#kh-acc'), keyIn = $('#kh-key'), readBtn = $('#kh-read'), msg = $('#kh-msg');
+  const card = $('#kh-card'), curlPre = $('#kh-curl');
+  const q = new URLSearchParams(location.search);
+  if (q.get('account')) accIn.value = q.get('account');
+  if (q.get('key')) keyIn.value = q.get('key');
+
+  const ACC_RE = /^(?=.{2,64}$)(([a-z\d]+[-_])*[a-z\d]+\.)*([a-z\d]+[-_])*[a-z\d]+$/;
+  const PUB_RE = /^ed25519:[1-9A-HJ-NP-Za-km-z]{43,44}$/;
+  const SECRET_RE = /^(ed25519:)?[1-9A-HJ-NP-Za-km-z]{80,90}$/;
+  const PHRASE_RE = /^([a-z]+\s+){11,}[a-z]+$/i;
+
+  const say = (text, bad) => { msg.textContent = text; msg.classList.toggle('bad', !!bad); };
+  /* A read that finishes after the inputs changed still fills the card, but leaves the message line alone. */
+  const sayFor = (a, k) => (text, bad) => { if (accIn.value.trim() === a && keyIn.value.trim() === k) say(text, bad); };
+  function check() {
+    const a = accIn.value.trim(), k = keyIn.value.trim();
+    accIn.removeAttribute('aria-invalid'); keyIn.removeAttribute('aria-invalid');
+    if (SECRET_RE.test(k) || PHRASE_RE.test(k)) {
+      keyIn.value = ''; keyIn.setAttribute('aria-invalid', 'true'); keyIn.focus();
+      return { err: 'That looks like a private key, so it was cleared and nothing was sent. Paste the public key: ed25519: and 43 or 44 base58 characters.' };
+    }
+    if (!ACC_RE.test(a)) { accIn.setAttribute('aria-invalid', 'true'); return { err: 'Not a NEAR account id: lowercase a-z, 0-9, - and _, joined by dots, 2 to 64 characters.' }; }
+    if (!PUB_RE.test(k)) { keyIn.setAttribute('aria-invalid', 'true'); return { err: 'Not an ed25519 public key: ed25519: and 43 or 44 base58 characters.' }; }
+    return { a, k };
+  }
+
+  const curlText = (a, k) => "curl -s " + RPCS[0] + " \\\n  -H 'content-type: application/json' \\\n  -d '" +
+    JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'query', params: { request_type: 'view_access_key', finality: 'final', account_id: a, public_key: k } }) + "'";
+  $('#kh-curl-copy').addEventListener('click', (e) => copy(curlPre.textContent, e.currentTarget));
+
+  async function rpc(params) {
+    let last = null;
+    for (const url of RPCS) {
+      try {
+        const r = await fetch(url, { method: 'POST', cache: 'no-store', headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ jsonrpc: '2.0', id: 'keyhole-site', method: 'query', params }) });
+        const text = await r.text();
+        if (r.status === 429 || r.status >= 500) { last = { kind: 'http', status: r.status, text, url }; continue; }
+        if (!r.ok) return { kind: 'http', status: r.status, text, url };
+        try { return { kind: 'ok', json: JSON.parse(text), text, url }; } catch (e) { return { kind: 'bad', text, url }; }
+      } catch (e) { last = { kind: 'net', text: String((e && e.message) || e), url }; }
+    }
+    return last;
+  }
+
+  const near = (y) => {
+    const v = BigInt(y), unit = 10n ** 24n;
+    return (v / unit).toString() + '.' + ((v % unit) / 10n ** 20n).toString().padStart(4, '0');
+  };
+  const ENF = {
+    PROTOCOL: () => h('span', 'inv enf', 'PROTOCOL'),
+    KEYHOLE: () => [h('span', 'out enf', 'KEYHOLE'), h('span', 'muted', 'server-side')],
+    OPERATOR: () => h('span', 'out enf', 'OPERATOR'),
+    NONE: () => h('span', 'out enf', 'NOT A KEY LIMIT'),
+    '': () => { const s = h('span', 'muted mono', '—'); s.setAttribute('aria-label', 'no enforcer: identity row'); return s; },
+  };
+  const row = (label, value, enf) => h('div', 'row', h('div', 'c-l', label), h('div', 'c-v', value), h('div', 'c-e', ENF[enf]()));
+  const head = () => { const r = h('div', 'row hd', h('div', 'c-l', 'LABEL'), h('div', 'c-v', 'VALUE'), h('div', 'c-e', 'ENFORCED BY')); r.setAttribute('aria-hidden', 'true'); return r; };
+  const bar = (filled, loading) => {
+    const b = h('span', loading ? 'bar loading' : 'bar'); b.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i < SEG; i++) { const s = h('i', i < filled ? 'on' : null); s.style.setProperty('--i', String(i)); b.append(s); }
+    return b;
+  };
+  const frame = (tag, sub, body, foot) => {
+    card.replaceChildren(h('div', 'card-head', h('span', 'card-title', 'CAGE CARD'), code(sub, 'card-sub'), h('span', 'tag', '[' + tag + ']')), ...body, h('div', 'card-foot', foot));
+    card.setAttribute('aria-busy', tag === 'READING' ? 'true' : 'false');
+  };
+  const readFoot = (res, url, a) => {
+    const link = h('a', null, a); link.href = EXPLORER + '/address/' + encodeURIComponent(a);
+    return ['read from chain: view_access_key · block ' + res.block_height + ' · ' + new Date().toISOString() + ' · ' + host(url) + ' · account ', link];
+  };
+
+  function liveCard(a, k, res, fc, codeHash, codeErr, url) {
+    const isSession = a === S.accountId && k === S.publicKey;
+    const methods = fc.method_names || [];
+    const methodVal = methods.length
+      ? [...methods.map((m) => h('span', 'm', code(m, 'b'), h('span', 'lead'), h('span', 'lbl', 'IN ALLOWLIST'))),
+         h('span', 'm other', h('span', null, 'every other method'), h('span', 'lead'), h('span', 'lbl', 'NOT IN ALLOWLIST'))]
+      : [h('span', 'm', h('span', null, 'any method of the receiver'), h('span', 'lead'), chip('EMPTY ALLOWLIST', 'warn-chip'))];
+    let gas;
+    if (fc.allowance === null || fc.allowance === undefined) gas = [h('span', 'mono', 'no allowance on this key · gas only'), chip('UNLIMITED', 'warn-chip')];
+    else {
+      const left = BigInt(fc.allowance), init = isSession ? BigInt(S.allowanceYocto) : 0n;
+      gas = init > 0n
+        ? [bar(Math.min(SEG, Number((left * BigInt(SEG) + init / 2n) / init))), h('span', 'mono', near(left) + ' of ' + near(init) + ' NEAR left · gas only')]
+        : [h('span', 'mono', near(left) + ' NEAR left · gas only')];
+    }
+    let hash, hashEnf = '';
+    if (codeErr) hash = [h('span', 'muted', 'not read: ' + codeErr)];
+    else if (codeHash === NO_CODE) hash = [code(codeHash, 'hash'), chip('NO CONTRACT')];
+    else {
+      const pack = D.pins.find((p) => p.codeHash === codeHash);
+      const note = isSession ? (codeHash === S.codeHashPin ? 'MATCHES THE PIN' : 'CHANGED SINCE WRAP') : pack ? 'PINNED BY PACK ' + pack.id : 'NO PACK PINS THIS CODE';
+      hash = [code(codeHash, 'hash'), chip(note, isSession && codeHash !== S.codeHashPin ? 'warn-chip' : 'chip')];
+      if (isSession || pack) hashEnf = 'KEYHOLE';
+    }
+    const signer = [code(a)];
+    if (isSession) signer.push(chip(/^ks-[0-9a-f]{4}\./.test(a) ? 'SUB-ACCOUNT' : 'ON-ACCOUNT'), h('span', 'muted', 'judging session ' + S.id));
+    else if (/^ks-[0-9a-f]{4}\./.test(a)) signer.push(chip('SUB-ACCOUNT'));
+    frame('LIVE', a, [h('div', 'rows', head(),
+      row('RECEIVER', code(fc.receiver_id), 'PROTOCOL'),
+      row('SIGNER', signer, ''),
+      row('METHOD', methodVal, 'PROTOCOL'),
+      row('ACTIONS', 'one FunctionCall per transaction; no Transfer, no AddKey', 'PROTOCOL'),
+      row('DEPOSIT', ['0 only; methods that demand one fail at runtime', h('span', 'runtime', 'RUNTIME')], 'PROTOCOL'),
+      row('GAS', gas, 'PROTOCOL'),
+      row('CODE HASH', hash, hashEnf),
+      row('VALUE', 'anything the signer owns inside the receiver', 'NONE'),
+      row('EXPIRY', isSession ? ['none in the protocol; ends at', code('keyhole burn ' + S.id)] : 'none in the protocol; ends when the key is deleted', 'OPERATOR'),
+      row('KEY', [code(k, 'hash'), h('span', 'muted', 'nonce ' + res.nonce)], ''))], readFoot(res, url, a));
+  }
+
+  function fullCard(a, k, res, url) {
+    frame('FULL ACCESS', a, [
+      h('div', 'warn', h('strong', null, 'FULL ACCESS KEY'), h('span', null, 'This key can do anything on this account: transfer, add keys, deploy code, delete the account. Keyhole never gives one to an agent.')),
+      h('div', 'rows', head(), row('SIGNER', code(a), ''), row('PERMISSION', code('FullAccess'), 'PROTOCOL'), row('KEY', [code(k, 'hash'), h('span', 'muted', 'nonce ' + res.nonce)], ''))],
+      readFoot(res, url, a));
+  }
+
+  function notFound(a, name, text, raw, url) {
+    frame('NOT FOUND', a, [h('div', 'nf', h('div', 'nf-line', code(name, 'inv'), h('span', 'nf-text', text)), h('div', 'lbl', 'RPC RESPONSE BODY · VERBATIM'), h('pre', null, raw))],
+      'read from chain: view_access_key · ' + new Date().toISOString() + ' · ' + host(url));
+  }
+
+  function rpcError(a, r) {
+    const retry = h('button', 'btn sm', 'RETRY'); retry.type = 'button'; retry.addEventListener('click', read);
+    const name = r.name || (r.kind === 'http' ? 'HTTP ' + r.status : r.kind === 'net' ? 'NETWORK ERROR' : 'NOT JSON');
+    const title = r.kind === 'http' && r.status === 429 ? 'RPC ERROR · RATE LIMITED' : 'RPC ERROR';
+    frame('RPC ERROR', a, [h('div', 'warn', h('strong', null, title), h('span', null, 'Nothing was read. Nothing was signed.'), retry),
+      h('div', 'nf', h('div', 'nf-line', code(name, 'inv'), h('span', 'muted', 'from ' + host(r.url))), h('pre', null, r.text || '(empty body)'))],
+      'tried ' + RPCS.map(host).join(', '));
+  }
+
+  let seq = 0;
+  async function read() {
+    const v = check();
+    if (v.err) { say(v.err, true); return; }
+    const a = v.a, k = v.k, mine = ++seq, tell = sayFor(a, k);
+    curlPre.textContent = curlText(a, k);
+    readBtn.disabled = true; readBtn.textContent = 'READING…';
+    tell('Reading view_access_key from testnet.');
+    frame('READING', a, [h('div', 'loading-line', bar(0, true), h('span', 'mono', 'view_access_key → ' + host(RPCS[0])))], 'nothing is signed: this page holds no key');
+    try {
+      const r = await rpc({ request_type: 'view_access_key', finality: 'final', account_id: a, public_key: k });
+      if (mine !== seq) return;
+      if (!r || r.kind !== 'ok') { rpcError(a, r || { kind: 'net', text: 'no response', url: RPCS[0] }); tell('The RPC did not answer with a key. Retry, or run the curl command.', true); return; }
+      const err = r.json.error, res = r.json.result;
+      if (err) {
+        const cause = (err.cause && err.cause.name) || err.name || 'RPC_ERROR';
+        if (cause === 'UNKNOWN_ACCESS_KEY') { notFound(a, cause, 'No such key on this account: burned, or never added.', r.text, r.url); tell('No such key: the chain answered UNKNOWN_ACCESS_KEY.'); return; }
+        if (cause === 'UNKNOWN_ACCOUNT') { notFound(a, cause, 'No such account on testnet: deleted, or never created.', r.text, r.url); tell('No such account: the chain answered UNKNOWN_ACCOUNT.'); return; }
+        rpcError(a, { kind: 'rpc', name: cause, text: r.text, url: r.url }); tell('The RPC answered with an error.', true); return;
+      }
+      if (res && res.error) {
+        /* The RPC words a missing key and a missing account the same way here; view_account tells them apart. */
+        const acct = await rpc({ request_type: 'view_account', finality: 'final', account_id: a });
+        if (mine !== seq) return;
+        const gone = !!(acct && acct.kind === 'ok' && acct.json.error && acct.json.error.cause && acct.json.error.cause.name === 'UNKNOWN_ACCOUNT');
+        notFound(a, String(res.error), gone ? 'No such account on testnet: deleted, or never created.' : 'No such key on this account: burned, or never added.', r.text, r.url);
+        tell(gone ? 'No such account: view_account answered UNKNOWN_ACCOUNT.' : 'No such key on this account. The RPC answered: ' + String(res.error));
+        return;
+      }
+      if (res.permission === 'FullAccess') { fullCard(a, k, res, r.url); tell('Full-access key found. It can do anything on this account.', true); return; }
+      const fc = res.permission && res.permission.FunctionCall;
+      if (!fc) { rpcError(a, { kind: 'rpc', name: 'UNKNOWN PERMISSION', text: r.text, url: r.url }); return; }
+      let codeHash = null, codeErr = null;
+      const c = await rpc({ request_type: 'view_account', finality: 'final', account_id: fc.receiver_id });
+      if (mine !== seq) return;
+      if (c && c.kind === 'ok' && c.json.result) codeHash = c.json.result.code_hash;
+      else codeErr = c && c.kind === 'ok' && c.json.error ? ((c.json.error.cause && c.json.error.cause.name) || 'error') : 'RPC did not answer';
+      liveCard(a, k, res, fc, codeHash, codeErr, r.url);
+      tell('Function-call key found. Every value on the card came back from the RPC just now.');
+      const url = new URL(location.href);
+      if (a === S.accountId && k === S.publicKey) { url.searchParams.delete('account'); url.searchParams.delete('key'); }
+      else { url.searchParams.set('account', a); url.searchParams.set('key', k); }
+      history.replaceState(null, '', url);
+    } finally {
+      if (mine === seq) { readBtn.disabled = false; readBtn.textContent = 'READ FROM CHAIN'; }
+    }
+  }
+  form.addEventListener('submit', (e) => { e.preventDefault(); read(); });
+  read();
+})();
+</script>
+</body>
+</html>

@@ -46,7 +46,7 @@ import { SendFateUnknownError, type SentTx, landedFailure, mustSucceed, signAndS
 import type { Network, TargetPack } from "../core/types.js";
 import { loadTargetPack } from "../packs/index.js";
 import { councilInitArgs } from "../packs/sputnik-setup.js";
-import { COUNCIL_ROLE, requiredApprovals } from "../packs/sputnik-v2.js";
+import { COUNCIL_ROLE, canVote, requiredApprovals } from "../packs/sputnik-v2.js";
 
 export interface TestnetDemoState {
   operator: string;
@@ -280,16 +280,6 @@ export async function verifyDao(pack: TargetPack, dao: string, seat: string, cos
   }
   if (required !== 2) return { ok: false, missing: false, why: `it needs ${required} of ${council.length} approvals, not 2-of-2` };
   return { ok: true, check: { codeHash: account.codeHash, council, required } };
-}
-
-/**
- * Whether a sputnikdao2 permission (`KIND:ACTION`, e.g. `*:AddProposal`, `transfer:VoteApprove`) lets its role vote:
- * its action is a Vote* action, or `*` (every action). Stricter than the `*:Vote*` / `Vote*` patterns alone, since
- * a per-kind `transfer:VoteApprove` or a blanket `*:*` votes as well.
- */
-function canVote(permission: string): boolean {
-  const action = permission.slice(permission.lastIndexOf(":") + 1);
-  return action === "*" || action.startsWith("Vote");
 }
 
 /** `DAO <dao> · code_hash <hash> · council [<seat>, <cosigner>] · 2-of-2`. */

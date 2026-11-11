@@ -425,6 +425,41 @@ describe("serve: dao_vote (LAYOUT R3 Surface B.3 and B.5)", () => {
   });
 });
 
+describe("serve: a session on the v3.31 Sputnik pack (C-T20c)", () => {
+  const V331 = "AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH";
+  const v331 = () => heroSession({ packId: "sputnik-v2-331", codeHashPin: V331 });
+
+  it("lists the same five tools with the Sputnik copy, never the generic `Call dao_vote`", async () => {
+    const { tools } = await (await connect(v331())).listTools();
+    expect(tools.map((t) => t.name)).toEqual(HERO_TOOLS);
+    const byName = Object.fromEntries(tools.map((t) => [t.name, t]));
+    expect(byName.dao_vote.title).toBe("Vote on a DAO proposal");
+    expect(byName.dao_vote.description).toBe(`Vote approve or reject on a proposal via act_proposal with the session key. ${CHAIN} The key does not limit which way the vote goes.`);
+    expect(byName.dao_list_proposals.title).toBe("List DAO proposals");
+    expect(byName.dao_get_policy.title).toBe("Read the DAO policy");
+    // Tool for tool what a sputnik-v2 session lists (another seat, since this test's key file for seat.sandbox exists).
+    const hero = Object.fromEntries((await (await connect(heroSession({ accountId: "seat-2.sandbox" }))).listTools()).tools.map((t) => [t.name, t]));
+    expect(byName).toEqual(hero);
+  });
+
+  it("dao_vote checks the v3.31 pin and sends the 4-arg act_proposal", async () => {
+    const client = await connect(v331());
+    const log = replayFetch(voteReplies({ "query:view_account": fx("015-b-view-dao-account.json").replace(PIN, V331) }));
+    const r = await client.callTool(vote);
+    expect(r.isError).toBeFalsy();
+    expect(r.structuredContent).toEqual({ txHash: landed, id: 0, status: "InProgress", approvals: 1, required: 2 });
+    const fc = signedTx(log).actions[0].functionCall;
+    const kind = JSON.parse(Buffer.from(JSON.parse(fx("028-e-get-proposal-0-after-fc-vote.json")).result.result).toString("utf8")).kind;
+    expect(JSON.parse(Buffer.from(fc?.args ?? []).toString("utf8"))).toEqual({ id: 0, action: "VoteApprove", proposal: kind, memo: null });
+    // The v2.0.0 code under a v3.31 pin is a changed code hash: refused server-side, nothing signed.
+    const refusedLog = replayFetch({ "query:view_account": fx("015-b-view-dao-account.json") });
+    const refused = await client.callTool(vote);
+    expect(refused.isError).toBe(true);
+    expect(unwrap(texts(refused)[0].split("\n"))).toBe(codeChanged("dao.sandbox", V331, PIN));
+    expect(refusedLog.some((q) => q.method === "send_tx")).toBe(false);
+  });
+});
+
 describe("serve: a pack call tool with no hooks of its own (counter)", () => {
   const counter = () =>
     heroSession({
@@ -492,7 +527,7 @@ describe("serve: keyhole_inspect and the views (LAYOUT R3 Surface B.1 and B.2)",
   it("keyhole_inspect: the mcp card as text, the scope as structured content, never a key", async () => {
     const session = heroSession();
     const client = await connect(session);
-    replayFetch({ "query:view_access_key": fx("024-d-view-fc-key.json"), "query:view_account": fx("015-b-view-dao-account.json") });
+    replayFetch({ "query:view_access_key": fx("024-d-view-fc-key.json"), "query:view_account": fx("015-b-view-dao-account.json"), "query:call_function": fx("017-b-get-policy.json") });
     const r = await client.callTool({ name: "keyhole_inspect", arguments: {} });
     const s = r.structuredContent as Record<string, unknown>;
     expect(s).toEqual({
@@ -516,6 +551,8 @@ describe("serve: keyhole_inspect and the views (LAYOUT R3 Surface B.1 and B.2)",
     ]);
     const card = { ...(await buildCageCard(session, "chain")), readAt: s.readAt as string };
     expect(texts(r)).toEqual([renderCageCard(card, "mcp", { color: false, unicode: false, width: 80, tty: false })]);
+    // Final review I1: the VOTE row's quorum is the DAO's, read with get_policy (the spike DAO: 2-of-2).
+    expect(texts(r)[0]).toContain("VOTE: any proposal here, either way, until burn; quorum 2-of-2 (NOT A KEY LIMIT)");
     expect(JSON.stringify(s)).not.toContain("ed25519:");
     expect(holdsKeyText(JSON.stringify(r), kp)).toBe(false);
   });

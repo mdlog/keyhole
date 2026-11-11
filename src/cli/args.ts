@@ -52,15 +52,6 @@ export function parseOrThrow<O extends Options>(argv: string[], options: O) {
   }
 }
 
-/** NEAR account id rules (2–64 chars; lowercase alphanumerics separated by `-`, `_` or `.`). */
-export function isAccountId(s: string): boolean {
-  return s.length >= 2 && s.length <= 64 && /^(([a-z\d]+[-_])*[a-z\d]+\.)*([a-z\d]+[-_])*[a-z\d]+$/.test(s);
-}
-
-export function isMethodName(s: string): boolean {
-  return /^[A-Za-z_][A-Za-z0-9_]*$/.test(s);
-}
-
 /** `0.05N`, `0.05NEAR` or `0.05` (NEAR, up to 24 decimals) → yoctoNEAR; null if malformed. */
 export function parseAmountYocto(s: string): bigint | null {
   const m = /^\s*(\d+(?:\.\d{1,24})?)\s*(?:N|NEAR)?\s*$/i.exec(s);

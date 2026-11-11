@@ -23,7 +23,8 @@
     "bootstrap:testnet": "tsx scripts/bootstrap-testnet.ts",
     "stage:testnet": "tsx scripts/stage-testnet.ts",
     "build:counter": "tsx scripts/build-counter.ts",
-    "status:html": "tsx scripts/status-html.ts"
+    "status:html": "tsx scripts/status-html.ts",
+    "site:html": "tsx scripts/site-html.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.32.2",

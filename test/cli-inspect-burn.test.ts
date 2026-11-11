@@ -207,16 +207,20 @@ describe("keyhole inspect (LAYOUT R5)", () => {
     expect(t.err()).toBe("unknown session ks-0000 · known sessions: none");
   });
 
-  it("the real command reads the key and the code hash from RPC (view_access_key, view_account), never the file", async () => {
+  it("the real command reads the key, the code hash and the DAO's policy from RPC (view_access_key, view_account, get_policy), never the file", async () => {
     const env = tmpEnv();
     vi.stubEnv("KEYHOLE_HOME", env.KEYHOLE_HOME);
     await saveSession(sampleSession({ tools: sampleCageCard().tools }), env);
-    const log = replayFetch({ "query:view_access_key": KEY_PRESENT, "query:view_account": DAO_ACCOUNT });
+    const policy = readFixture(SANDBOX_FIXTURES, "017-b-get-policy.json"); // the spike DAO: council {seat, cosigner}, [1, 2]
+    const log = replayFetch({ "query:view_access_key": KEY_PRESENT, "query:view_account": DAO_ACCOUNT, "query:call_function": policy });
     const t = term();
     expect(await main(["inspect", "ks-7f3a"], t.io, {})).toBe(0);
-    expect(log.map((r) => r.params?.request_type).sort()).toEqual(["view_access_key", "view_account"]);
+    expect(log.map((r) => r.params?.request_type).sort()).toEqual(["call_function", "view_access_key", "view_account"]);
+    expect(log.find((r) => r.params?.request_type === "call_function")?.params).toMatchObject({ account_id: "dao.sandbox", method_name: "get_policy" });
     expect(t.out()).toContain("[LIVE]");
     expect(t.out()).toMatch(/act_proposal \.+ callable/);
+    // Final review I1: the VOTE row's quorum is this DAO's, as get_policy gave it.
+    expect(t.out()).toContain("| VOTE       any proposal here, either way, until burn; quorum 2-of-2 ");
   });
 });
 

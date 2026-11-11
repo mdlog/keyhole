@@ -57,6 +57,10 @@ const NO_CODE_ACCOUNT = fx("030-e-grantee-balance-before.json");
 /** The DAO's body with code no pack pins. */
 const OTHER_CODE = "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin";
 const OTHER_CODE_ACCOUNT = DAO_ACCOUNT.replace(PIN, OTHER_CODE);
+/** C-T20c: the default DAO code of the maintained sputnikv2.testnet factory (v3.31), which pack sputnik-v2-331 pins. */
+const V331 = "AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH";
+/** Every pack in src/packs, as the refusal names them. */
+const PACK_IDS = ["counter", "sputnik-v2", "sputnik-v2-331"];
 const FULL_ACCESS = fx("022-d-add-fc-key.nonce.json");
 const FC_KEY = fx("024-d-view-fc-key.json");
 const NO_KEY = fx("070-i-view-burned-key.json");
@@ -167,6 +171,17 @@ describe("planWrap", () => {
     expect(JSON.stringify(plan)).not.toMatch(/private|secret/i);
   });
 
+  it("C-T20c: a DAO on the sputnikv2.testnet factory's v3.31 code selects pack sputnik-v2-331, pins that code and dry-runs it", async () => {
+    replayFetch({ status: STATUS, "query:view_account": DAO_ACCOUNT.replace(PIN, V331) });
+    const plan = await planWrap(opts, d);
+    expect(plan.draft).toMatchObject({ packId: "sputnik-v2-331", codeHashPin: V331, methodNames: ["act_proposal"] });
+    expect(fake).toHaveBeenCalledTimes(1);
+    const [pack] = fake.mock.calls[0];
+    expect(pack.id).toBe("sputnik-v2-331");
+    expect(pack.sandboxFixture?.codeHash).toBe(V331);
+    expect(packs.packForCodeHash).toHaveBeenCalledWith(V331);
+  });
+
   it("two plans mint two different keys and session ids", async () => {
     replayFetch(PLAN_RPC);
     const a = await planWrap(opts, d);
@@ -259,7 +274,7 @@ describe("planWrap", () => {
     replayFetch({ status: STATUS, "query:view_account": OTHER_CODE_ACCOUNT });
     const err = await planWrap(opts, d).catch((e: unknown) => e);
     expect(err).toBeInstanceOf(InputError);
-    expect((err as InputError).problems).toEqual([noTools(["counter", "sputnik-v2"])]);
+    expect((err as InputError).problems).toEqual([noTools(PACK_IDS)]);
     expect(fake).not.toHaveBeenCalled();
     expect(heldPrivateKeyCount()).toBe(0);
   });
@@ -270,10 +285,14 @@ describe("planWrap", () => {
       (await realPacks.listPackIds()).map(async (id) => ({ id, codeHash: (await realPacks.loadTargetPack(id)).sandboxFixture?.codeHash })),
     );
     expect(pins.find((p) => p.id === "sputnik-v2")?.codeHash).toBe(PIN);
+    // C-T20c: three pins, the v3.31 pack's among them.
+    expect(pins.map((p) => p.id)).toEqual(PACK_IDS);
+    expect(pins.every((p) => typeof p.codeHash === "string" && p.codeHash.length > 0)).toBe(true);
+    expect(pins.find((p) => p.id === "sputnik-v2-331")?.codeHash).toBe(V331);
     replayFetch({ status: STATUS, "query:view_account": OTHER_CODE_ACCOUNT });
     const err = (await planWrap(opts, d).catch((e: unknown) => e)) as InputError & { hint?: string };
     expect(err).toBeInstanceOf(InputError);
-    expect(err.problems).toEqual([noTools(["counter", "sputnik-v2"])]);
+    expect(err.problems).toEqual([noTools(PACK_IDS)]);
     // C-T20e: with real 44-character code hashes the one-line hint is over 100 cells, so it breaks before a ` · `, each
     // continuation hung under the text after `hint: `; joined with a space again, the rows are the one-line hint.
     const rows = err.hint!.split("\n");
@@ -285,8 +304,8 @@ describe("planWrap", () => {
     expect(rows.at(-1)).toMatch(/ · see README › Limits$|^ {6}· see README › Limits$/);
     expect(rows.map((r) => r.trim()).join(" ")).toBe(`hint: code_hash ${OTHER_CODE} matches no pack ${pins.map((p) => `· ${p.id} pins ${p.codeHash}`).join(" ")} · see README › Limits`);
     // Printed after the problem, one row per line (main prints line()); the message, which tests match, is unchanged.
-    expect(err.line().split("\n")).toEqual([`ERROR (input): ${noTools(["counter", "sputnik-v2"])}`, ...rows]);
-    expect(err.message).toBe(noTools(["counter", "sputnik-v2"]));
+    expect(err.line().split("\n")).toEqual([`ERROR (input): ${noTools(PACK_IDS)}`, ...rows]);
+    expect(err.message).toBe(noTools(PACK_IDS));
     expect(fake).not.toHaveBeenCalled();
 
     // The receiver's hash is RPC data: a control character in it reaches the terminal neutralized.

@@ -21,6 +21,7 @@ import {
   PASS_IN_SCOPE,
   PASS_KEY_GONE,
   PASS_RUNTIME,
+  RPC_NOT_SAVED,
   SIX_OF_EIGHT,
   failChainCheck,
   failExpected,
@@ -51,9 +52,9 @@ const synthetic = (patch: Partial<DemoStep>): DemoStep => ({ n: 1, total: 14, ph
 const chainStep = (chainCheck: DemoStep["chainCheck"] = { before, after }, patch: Partial<DemoStep> = {}): DemoStep =>
   synthetic({ n: 9, total: 16, phase: "chain-check", label: "CHAIN CHECK", signer: "none", chainCheck, ...patch });
 
-type Opts = { caps?: TermCaps; style?: "full" | "beat"; mode?: "live" | "replay"; network?: "sandbox" | "testnet" };
+type Opts = { caps?: TermCaps; style?: "full" | "beat"; mode?: "live" | "replay"; network?: "sandbox" | "testnet"; saved?: boolean };
 function printer(o: Opts = {}) {
-  return createStepPrinter({ caps: o.caps ?? plain100, style: o.style ?? "full", network: o.network ?? "sandbox", mode: o.mode ?? "replay" });
+  return createStepPrinter({ caps: o.caps ?? plain100, style: o.style ?? "full", network: o.network ?? "sandbox", mode: o.mode ?? "replay", ...(o.saved === undefined ? {} : { saved: o.saved }) });
 }
 /** Every step through one printer, as the CLI prints them: one chunk per call, joined by newlines. */
 function print(steps: readonly DemoStep[], o: Opts = {}): string {
@@ -607,6 +608,26 @@ describe("a rejection that is not the key's scope (C-T2k)", () => {
       expect(text).toContain("chain rejected the tx: InvalidNonce");
       expect(text).not.toMatch(/refused by protocol|PASS|breaks/);
     }
+  });
+});
+
+describe("the rpc row of a run that writes no files (final review M3)", () => {
+  const refusals = run.steps.filter((s) => s.fixture !== undefined && s.attempt?.outcome.kind === "Refusal");
+
+  it("saved: false names no fixture file under 'verbatim', and each rpc row says the body is not saved", () => {
+    expect(refusals.length).toBeGreaterThanOrEqual(6);
+    const out = print(run.steps, { mode: "live", saved: false });
+    expect(out).not.toContain("demo/fixtures/");
+    const rows = out.split("\n").filter((l) => l.includes("rpc      response body, verbatim"));
+    expect(rows).toHaveLength(refusals.length);
+    for (const row of rows) expect(row).toBe(`        rpc      response body, verbatim · ${RPC_NOT_SAVED}`);
+  });
+
+  it("the default (a run that is written, or a replay of committed files) names each file", () => {
+    const out = print(run.steps, { mode: "live" });
+    for (const s of refusals) expect(out, s.fixture).toContain(`demo/fixtures/${s.fixture}`);
+    expect(out).not.toContain(RPC_NOT_SAVED);
+    expect(print(run.steps, { mode: "replay", saved: true })).toBe(print(run.steps, { mode: "replay" }));
   });
 });
 

@@ -4,7 +4,7 @@
  * serve loads, no longer pulls in the classifier, its label rules, the sandbox and the DAO setup code (4 modules).
  * This reads the source's static imports (import / export … from, import "x", import("x")); nothing is executed.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { REPO } from "./helpers.js";
@@ -49,5 +49,32 @@ describe("the module graph of keyhole serve (C-T18c)", () => {
     const burn = reachable("src/cli/burn.ts");
     expect(burn.has("src/cli/wrap.ts")).toBe(false);
     expect(burn.has("src/render/style.ts")).toBe(true);
+  });
+});
+
+describe("the layers (final review M8)", () => {
+  /** The repo-relative src files `file` imports directly (relative specifiers only). */
+  const directImports = (file: string): string[] => {
+    const text = readFileSync(resolve(REPO, file), "utf8");
+    const specs = [...text.matchAll(/(?:^|\n)\s*(?:import|export)\s[^;]*?from\s+"(\.[^"]+)"/g), ...text.matchAll(/\bimport\(\s*"(\.[^"]+)"\s*\)/g)].map((m) => m[1]);
+    return specs.map((spec) => relative(REPO, resolve(dirname(resolve(REPO, file)), spec.replace(/\.js$/, ".ts"))));
+  };
+
+  it("serve keeps no private copy of wrapWords: it uses render/style.ts's (final review M9, n-1); inspect's comment names m-2 (n-5)", () => {
+    const serve = readFileSync(resolve(REPO, "src/cli/serve.ts"), "utf8");
+    expect(serve).not.toMatch(/function wrapWords\b/);
+    expect(serve).toMatch(/import \{[^}]*\bwrapWords\b[^}]*\} from "\.\.\/render\/style\.js";/);
+    const inspect = readFileSync(resolve(REPO, "src/cli/inspect.ts"), "utf8");
+    expect(inspect).toContain("(m-2 of Sweep B fix round 1, C-T18d)");
+    expect(inspect).not.toContain("m-1 of fix round 1");
+  });
+
+  it("no src/core module imports from src/cli: core/wrap.ts takes isAccountId and isMethodName from core/ids.ts", () => {
+    const core = readdirSync(resolve(REPO, "src/core")).filter((f) => f.endsWith(".ts")).map((f) => `src/core/${f}`);
+    expect(core).toContain("src/core/wrap.ts");
+    for (const file of core) for (const target of directImports(file)) expect(target, `${file} → ${target}`).not.toMatch(/^src\/cli\//);
+    expect(directImports("src/core/wrap.ts")).toContain("src/core/ids.ts");
+    expect(directImports("src/cli/wrap.ts")).toContain("src/core/ids.ts");
+    expect(readFileSync(resolve(REPO, "src/cli/args.ts"), "utf8")).not.toMatch(/export function is(AccountId|MethodName)\b/);
   });
 });

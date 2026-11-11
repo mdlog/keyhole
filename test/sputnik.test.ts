@@ -15,9 +15,9 @@ import { EnvironmentError, InputError } from "../src/core/errors.js";
 import type { SandboxHandle } from "../src/core/sandbox.js";
 import type { SandboxFixture, TargetPack, ToolSchema } from "../src/core/types.js";
 import { packHooks } from "../src/packs/hooks.js";
-import { loadTargetPack, packProblems } from "../src/packs/index.js";
+import { listPackIds, loadTargetPack, packProblems } from "../src/packs/index.js";
 import { addProposal, councilInitArgs, deployDaoSandbox, pinnedWasm } from "../src/packs/sputnik-setup.js";
-import { actProposalArgs, proposalLine, proposalStatus, requiredApprovals } from "../src/packs/sputnik-v2.js";
+import { actProposalArgs, proposalLine, proposalStatus, quorumNote, requiredApprovals } from "../src/packs/sputnik-v2.js";
 import { NEGATIVE_CONTROL_FIXTURES, REPO, SANDBOX_FIXTURES, type ReplayedRequest, readFixture, replayFetch, sampleSession } from "./helpers.js";
 
 const fx = (file: string) => readFixture(SANDBOX_FIXTURES, file);
@@ -164,6 +164,44 @@ describe("requiredApprovals: RoleWeight threshold = max(quorum, min(num × size 
   });
 });
 
+describe("quorumNote: the cage card's `quorum N-of-M`, only where one council count decides every proposal (final review I1)", () => {
+  it("a 1-of-1 council and a 3-of-5 council: N is requiredApprovals, M the council's size", () => {
+    expect(quorumNote(policyWith(1, [1, 2], "0"))).toBe("quorum 1-of-1");
+    expect(quorumNote(policyWith(5, [1, 2], "0"))).toBe("quorum 3-of-5");
+    expect(quorumNote(policyWith(5, [1, 2], "0"))).toBe(`quorum ${requiredApprovals(policyWith(5, [1, 2], "0"))}-of-5`);
+  });
+
+  it("the demo DAO (the spike's recorded get_policy) is 2-of-2", () => {
+    expect(quorumNote(viewed(POLICY))).toBe("quorum 2-of-2");
+  });
+
+  it("a Weight threshold and a quorum count, as live sputnikv2.testnet DAOs set them", () => {
+    expect(quorumNote(policyWith(3, "2", "0"))).toBe("quorum 2-of-3");
+    expect(quorumNote(policyWith(4, "3", "0"))).toBe("quorum 3-of-4");
+    expect(quorumNote(policyWith(4, [1, 2], "4"))).toBe("quorum 4-of-4");
+  });
+
+  it("null where no one count is the control: a per-kind council policy, another role that votes, token weight, no council Group, no policy", () => {
+    const one = { weight_kind: "RoleWeight", quorum: "0", threshold: "1" };
+    const base = policyWith(3, [1, 2], "0");
+    const withRole = (role: Record<string, unknown>) => ({ ...base, roles: [...base.roles, role] });
+    expect(quorumNote(policyWith(3, [1, 2], "0", { transfer: one }))).toBeNull();
+    // Live shapes: a one-member role that may approve transfers alone, an Everyone role with every action, and a
+    // token-weighted Member role.
+    expect(quorumNote(withRole({ name: "fastlane", kind: { Group: ["f.sandbox"] }, permissions: ["transfer:VoteApprove"], vote_policy: { transfer: one } }))).toBeNull();
+    expect(quorumNote(withRole({ name: "anyone", kind: "Everyone", permissions: ["*:*"], vote_policy: {} }))).toBeNull();
+    expect(quorumNote(withRole({ name: "shareholders", kind: { Member: "1" }, permissions: ["call:VoteApprove"], vote_policy: {} }))).toBeNull();
+    expect(quorumNote(withRole({ name: "odd", kind: "Everyone", permissions: "*:*", vote_policy: {} }))).toBeNull(); // unreadable permissions
+    // A role that may only propose or finalize leaves the council's count in charge.
+    expect(quorumNote(withRole({ name: "proposer", kind: { Group: ["p.sandbox"] }, permissions: ["*:AddProposal", "*:Finalize"], vote_policy: {} }))).toBe("quorum 2-of-3");
+    expect(quorumNote(policyWith(3, [1, 2], "0", {}, "TokenWeight"))).toBeNull();
+    expect(quorumNote({ ...base, roles: [{ name: "Team", kind: { Group: ["t.sandbox"] }, permissions: ["*:*"], vote_policy: {} }] })).toBeNull();
+    expect(quorumNote({ ...base, roles: [{ name: "council", kind: "Everyone", permissions: ["*:*"], vote_policy: {} }] })).toBeNull();
+    expect(quorumNote({ ...base, roles: [base.roles[1], { ...base.roles[1] }] })).toBeNull(); // two roles named council
+    for (const v of [{}, null, "policy", []]) expect(quorumNote(v), JSON.stringify(v)).toBeNull();
+  });
+});
+
 describe("actProposalArgs: always the 4-arg form {id, action, proposal: stored kind, memo}", () => {
   it("approve → VoteApprove with the stored kind, read with get_proposal", async () => {
     const log = replayFetch({ "query:call_function": P0_AFTER_FC_VOTE });
@@ -238,6 +276,37 @@ describe("packHooks", () => {
     expect(seen.count).toBe(0);
   });
 
+  it("sputnik-v2 exposureNote reads the receiver's get_policy (final) and states its quorum; counter reads nothing", async () => {
+    const log = replayFetch({ "query:call_function": POLICY });
+    expect(await packHooks("sputnik-v2").exposureNote(s)).toBe("quorum 2-of-2");
+    expect(log.map(viewCall)).toEqual([{ method: "get_policy", args: {} }]);
+    expect(log[0].params).toMatchObject({ request_type: "call_function", finality: "final", account_id: "dao.sandbox" });
+    replayFetch({ "query:call_function": viewBody(policyWith(5, [1, 2], "0")) });
+    expect(await packHooks("sputnik-v2").exposureNote(s)).toBe("quorum 3-of-5");
+    const seen = noFetch();
+    expect(await packHooks("counter").exposureNote(s)).toBeNull();
+    expect(seen.count).toBe(0);
+  });
+
+  it("C-T20c: sputnik-v2-331 has sputnik-v2's hooks, and so has every pack that serves act_proposal (load-bearing)", async () => {
+    // Without them serve would pass {id, action} straight through as act_proposal's args, and the vote would panic.
+    expect(packHooks("sputnik-v2-331")).toBe(packHooks("sputnik-v2"));
+    const v331 = sampleSession({ packId: "sputnik-v2-331", codeHashPin: "AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH" });
+    replayFetch({ "query:call_function": P0_AFTER_FC_VOTE });
+    expect(await packHooks("sputnik-v2-331").callArgs(v331, daoVote, { id: 0, action: "approve" })).toEqual({ id: 0, action: "VoteApprove", proposal: viewed(P0_AFTER_FC_VOTE).kind, memo: null });
+    replayFetch({ "query:call_function": [P0_AFTER_FC_VOTE, POLICY] });
+    expect((await packHooks("sputnik-v2-331").afterCall(v331, daoVote, { id: 0, action: "approve" }))?.text).toBe("proposal #0 InProgress (1 of 2 approvals)");
+    replayFetch({ "query:call_function": POLICY });
+    expect(await packHooks("sputnik-v2-331").exposureNote(v331)).toBe("quorum 2-of-2");
+    const voting: string[] = [];
+    for (const id of await listPackIds()) {
+      if (!(await loadTargetPack(id)).tools.some((t) => t.kind === "call" && t.method === "act_proposal")) continue;
+      voting.push(id);
+      expect(packHooks(id), id).toBe(packHooks("sputnik-v2"));
+    }
+    expect(voting).toEqual(["sputnik-v2", "sputnik-v2-331"]);
+  });
+
   it("proposalLine is the dao_vote result line", () => {
     expect(proposalLine(3, { status: "Rejected", approvals: 0, required: 2 })).toBe("proposal #3 Rejected (0 of 2 approvals)");
   });
@@ -302,6 +371,13 @@ describe("pinnedWasm", () => {
     const wasm = await pinnedWasm(fixture);
     expect(createHash("sha256").update(wasm).digest("hex")).toBe(fixture.sha256);
     expect(baseEncode(createHash("sha256").update(wasm).digest())).toBe(fixture.codeHash);
+  });
+
+  it("C-T20c: reads the v3.31 pack's wasm (vendor/compat-testnet-fetched) against its own pins", async () => {
+    const fixture = (await loadTargetPack("sputnik-v2-331")).sandboxFixture as SandboxFixture;
+    const wasm = await pinnedWasm(fixture);
+    expect(createHash("sha256").update(wasm).digest("hex")).toBe("880bae9a58c99ec1efe8b10cf834b3f0c0ebc7a05d71206f3c1202c4280952da");
+    expect(baseEncode(createHash("sha256").update(wasm).digest())).toBe("AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH");
   });
 
   it("refuses bytes that are not the pinned ones", async () => {

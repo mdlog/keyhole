@@ -7,11 +7,11 @@
 | target code unchanged (`code_hash` pin) | KEYHOLE server-side — `serve`, before each pack call (`dao_vote`) | `keyhole inspect` |
 | key lifetime | OPERATOR — `keyhole burn`; no protocol expiry | `AccessKeyNotFound` after burn |
 | refused attempts | — nothing on-chain; the RPC response is the evidence | `demo/fixtures/` |
-| how the agent votes | NOT A KEY LIMIT — the prompt; the DAO's 2-of-2 quorum is the control | proposal status |
+| how the agent votes | NOT A KEY LIMIT — the prompt; the DAO's quorum (2-of-2 in the demo DAO) is the control | proposal status |
 
 Next to the NEAR docs Shade-Agent AI-DAO tutorial, which gives an agent its own account, Keyhole gives the member's seat a key that can only vote.\
 NEARpedia (what NEAR looks like today, written for agents) is complementary. [near-hydra](https://github.com/nikshepsvn/near-hydra) mints agent keys; Keyhole binds MCP tools to the key's on-chain scope and makes that scope inspectable, testable and burnable.\
-X post: `X_POST_URL` · 90 s video: `VIDEO_URL`
+Live page: <https://mdlog.github.io/keyhole/>, which reads the judging session's key from testnet in the browser ([`docs/index.html`](docs/index.html)) · X post: `X_POST_URL` · 90 s video: `VIDEO_URL`
 
 The cage card of the live judging session, as `npm run keyhole -- inspect ks-70aa` printed it on the operator's machine, which holds the session file. The key's scope and the target's code hash are read from chain, and the right-hand column names what enforces each row:
 
@@ -63,13 +63,14 @@ Each step is tagged with what it needs, and each "see" quotes the output of a re
    npm run keyhole -- demo --testnet
    ```
    `KEYHOLE_OPERATOR` names a testnet account whose full-access key is in near-cli-rs's legacy keychain, at `~/.near-credentials/testnet/YOUR-ACCOUNT.testnet.json` (`KEYHOLE_CREDENTIALS_DIR` moves the keychain). near-cli-rs writes it with `near account create-account sponsor-by-faucet-service … save-to-legacy-keychain`. The first run creates the seat, cosigner and grantee sub-accounts and the DAO through the `sputnik-v2.testnet` factory, which needs about 6.6 NEAR on the operator (the DAO's code storage is about 4.7 NEAR). Later runs reuse them; `npm run bootstrap:testnet -- --check` prints them and signs nothing. `KEYHOLE_DEMO_OUT` sends the run's transcript, run file and fixtures to `./my-run/demo`, so the committed `demo/transcript.md` and fixtures that this README's hashes point to stay as they are; without it, the run rewrites them.\
+   The default RPC, `https://rpc.testnet.near.org`, can answer HTTP 429; `KEYHOLE_TESTNET_RPC=https://rpc.testnet.fastnear.com` points Keyhole at another testnet RPC. If the burn step does not finish, the note on step 14 prints `npm run keyhole -- burn ID`, the command that deletes the key that may still be on chain.\
    See (quoted from the committed run, [`demo/transcript.md`](demo/transcript.md), not re-run for this README): 14 steps, each landed transaction linked as `https://testnet.nearblocks.io/txns/HASH`, and five `PASS: refused by protocol (NAME)` lines, the last `PASS: refused by protocol (AccessKeyNotFound)` after the burn. Then `RESULT 14/14 PASS`, exit 0, in 3m23s.
 4. `[optional]` Attach `keyhole serve` to an MCP client. First wrap a key. Here the seat's full-access key signs one AddKey after a typed `yes`; the DAO and the seat are the ones `bootstrap:testnet -- --check` prints:
    ```sh
    npm run keyhole -- wrap DAO --allow act_proposal \
      --gas 0.05N --on-account SEAT
    ```
-   `wrap` accepts a DAO whose code is the vendored v2.0.0 build: the DAO `demo --testnet` creates, or any DAO from the `sputnik-v2.testnet` factory (note the hyphen). A DAO from the maintained `sputnikv2.testnet` factory (v3.31) has another `code_hash` and is refused with `no tools: no near-abi and no target pack`, then a `hint:` line with its `code_hash` and the one each pack pins; the spike still passes against that code (see Limits).\
+   `wrap` accepts a DAO whose code a Sputnik pack pins. `sputnik-v2` pins the vendored v2.0.0 build: the DAO `demo --testnet` creates, or any DAO from the `sputnik-v2.testnet` factory (note the hyphen). `sputnik-v2-331` pins the default code that recent DAOs from the maintained `sputnikv2.testnet` factory (v3.31) run; the demo runs on `sputnik-v2`, and `sputnik-v2-331` is checked on near-sandbox (`npm run test:sandbox`). Older DAOs from that factory may run another build, such as v2.0 `8RMeZ5…` or v3.0 `783vth3F…`; one that no pack pins is refused with `no tools: no near-abi and no target pack`, then a `hint:` line with its `code_hash` and the one each pack pins (see Limits).\
    Then copy [`examples/claude-code.mcp.json`](examples/claude-code.mcp.json) into a project's `.mcp.json` (Claude Code), or merge [`examples/codex-config.toml`](examples/codex-config.toml) into `~/.codex/config.toml` (Codex), with the repo's absolute path and the session id that `wrap` printed filled in. The repo root deliberately has no `.mcp.json`. Delete the key afterwards with `npm run keyhole -- burn ID`.\
    See (from a `tools/list` handshake through the `examples/claude-code.mcp.json` command, not a first-hand `/mcp` screen): five tools, `keyhole_inspect`, `dao_list_proposals`, `dao_get_policy`, `dao_vote` and `keyhole_attempt`; Claude Code shows a server's tools under `/mcp`. On stderr, `serve` reports `1 private key loaded (session)` and `5 tools`.
 
@@ -114,7 +115,7 @@ The refusals cover six of eight InvalidAccessKeyError variants; the two gas-key 
 - [`demo/fixtures/`](demo/fixtures/): flat `NETWORK.PACK.TEST.json` files, each an RPC response body byte for byte: the refusals, the classifier's recorded dry-runs and the counter's ABI view (`npm run capture:sandbox`). [`manifest.json`](demo/fixtures/manifest.json) lists the seven refusals `npm test` replays.
 - [`demo/capture.sandbox.md`](demo/capture.sandbox.md): a near-sandbox run of the demo, `RESULT 20/20 PASS · 7 protocol refusals · 14 tx hashes · 24s · exit 0`, the source of the two sandbox refusals.
 - [`demo/judging-session.json`](demo/judging-session.json): the public fields of the live judging session `ks-70aa`.
-- [`demo/screeners/`](demo/screeners/): [`prompt.txt`](demo/screeners/prompt.txt), the neutral prompt for clean-clone runs of `claude -p` and `codex exec`. The logs of those runs are added by the screener runs.
+- [`demo/screeners/`](demo/screeners/): [`prompt.txt`](demo/screeners/prompt.txt), the neutral prompt for a clean-copy run of `claude -p`. See [`claude-p.log`](demo/screeners/claude-p.log) for that run (Claude Code 2.1.322, 2026-11-11, from a copy with no `node_modules`): steps 1 and 2 of "Try it" (`npm ci`, `npm test`, `npm run keyhole -- demo --sandbox`) all exit 0. The log's header holds the command and the copy method. No Codex run is included: `codex exec` was not run.
 - [`demo/transcript.sandbox.md`](demo/transcript.sandbox.md) and [`demo/fixtures/sandbox/`](demo/fixtures/sandbox/): the Day-1 spike on near-sandbox 0.3.5 (nearcore 2.14.0, protocol 88), 27 PASS, 0 FAIL, exit 0; 93 raw RPC responses plus `index.json`, the request log with every signed transaction.
 - [`spike/negative-control/`](spike/negative-control/): the same spike with `add_proposal` added to the key's methods. That attempt lands and the contract panics (`ERR_MIN_BOND`): 22 PASS, 5 FAIL, exit 1. The harness fails when it should.
 - [`spike/compat-sputnikv2-3.31/`](spike/compat-sputnikv2-3.31/): the spike against the DAO code that the maintained `sputnikv2.testnet` factory deploys (version 3.31): 27 PASS, 0 FAIL.
@@ -131,7 +132,7 @@ The privilege split:
 
 `KEYHOLE_CREDENTIALS_DIR` moves the keychain. `KEYHOLE_HOME` (default `~/.keyhole`) holds session metadata, `sessions/ID.json`, and never a key.
 
-Before `wrap` signs, it dry-runs each method on a near-sandbox copy of the target, built from the pack's pinned wasm, and labels it `callable`, `fails-without-deposit (runtime)` or `not in allowlist`; the cage card shows these labels. `serve` re-reads the target's `code_hash` before each `dao_vote` and refuses server-side, signing nothing, if it changed since wrap.
+Before `wrap` signs, it dry-runs each method on a near-sandbox copy of the target, built from the pack's pinned wasm, and labels it `callable`, `fails-without-deposit (runtime)`, `not in allowlist` or `inconclusive`; the cage card shows these labels. `serve` re-reads the target's `code_hash` before each `dao_vote` and refuses server-side, signing nothing, if it changed since wrap.
 
 The validator's check order, verified against nearcore master `runtime/runtime/src/verifier.rs` on 2026-11-05:
 1. the signer exists;
@@ -148,25 +149,26 @@ The rule order on screen (method · action · receiver · deposit · allowance) 
 |---|---|
 | `src/core/` | RPC and signing, the attempt path and `parseRefusal`, keys, sessions, `wrap`, `burn` and the cage card's data |
 | `src/classify/` | the differential dry-run classifier |
-| `src/packs/` | the target packs: `sputnik-v2` (pack JSON) and `counter` (its embedded near-abi) |
+| `src/packs/` | the target packs: `sputnik-v2` and `sputnik-v2-331` (pack JSON, one per pinned DAO build) and `counter` (its embedded near-abi) |
 | `src/render/` | the cage card, refusal block, rule strip and transcript, as plain strings |
 | `src/demo/` | the demo driver, the artifact writers, the replay loader and the testnet setup |
 | `src/cli/` | one file per command |
 | `test/`, `test-sandbox/` | `npm test` (offline) and `npm run test:sandbox` (near-sandbox) |
 | `contracts/counter/` | the smoke-test contract, in Rust (`npm run build:counter`) |
 | `spike/`, `vendor/` | the Day-1 spike and the vendored DAO wasm |
-| `scripts/` | the secret scan, the testnet bootstrap, the sandbox captures and the video staging |
+| `scripts/` | the secret scan, the testnet bootstrap, the sandbox captures, the video staging and the hosted page's data (`npm run site:html`) |
+| `docs/` | the hosted page (GitHub Pages, branch `main`, folder `/docs`): a live `view_access_key` inspector and the refusal ledger, built from `demo/` |
 
 ## Limits
 
 - No value cap. The allowance pays for gas only; the agent can move whatever the session account owns inside the target, up to what the operator put there.
-- Two target packs today, `sputnik-v2` and `counter`. `wrap` picks the pack by the receiver's `code_hash`, and refuses a contract that no pack pins with `no tools: no near-abi and no target pack` and a `hint:` line naming each pack's pinned `code_hash`. DAOs from the maintained `sputnikv2.testnet` factory (version 3.31) have another `code_hash`, so they are refused, although the spike passes against their code.
-- The key limits the method, not the vote. The DAO's 2-of-2 quorum is the control.
+- Three target packs today: `sputnik-v2`, `sputnik-v2-331` and `counter`. `wrap` picks the pack by the receiver's `code_hash`, and refuses a contract that no pack pins with `no tools: no near-abi and no target pack` and a `hint:` line naming each pack's pinned `code_hash`. `sputnik-v2-331` pins the v3.31 build that recent DAOs from the maintained `sputnikv2.testnet` factory (version 3.31) run; only `sputnik-v2` ran on testnet, and `sputnik-v2-331` is checked on near-sandbox. The factory's older DAOs may run another build, such as v2.0 (`8RMeZ5…`) or v3.0 (`783vth3F…`); one that no pack pins is refused that way.
+- The key limits the method, not the vote. The control is the DAO's quorum (2-of-2 in the demo DAO), which the cage card reads from the DAO's `get_policy`. Where the policy gives no single council quorum (another role can vote, or the council has per-kind policies), the card states none.
 - No protocol expiry. Burning is an operator action: `keyhole burn`.
 - The `code_hash` pin is Keyhole's check, in `serve`, before each pack call (`dao_vote`). `keyhole_attempt` does not check it, by design: its attempts must reach the chain so that the protocol does the refusing, and the key's on-chain scope still bounds them.
 - The allowance is charged for the up-front gas purchase. In the spike, a vote attaching 30 TGas needed 0.030919 NEAR of allowance up front, and one attaching 100 TGas needed 0.100919 NEAR, more than a 0.05 NEAR key holds. Votes therefore attach 30 TGas, and `wrap` refuses an allowance below the cost of one call (0.031 NEAR at 30 TGas).
 - A `callable` label is observed by dry-running the method from a council seat's full-access key on a sandbox copy of the target. A sub-account session (`ks-XXXX.OPERATOR`) is not itself a council member, so a real vote from it can still panic in the contract. The label over-states success, in the safe direction: it never hides a capability.
-- The Sputnik pack finds the voting group by the role name `council`. A DAO whose voting role has another name, or whose policy is TokenWeight, gets no proposal status line after a vote (an environment error). sputnikdao2 2.3.1's `ERR_WRONG_KIND` path is untested; the stored kind is sent back verbatim, `msg: null` included. The kind echo goes through `JSON.parse`, so a u64 JSON number above 2^53 (`BountyDone.bounty_id`, Ratio thresholds inside a `ChangePolicy` kind) would lose precision; the demo never reaches one.
+- The Sputnik packs find the voting group by the role name `council`. A DAO whose voting role has another name, or whose policy is TokenWeight, gets no proposal status line after a vote (an environment error). sputnikdao2 `main`'s `ERR_WRONG_KIND` path is untested (`main` is not the default code of either testnet factory); the stored kind is sent back verbatim, `msg: null` included. The kind echo goes through `JSON.parse`, so a u64 JSON number above 2^53 (`BountyDone.bounty_id`, Ratio thresholds inside a `ChangePolicy` kind) would lose precision; the demo never reaches one.
 - Output is laid out for a 100-column terminal, and paths are never broken. The default `~/.keyhole` fits; a `KEYHOLE_HOME` path of about 69 characters or more can make a `demo` row wrap.
 - Testnet and near-sandbox only. No mainnet, Chain Signatures, Intents or Trezu.
 
@@ -184,11 +186,11 @@ The rule order on screen (method · action · receiver · deposit · allowance) 
 
 - Sibling project: **Verdict**, prediction markets resolved by a cross-contract view call on NEAR state (`VERDICT_REPO_URL`). It is a separate repo and product with no shared mechanism; the two share no code, accounts or DAO. A shared near-workspaces harness would be listed in both READMEs.
 - AI use: the code, tests and docs were written with Claude Code.
-- Vendored code: `vendor/sputnikdao2-v2.0.0.wasm` is Sputnik DAO `sputnikdao2` 2.0.0 from [near-daos/sputnik-dao-contract](https://github.com/near-daos/sputnik-dao-contract), commit `317ea4fb`. It is MIT-licensed, "Copyright (c) 2021 near-daos", with the license in [`vendor/LICENSE-sputnik-dao-contract.txt`](vendor/LICENSE-sputnik-dao-contract.txt), and byte-identical to the DAO code the `sputnik-v2.testnet` factory embeds. `vendor/compat-testnet-fetched/` holds the `sputnikv2.testnet` factory's default DAO code (version 3.31), fetched read-only for the compat run. It has no licence file of its own: its licence basis is the factory's metadata, which names the same MIT-licensed repo at commit `7764926c`, and its build was not reproduced from that source. Provenance and checks: [`vendor/VENDORED.md`](vendor/VENDORED.md) (`npm run verify-vendored`).
+- Vendored code: `vendor/sputnikdao2-v2.0.0.wasm` is Sputnik DAO `sputnikdao2` 2.0.0 from [near-daos/sputnik-dao-contract](https://github.com/near-daos/sputnik-dao-contract), commit `317ea4fb`. It is MIT-licensed, "Copyright (c) 2021 near-daos", with the license in [`vendor/LICENSE-sputnik-dao-contract.txt`](vendor/LICENSE-sputnik-dao-contract.txt), and byte-identical to the DAO code the `sputnik-v2.testnet` factory embeds. `vendor/compat-testnet-fetched/` holds the `sputnikv2.testnet` factory's default DAO code (version 3.31), fetched read-only for the compat run; it is also the `sputnik-v2-331` pack's pinned dry-run code. It has no licence file of its own: its licence basis is the factory's metadata, which names the same MIT-licensed repo at commit `7764926c`, and its build was not reproduced from that source. Provenance and checks: [`vendor/VENDORED.md`](vendor/VENDORED.md) (`npm run verify-vendored`).
 - The counter contract (`contracts/counter/`, MIT) is written and built in this repo, with near-sdk 5.30.1 and cargo-near 0.22.0.
 - Libraries: near-api-js 7.4.0, near-sandbox 0.3.5 (nearcore 2.14.0, binary downloaded on first use), the MCP TypeScript SDK (`@modelcontextprotocol/sdk` 1.32.2, for `serve`), tsx, TypeScript, vitest and @noble/curves (the secret scan). Exact pins are in `package.json` and `package-lock.json`.
 - The team's own Mezodot MCP server code, from before the window, is not reused.
 - No Keyhole code exists from before the hackathon window. The Day-1 spike dates from 2026-11-06.
-- Private keys live only in near-cli-rs's legacy keychain (`~/.near-credentials`) or in process memory; never in this repo. Session files hold metadata only, and `npm run scan:secrets` finds 0 private keys in the repo.
+- Private keys live only in near-cli-rs's legacy keychain (`~/.near-credentials`) or in process memory; never in this repo. Session files hold metadata only, and `npm run scan:secrets` finds 0 `ed25519:` private keys in the repo.
 - License: MIT ([`LICENSE`](LICENSE)).
 - Tracks: `security`, `open` and `social`. Track-hint tech: FUNCTION CALL KEYS and SPUTNIK DAO.

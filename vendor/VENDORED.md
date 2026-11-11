@@ -61,7 +61,7 @@ Verdict: the version the factory deploys **matches** the vendored wasm byte for 
 
 `vendor/compat-testnet-fetched/sputnikdao2-sputnikv2.testnet-3.31.wasm` holds that factory's default code. It was fetched read-only with `get_code({"code_hash":"AA4nA45v…"})`: 539,647 bytes, sha256 `880bae9a58c99ec1efe8b10cf834b3f0c0ebc7a05d71206f3c1202c4280952da`, code_hash `AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH`.
 - **Provenance:** testnet factory storage, not GitHub. According to the factory's metadata it is built from the MIT-licensed repo above at `7764926c`; build reproducibility was not verified.
-- **Use:** only for the compatibility run in `compat-sputnikv2-3.31/`, where the spike passes 27/27 unchanged.
+- **Use:** for the compatibility run in `compat-sputnikv2-3.31/`, where the spike passes 27/27 unchanged, and the second pack's pinned dry-run code (`src/packs/sputnik-v2-331.pack.json`).
 
 ## 4. Signature drift to watch (`main`, not deployed by either testnet factory as of 2026-11-06)
 `main` (2.3.1 after PRs #217 and #221) declares `act_proposal(id, action, proposal: ProposalKind, memo)` with `#[deny_unknown_arguments]`:

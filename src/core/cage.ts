@@ -17,10 +17,11 @@
  * - no key on chain: nothing is callable, so every call tool is `not in allowlist`.
  * The classifications that agree with the chain (callable, fails-without-deposit) are the wrap-time dry-run's.
  */
+import { packHooks } from "../packs/hooks.js";
 import { loadTargetPack } from "../packs/index.js";
 import { ABSENT_EVIDENCE } from "../render/strings.js";
 import { attemptActions } from "./attempt.js";
-import { InputError } from "./errors.js";
+import { EnvironmentError, InputError } from "./errors.js";
 import { viewCodeHash, viewScopedKey } from "./rpc.js";
 import type { CageCard, Exposure, ScopedKey, Session, ToolSchema } from "./types.js";
 
@@ -55,6 +56,25 @@ async function exposureOf(session: Session): Promise<Exposure> {
     if (e instanceof InputError) return { ...DEFAULT_EXPOSURE };
     throw e;
   }
+}
+
+/**
+ * The card's VOTE / VALUE row as the receiver states it (RPC-live, final review I1): the pack's exposure, then what the
+ * pack's hooks read from the receiver after a `; ` (sputnik: `quorum N-of-M` from the DAO's get_policy). A pack stating
+ * no DAO's quorum is the point: every DAO sets its own, so the card prints only one it read. A read that fails (an
+ * EnvironmentError: unreachable RPC, a view that panics on changed code) or a policy with no single count leaves the
+ * row as the pack says it, with no quorum; the rest of the card does not depend on it.
+ */
+export async function cardExposure(session: Session): Promise<Exposure> {
+  const base = await exposureOf(session);
+  let note: string | null;
+  try {
+    note = await packHooks(session.packId).exposureNote(session);
+  } catch (e) {
+    if (e instanceof EnvironmentError) return base;
+    throw e;
+  }
+  return note === null ? base : { ...base, value: `${base.value}; ${note}` };
 }
 
 /** The receiver reason this module writes for a key whose receiver is not the session's. */
@@ -141,12 +161,18 @@ function toolsAgainstKey(session: Session, key: ScopedKey | null): ToolSchema[] 
 
 /**
  * "preview" makes no RPC call: the requested scope is the key (nonce 0, the whole allowance), the pin is the
- * code hash, and the tools are the wrap-time dry-run's. "chain" reads the key (view_access_key) and the code
- * hash (view_account) in parallel; chain wins over the session file. `key: null` with source "chain" is a key
- * the chain does not have (burned). `readAt` is an ISO string.
+ * code hash, and the tools are the wrap-time dry-run's. "chain" reads the key (view_access_key), the code
+ * hash (view_account) and the exposure row (cardExposure: the sputnik DAO's get_policy) in parallel; chain wins
+ * over the session file. `key: null` with source "chain" is a key the chain does not have (burned). `readAt` is an
+ * ISO string.
+ *
+ * `opts.exposure` is a row the caller already read (wrap reads it with cardExposure before the preview; offline tests
+ * feed one): it is used as given, and the chain card then reads no policy. Without it a preview prints the pack's
+ * row, with no quorum: a preview reads nothing.
  */
-export async function buildCageCard(session: Session, source: "preview" | "chain"): Promise<CageCard> {
+export async function buildCageCard(session: Session, source: "preview" | "chain", opts: { exposure?: Exposure } = {}): Promise<CageCard> {
   assertSessionPublicKey(session);
+  const given = opts.exposure ? { ...opts.exposure } : undefined;
   if (source === "preview") {
     const key: ScopedKey = {
       publicKey: session.publicKey,
@@ -156,8 +182,8 @@ export async function buildCageCard(session: Session, source: "preview" | "chain
       allowanceRemainingYocto: session.allowanceYocto,
       nonce: 0,
     };
-    return { session, key, tools: toolsAgainstKey(session, key), codeHashNow: session.codeHashPin, source, readAt: new Date().toISOString(), exposure: await exposureOf(session) };
+    return { session, key, tools: toolsAgainstKey(session, key), codeHashNow: session.codeHashPin, source, readAt: new Date().toISOString(), exposure: given ?? (await exposureOf(session)) };
   }
-  const [key, codeHashNow, exposure] = await Promise.all([viewScopedKey(session), viewCodeHash(session.network, session.receiverId), exposureOf(session)]);
+  const [key, codeHashNow, exposure] = await Promise.all([viewScopedKey(session), viewCodeHash(session.network, session.receiverId), given ?? cardExposure(session)]);
   return { session, key, tools: toolsAgainstKey(session, key), codeHashNow, source, readAt: new Date().toISOString(), exposure };
 }

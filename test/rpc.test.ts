@@ -240,6 +240,27 @@ describe("rpcCall retries (fake timers)", () => {
     expect(gaps(calls)).toEqual([500, 1000, 2000, 4000]);
   });
 
+  it("when the retries run out on 429, 502 or 503, the hint names the variable that changes the RPC, and keeps the offline alternative (T21c)", async () => {
+    for (const status of [429, 502, 503]) {
+      httpReplies(Array.from({ length: 5 }, () => ({ status, body: "" })));
+      const err = await drive(rpcCall("http://x.invalid", "query", { request_type: "view_account", finality: "final", account_id: "dao.sandbox" })).catch((e: unknown) => e);
+      expect(err).toBeInstanceOf(EnvironmentError);
+      // rpcCall is not told the network, so the hint names both variables; testnet's comes with one example value.
+      expect((err as EnvironmentError).tryThis).toBe(
+        "wait and retry, or use another RPC endpoint (testnet: set KEYHOLE_TESTNET_RPC, for example https://rpc.testnet.fastnear.com; sandbox: set KEYHOLE_SANDBOX_RPC); offline alternative: npm test (REPLAY)",
+      );
+    }
+  });
+
+  it("a send that got 429 never suggests a retry or another RPC: its hint is SEND_HINT, look it up first (T21c)", async () => {
+    for (const method of ["send_tx", "broadcast_tx_commit", "broadcast_tx_async"]) {
+      httpReplies([{ status: 429, body: "" }]);
+      const err = await drive(rpcCall("http://x.invalid", method, ["AA=="])).catch((e: unknown) => e);
+      expect((err as EnvironmentError).tryThis).toBe(SEND_HINT);
+      expect((err as EnvironmentError).line()).not.toMatch(/KEYHOLE_|retry|another RPC/);
+    }
+  });
+
   it("broadcast_tx_commit and broadcast_tx_async are never retried", async () => {
     for (const method of ["broadcast_tx_commit", "broadcast_tx_async"]) {
       const calls = httpReplies([{ status: 503, body: "" }]);

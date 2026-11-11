@@ -2,8 +2,8 @@
   "id": "sputnik-v2",
   "abiSource": "pack-json",
   "description": "Sputnik DAO v2 (sputnikdao2; no embedded ABI, so this pack declares the tools). The hero key allows act_proposal only. Placeholders {seat}, {cosigner} and {attacker} are account ids filled in by the demo driver.",
-  "notEnforced": "how the agent votes → the DAO's 2-of-2 quorum",
-  "exposure": { "label": "VOTE", "value": "any proposal here, either way, until burn; quorum 2-of-2" },
+  "notEnforced": "how the agent votes → the DAO's quorum (read from its get_policy)",
+  "exposure": { "label": "VOTE", "value": "any proposal here, either way, until burn" },
   "tools": [
     {
       "name": "dao_list_proposals",

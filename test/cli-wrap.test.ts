@@ -82,11 +82,18 @@ function subPlan(): WrapPlan {
 /** The live session signWrap returns for a plan. */
 const signed = (plan: WrapPlan): Session => ({ ...plan.draft, methodNames: [...plan.draft.methodNames], createdAt: "2026-11-06T10:00:00.000Z", status: "live" });
 
-/** Fakes for every CONTRACT function wrap calls; buildCageCard and loadTargetPack stay real (no socket). */
-function fakes(plan: WrapPlan = heroPlan()) {
+/** The VOTE row the hero DAO's get_policy gives (council {seat, cosigner}, [1, 2]): what cardExposure reads for it. */
+const HERO_EXPOSURE = { label: "VOTE", value: "any proposal here, either way, until burn; quorum 2-of-2" } as const;
+
+/**
+ * Fakes for every CONTRACT function wrap calls, and for cardExposure (its get_policy read); buildCageCard and
+ * loadTargetPack stay real (no socket).
+ */
+function fakes(plan: WrapPlan = heroPlan(), exposure: { label: "VOTE" | "VALUE"; value: string } = HERO_EXPOSURE) {
   return {
     planWrap: vi.fn<WrapDeps["planWrap"]>(async () => plan),
     signWrap: vi.fn<WrapDeps["signWrap"]>(async (p) => ({ session: signed(p), txHash: TX })),
+    cardExposure: vi.fn<WrapDeps["cardExposure"]>(async () => ({ ...exposure })),
   };
 }
 
@@ -253,6 +260,32 @@ describe("keyhole wrap: the preview (LAYOUT R2 blocks 1–7)", () => {
     expect(order[3]).toBe(order[0] + 3);
     expect(f.planWrap).toHaveBeenCalledTimes(1);
     expect(f.signWrap).not.toHaveBeenCalled();
+  });
+
+  it("final review I1: the PREVIEW card's VOTE row states the quorum read from the receiver, never a pack's 2-of-2", async () => {
+    const voteRow = (text: string) => text.split("\n").find((l) => l.startsWith("| VOTE "));
+    for (const [quorum, value] of [
+      ["1-of-1", "any proposal here, either way, until burn; quorum 1-of-1"],
+      ["3-of-5", "any proposal here, either way, until burn; quorum 3-of-5"],
+    ] as const) {
+      const f = fakes(heroPlan(), { label: "VOTE", value });
+      const t = term({ answers: ["no"] });
+      await exec(createWrapCommand(f), HERO, t.io);
+      expect(voteRow(t.text()), quorum).toContain(`until burn; quorum ${quorum}`);
+      expect(t.text(), quorum).not.toContain("2-of-2");
+      // It reads the policy of the receiver the plan pins, for the session the card shows.
+      expect(f.cardExposure).toHaveBeenCalledTimes(1);
+      expect(f.cardExposure.mock.calls[0][0]).toMatchObject({ receiverId: "dao.sandbox", packId: "sputnik-v2", network: "sandbox" });
+    }
+  });
+
+  it("final review I1: a policy that cannot be read leaves the quorum out (the real cardExposure, offline)", async () => {
+    const { cardExposure: _read, ...noRead } = fakes();
+    const t = term({ answers: ["no"] });
+    await exec(createWrapCommand(noRead), HERO, t.io);
+    const row = t.text().split("\n").find((l) => l.startsWith("| VOTE "));
+    expect(row).toContain("any proposal here, either way, until burn");
+    expect(t.text()).not.toContain("quorum");
   });
 
   it("the card is the PREVIEW plate: requested scope, nothing signed, the pin in full, no WARN for the hero", async () => {

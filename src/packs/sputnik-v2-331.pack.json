@@ -1,0 +1,188 @@
+{
+  "id": "sputnik-v2-331",
+  "abiSource": "pack-json",
+  "description": "Sputnik DAO v2 at the sputnikv2.testnet factory's default DAO code, version 3.31 (commit 7764926c, fetched read-only; no embedded ABI, so this pack declares the tools). The same tools, scope and tests as sputnik-v2; only the pinned code differs. Placeholders {seat}, {cosigner} and {attacker} are account ids filled in by the demo driver.",
+  "notEnforced": "how the agent votes → the DAO's quorum (read from its get_policy)",
+  "exposure": { "label": "VOTE", "value": "any proposal here, either way, until burn" },
+  "tools": [
+    {
+      "name": "dao_list_proposals",
+      "kind": "view",
+      "method": "get_proposals",
+      "argsSchema": {
+        "type": "object",
+        "properties": {
+          "from_index": { "type": "integer", "minimum": 0 },
+          "limit": { "type": "integer", "minimum": 1, "maximum": 100 }
+        },
+        "required": ["from_index", "limit"],
+        "additionalProperties": false
+      },
+      "gasTGas": 0
+    },
+    {
+      "name": "dao_get_policy",
+      "kind": "view",
+      "method": "get_policy",
+      "argsSchema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "gasTGas": 0
+    },
+    {
+      "name": "dao_vote",
+      "kind": "call",
+      "method": "act_proposal",
+      "argsSchema": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "minimum": 0 },
+          "action": { "type": "string", "enum": ["approve", "reject"] },
+          "memo": { "type": "string" }
+        },
+        "required": ["id", "action"],
+        "additionalProperties": false
+      },
+      "gasTGas": 30,
+      "dryRun": { "args": { "id": 0, "action": "VoteApprove", "proposal": "Vote", "memo": "keyhole dry-run" }, "depositYocto": null }
+    }
+  ],
+  "outOfScope": [
+    {
+      "method": "add_proposal",
+      "dryRun": {
+        "args": { "proposal": { "description": "keyhole dry-run", "kind": "Vote" } },
+        "depositYocto": "100000000000000000000000"
+      }
+    }
+  ],
+  "sandboxFixture": {
+    "wasmPath": "vendor/compat-testnet-fetched/sputnikdao2-sputnikv2.testnet-3.31.wasm",
+    "sha256": "880bae9a58c99ec1efe8b10cf834b3f0c0ebc7a05d71206f3c1202c4280952da",
+    "codeHash": "AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH",
+    "init": {
+      "method": "new",
+      "args": {
+        "config": { "name": "keyhole-demo-dao", "purpose": "Keyhole demo: 2-of-2 council grants DAO", "metadata": "" },
+        "policy": {
+          "roles": [
+            { "name": "all", "kind": "Everyone", "permissions": ["*:AddProposal"], "vote_policy": {} },
+            {
+              "name": "council",
+              "kind": { "Group": ["{seat}", "{cosigner}"] },
+              "permissions": ["*:AddProposal", "*:VoteApprove", "*:VoteReject", "*:VoteRemove", "*:Finalize"],
+              "vote_policy": {}
+            }
+          ],
+          "default_vote_policy": { "weight_kind": "RoleWeight", "quorum": "0", "threshold": [1, 2] },
+          "proposal_bond": "100000000000000000000000",
+          "proposal_period": "604800000000000",
+          "bounty_bond": "100000000000000000000000",
+          "bounty_forgiveness_period": "86400000000000"
+        }
+      }
+    },
+    "setup": [
+      {
+        "signer": "cosigner",
+        "method": "add_proposal",
+        "args": { "proposal": { "description": "keyhole dry-run setup", "kind": "Vote" } },
+        "depositYocto": "100000000000000000000000"
+      }
+    ]
+  },
+  "negativeTests": [
+    {
+      "id": "refuse-method",
+      "label": "open a payout proposal",
+      "violates": "method",
+      "keyState": "session-key",
+      "receiver": "receiver",
+      "action": "FunctionCall",
+      "method": "add_proposal",
+      "args": {
+        "proposal": {
+          "description": "Pay 10 NEAR to {attacker} (pre-authorised)",
+          "kind": { "Transfer": { "token_id": "", "receiver_id": "{attacker}", "amount": "10000000000000000000000000" } }
+        }
+      },
+      "depositYocto": "0",
+      "gasTGas": 30,
+      "expected": "MethodNameMismatch"
+    },
+    {
+      "id": "refuse-action",
+      "label": "send NEAR",
+      "violates": "action",
+      "keyState": "session-key",
+      "receiver": "attacker",
+      "action": "Transfer",
+      "args": {},
+      "depositYocto": "1",
+      "gasTGas": 0,
+      "expected": "RequiresFullAccess"
+    },
+    {
+      "id": "refuse-receiver",
+      "label": "vote in another DAO",
+      "violates": "receiver",
+      "keyState": "session-key",
+      "receiver": "other-receiver",
+      "action": "FunctionCall",
+      "method": "act_proposal",
+      "args": { "id": 0, "action": "VoteApprove" },
+      "depositYocto": "0",
+      "gasTGas": 30,
+      "expected": "ReceiverMismatch"
+    },
+    {
+      "id": "refuse-deposit",
+      "label": "attach the bond",
+      "violates": "deposit",
+      "keyState": "session-key",
+      "receiver": "receiver",
+      "action": "FunctionCall",
+      "method": "act_proposal",
+      "args": { "id": 1, "action": "VoteApprove" },
+      "depositYocto": "1",
+      "gasTGas": 30,
+      "expected": "DepositWithFunctionCall"
+    },
+    {
+      "id": "refuse-action-own-receiver",
+      "label": "send NEAR to the DAO itself",
+      "violates": "action",
+      "keyState": "session-key",
+      "receiver": "receiver",
+      "action": "Transfer",
+      "args": {},
+      "depositYocto": "1",
+      "gasTGas": 0,
+      "expected": "RequiresFullAccess"
+    },
+    {
+      "id": "refuse-allowance",
+      "label": "vote with a key whose allowance is below the prepaid gas",
+      "violates": "allowance",
+      "keyState": "tiny-allowance-key",
+      "receiver": "receiver",
+      "action": "FunctionCall",
+      "method": "act_proposal",
+      "args": { "id": 1, "action": "VoteReject" },
+      "depositYocto": "0",
+      "gasTGas": 30,
+      "expected": "NotEnoughAllowance"
+    },
+    {
+      "id": "after-burn",
+      "label": "vote with the deleted key",
+      "violates": "none",
+      "keyState": "after-burn",
+      "receiver": "receiver",
+      "action": "FunctionCall",
+      "method": "act_proposal",
+      "args": { "id": 1, "action": "VoteReject" },
+      "depositYocto": "0",
+      "gasTGas": 30,
+      "expected": "AccessKeyNotFound"
+    }
+  ]
+}

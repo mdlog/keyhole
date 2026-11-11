@@ -45,6 +45,12 @@ export const PASS_KEY_GONE = "PASS: no such key on chain (view_access_key)";
 
 export const CAPTION = "rejected at validation — never in a block; the RPC response is the evidence";
 
+/**
+ * The end of a refusal block's `rpc` row when the run writes no files (`demo --sandbox`; final review M3): the body
+ * on screen is this run's, verbatim, and no fixture file holds it. A committed file of the same name is another run's.
+ */
+export const RPC_NOT_SAVED = "not saved: this run writes no files";
+
 /** Follows the PASS line of a sub-account burn proof (SignerDoesNotExist). */
 export const NOTE_SIGNER_GONE = "InvalidTxError: the account itself is gone, not an access-key error (sub-account mode)";
 
@@ -66,7 +72,8 @@ export const ABSENT_EVIDENCE = "absent from the key's method_names (chain)";
 
 /**
  * The hint under noTools: the receiver's code hash and the one each pack pins, so a contract built from other code
- * (e.g. a DAO from the maintained sputnikv2.testnet factory, v3.31) is explained where it is refused (README › Limits).
+ * (e.g. an older DAO from the maintained sputnikv2.testnet factory, on its v2.0 or v3.0 build; its v3.31 default code
+ * is pinned by sputnik-v2-331 since C-T20c) is explained where it is refused (README › Limits).
  * The receiver's hash comes from RPC, so its control characters are neutralized. One line when it fits 100 cells; with
  * real code hashes (44 characters each) it does not, so it breaks before a ` · ` (joinAtDots), each continuation hung
  * under the text after `hint: ` (C-T20e). Joined with a space again, the rows are the one-line hint.
@@ -86,6 +93,12 @@ export const codeChanged = (receiverId: string, pinned: string, now: string): st
 export const warnRuntime = (method: string): string =>
   `WARN  ${method} — fails-without-deposit (runtime): a function-call key can never attach a deposit, so every call fails on-chain and still costs gas.`;
 export const warnInconclusive = (method: string): string => `WARN  ${method} — inconclusive: the dry-run could not classify it; raw panic text below.`;
+
+/**
+ * The end of the cage card's VOTE row, from the receiver's get_policy (final review I1): `quorum 2-of-2` for the demo
+ * DAO. Never a pack constant: src/packs/sputnik-v2.ts quorumNote builds it from a policy it read.
+ */
+export const quorumOf = (required: number, size: number): string => `quorum ${required}-of-${size}`;
 
 /** EXPOSURE (R2 block 5). `methods` is already joined for display. */
 export const exposureVote = (account: string, method: string, receiverId: string): string =>

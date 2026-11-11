@@ -137,6 +137,9 @@ export function createDemoCommand(overrides: Partial<DemoDeps> = {}): Command {
 
 export const demo: Command = createDemoCommand();
 
+/** Whether a run on `network` writes its evidence (fixtures, run json, transcript): testnet only; sandbox persists nothing. */
+const writesArtifacts = (network: Network): boolean => network === "testnet";
+
 /** What the steps printed so far say: the last one, and the testnet session's id and state. */
 interface Seen {
   last?: DemoStep;
@@ -175,7 +178,8 @@ class DemoRunner {
   ) {
     this.env = io.env ?? process.env;
     this.caps = termCaps(io.stdout ?? {}, this.env);
-    this.printer = createStepPrinter({ caps: this.caps, style: this.caps.tty ? "beat" : "full", network, mode: "live" });
+    // Only a testnet run is written (end()); a sandbox run's refusal blocks name no fixture file (final review M3).
+    this.printer = createStepPrinter({ caps: this.caps, style: this.caps.tty ? "beat" : "full", network, mode: "live", saved: writesArtifacts(network) });
     this.progress = new Progress(io, this.caps);
     this.pausing = step && this.caps.tty && io.readLine !== undefined;
     this.aborted = new Promise((resolve) => {
@@ -303,7 +307,7 @@ class DemoRunner {
     this.printHeader(); // a run with no step still says where it ran
     let shown = run;
     let writeError: unknown;
-    if (this.network === "testnet") {
+    if (writesArtifacts(this.network)) {
       try {
         const transcript = renderTranscript(run, { rpc: this.rpcShown(), operator: this.env.KEYHOLE_OPERATOR ?? "not set", startedAt: this.startedAt });
         await this.d.writeRunArtifacts(run, { ...demoArtifactPaths("testnet", this.env), transcript });

@@ -24,7 +24,7 @@ import type { DemoRun, DemoStep, Network, TxSuccess } from "../src/core/types.js
 import type { runDemo } from "../src/demo/driver.js";
 import { loadDemoRunFixture } from "../src/demo/replay.js";
 import { nn } from "../src/render/refusal-block.js";
-import { OFFLINE_ALTERNATIVE, PASS_RUNTIME, SIX_OF_EIGHT, aborted, abortedSandbox, failExpected } from "../src/render/strings.js";
+import { OFFLINE_ALTERNATIVE, PASS_RUNTIME, RPC_NOT_SAVED, SIX_OF_EIGHT, aborted, abortedSandbox, failExpected } from "../src/render/strings.js";
 import { displayWidth, stripAnsi } from "../src/render/style.js";
 import { REPO, SANDBOX_FIXTURES } from "./helpers.js";
 
@@ -232,10 +232,38 @@ describe("keyhole demo, piped (full style)", () => {
     expect(lines.at(-1)).toBe(SIX_OF_EIGHT);
   });
 
-  it("C-T14b: the spike capture's long fixture names (the widest rpc row was 109 cells) break before the path: every piped row fits 100 columns, no path is cut", async () => {
-    const f = fake({ network: "sandbox", steps: SPIKE.steps });
+  it("final review M3: --sandbox, piped, names no fixture file under 'verbatim' (it writes none); each rpc row says not saved", async () => {
+    const f = fake({ network: "sandbox", steps: RUN_SANDBOX.steps });
+    const { cmd, writeRunArtifacts } = command(f);
     const t = terminal();
-    expect(await exec(command(f).cmd, ["--sandbox"], t.io)).toBe(0);
+    expect(await exec(cmd, ["--sandbox"], t.io)).toBe(0);
+    expect(writeRunArtifacts).not.toHaveBeenCalled();
+    const lines = t.lines();
+    expect(t.out()).not.toContain("demo/fixtures/");
+    const rows = lines.filter((l) => l.includes("rpc      response body, verbatim"));
+    expect(rows.length).toBe(RUN_SANDBOX.steps.filter((s) => s.fixture !== undefined && s.attempt?.outcome.kind === "Refusal").length);
+    expect(rows.length).toBeGreaterThanOrEqual(7);
+    for (const row of rows) expect(row).toBe(`        rpc      response body, verbatim · ${RPC_NOT_SAVED}`);
+  });
+
+  it("final review M3: --testnet, piped, names each fixture file under 'verbatim': that run is written", async () => {
+    const f = fake({ network: "testnet", steps: HERO_TESTNET });
+    const { cmd, writeRunArtifacts } = command(f);
+    const t = terminal({ env: { KEYHOLE_OPERATOR: OP } });
+    expect(await exec(cmd, ["--testnet"], t.io)).toBe(0);
+    expect(writeRunArtifacts).toHaveBeenCalledOnce();
+    const refused = HERO_TESTNET.filter((s) => s.fixture !== undefined && s.attempt?.outcome.kind === "Refusal");
+    expect(refused.length).toBeGreaterThanOrEqual(5);
+    for (const s of refused) expect(t.out(), s.fixture).toContain(`demo/fixtures/${s.fixture}`);
+    expect(t.out()).not.toContain(RPC_NOT_SAVED);
+  });
+
+  it("C-T14b: the spike capture's long fixture names (the widest rpc row was 109 cells) break before the path: every piped row fits 100 columns, no path is cut", async () => {
+    // A run that is written names its files (M3): --testnet, fed the spike capture's 16 steps. A real testnet run has
+    // 14 steps and 5 refusals; with these 13, a transcript claim would stretch RESULT, which is not under test here.
+    const f = fake({ network: "testnet", steps: SPIKE.steps, run: { transcriptPath: "" } });
+    const t = terminal({ env: { KEYHOLE_OPERATOR: OP } });
+    expect(await exec(command(f).cmd, ["--testnet"], t.io)).toBe(0);
     const lines = t.lines();
     for (const l of lines) expect(displayWidth(l), l).toBeLessThanOrEqual(100);
     const refused = SPIKE.steps.filter((s) => s.fixture !== undefined && s.attempt?.outcome.kind === "Refusal");

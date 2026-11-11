@@ -16,7 +16,6 @@
 import { join } from "node:path";
 import { rm, stat } from "node:fs/promises";
 import { type Action, KeyPair, type PublicKey, actions } from "near-api-js";
-import { isAccountId, isMethodName } from "../cli/args.js";
 import { classifyTools } from "../classify/dry-run.js";
 import { listPackIds, loadTargetPack, packForCodeHash } from "../packs/index.js";
 import { MAINNET_OUT_OF_SCOPE, noPackHint, noTools, warnInconclusive, warnRuntime } from "../render/strings.js";
@@ -24,6 +23,7 @@ import { ALLOWANCE_STEP_YOCTO, SUBACCOUNT_RESERVE, formatNear, minAllowanceYocto
 import { sessionsDir } from "./config.js";
 import { deleteSessionKey, loadFullAccessKey, saveSessionKey, sessionKeyPath } from "./credentials.js";
 import { EXIT_TX_SENT, EnvironmentError, InputError, TxSentError } from "./errors.js";
+import { isAccountId, isMethodName } from "./ids.js";
 import { holdSessionKey, sessionKeyPair } from "./keys.js";
 import { bodyState } from "./outcome.js";
 import { parseRefusal } from "./refusal.js";

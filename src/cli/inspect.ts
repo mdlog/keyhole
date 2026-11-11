@@ -50,7 +50,7 @@ export function createInspectCommand(overrides: Partial<InspectDeps> = {}): Comm
         io.out(`${sgr(caps, "bold", "BURNED")} · no such key on chain (view_access_key)`);
         const hashes = session.status === "burned" ? (session.burnTxHashes ?? []) : [];
         if (hashes.length === 0) io.out("DeleteKey tx: none recorded in the session file");
-        // A testnet line is 114 cells with its label: it breaks before the URL, the second row hung under the tx (m-1 of fix round 1, C-T18d).
+        // A testnet line is 114 cells with its label: it breaks before the URL, the second row hung under the tx (m-2 of Sweep B fix round 1, C-T18d).
         for (const hash of hashes) for (const row of renderTxLineRows(hash, session.network, caps, caps.width, DELETE_KEY, " ".repeat(DELETE_KEY.length))) io.out(row);
         io.out(session.status === "burned" && session.burnedAt ? `burned at ${session.burnedAt}` : "burned at: not recorded in the session file");
         if (session.status === "live") {

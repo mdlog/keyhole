@@ -1,0 +1,57 @@
+=== SCREENER LOG: claude -p ===
+Date (UTC):   2026-11-11, started 00:51:23Z, finished 00:54:37Z (wall time 3m14s)
+Tool:         Claude Code, `claude --version` -> 2.1.322 (Claude Code)
+Command:      cd /tmp/claude-1000/keyhole-clean && flock "$SANDBOX_LOCK" claude -p "$(cat demo/screeners/prompt.txt)" --allowedTools "Bash(npm ci)" "Bash(npm test)" "Bash(npm run keyhole -- demo --sandbox)" "Read" < /dev/null > ../claude-p.log 2>&1
+              ($SANDBOX_LOCK is the build's shared lock file that serialises near-sandbox runs on this machine; the "< /dev/null" keeps the non-TTY run from waiting on stdin.)
+Clean copy:   rsync -a --delete --exclude-from=.gitignore --exclude .git ./ /tmp/claude-1000/keyhole-clean/
+              473 files, no .git, no node_modules, no .sandbox-bin, no .sandbox-home, no contracts/counter/target. Verified: `ls /tmp/claude-1000/keyhole-clean/node_modules` -> no such directory.
+Exit code:    0 (the claude process)
+Prompt:       demo/screeners/prompt.txt, passed verbatim.
+Editing note: the original stdout+stderr began with 4 "Permission allow rule (...settings.json)" warning lines from Claude Code about the runner's own user-level allow rules (unrelated local paths); they are removed here. Everything below this line is the original output, unchanged.
+=== OUTPUT ===
+I ran steps 1 and 2 exactly as written, and every check passed. Both exited 0, every output line the README promises appeared, and the row-3 evidence file matches its table row. No repo file was modified.
+
+## Step 1 `[offline]`
+
+| Command | Exit | Wall time | Expected text present? |
+|---|---|---|---|
+| `npm ci` | 0 | 1.4 s | n/a. It added 233 packages, which almost certainly came from the local npm cache. |
+| `npm test` | 0 | 31.3 s (vitest: 30.91 s; README: "about 30 s") | **Yes, all of it.** 41 test files and 1591 tests passed. |
+
+The REPLAY block sits just above vitest's summary and contains:
+- Seven `REPLAY [` lines, each ending `PASS: refused by protocol (NAME)`. The first is `REPLAY [testnet] sputnik-v2.refuse-method … PASS: refused by protocol (MethodNameMismatch)`.
+- `display invariant: raw block on screen equals fixture bytes (7/7)`.
+- Six classifier labels, followed by `6/6`.
+- `secret scan: 0 keys in repo` and `serve opens exactly 1 private key`.
+
+## Step 2 `[network]`
+
+| Command | Exit | Wall time | Expected text present? |
+|---|---|---|---|
+| `npm run keyhole -- demo --sandbox` | 0 | 29.3 s, including the first-run binary download (about 5 s) | **Yes, all of it.** |
+
+- Steps `[01/20]` to `[20/20]` all ran.
+- The run printed all five lines the README lists: the `MethodNameMismatch`, `RequiresFullAccess`, `ReceiverMismatch` and `DepositWithFunctionCall` refusals, and `PASS: key state unchanged by 4 refusals`.
+- The result line was `RESULT 20/20 PASS · 7 protocol refusals · 14 tx hashes · 29s · exit 0`, ending in the wall time and `exit 0` as described. The README's 24 s refers to the committed run, not this one.
+- It also printed `six of eight InvalidAccessKeyError variants; the two gas-key variants are out of scope`.
+- The download landed in `.sandbox-bin/near-sandbox-2.14.0/near-sandbox` at 94,252,552 bytes, matching "about 90 MB".
+
+**Not run:** step 3 is tagged `[network + funded testnet account in env]`, not `[offline]` or `[network]`, and it would sign real testnet transactions. Step 4 is `[optional]`.
+
+## Negative tests: row 3 (receiver → `ReceiverMismatch`)
+
+The evidence file `demo/fixtures/testnet.sputnik-v2.refuse-receiver.json` (338 bytes, no trailing newline) supports the row:
+- **Error name:** `InvalidTxError › InvalidAccessKeyError › ReceiverMismatch`, as the row says.
+- **Receivers:** the key's receiver is `kh-2c19.sputnik-v2.testnet` and the transaction went to `genesis.sputnik-v2.testnet`. Both match the README's description.
+- **Byte-for-byte claim:** the file matches line 49 of `demo/transcript.md` exactly, and the `rawRpcJson` of step 9 in `demo/run.testnet.json`.
+- **Method:** the RPC body doesn't name it, but `run.testnet.json` records `act_proposal` with deposit 0 and 30 TGas, and the transaction never reached a block.
+- **Replay:** the file is listed in `manifest.json` and was replayed in step 1 (`REPLAY [testnet] sputnik-v2.refuse-receiver … PASS`).
+- **Live reproduction:** step 2 produced the same refusal on the sandbox (`ak_receiver: dao.sandbox`, `tx_receiver: other-dao.sandbox`).
+
+This only shows the evidence is internally consistent. A refused transaction never lands on chain, so the testnet fixture can't be checked against the chain itself, as the README says.
+
+## Files
+
+All 32 files I hashed (README, package files, every `demo/*.md`, `demo/*.json` and `demo/fixtures/*.json`) are byte-identical before and after. A ctime check found 0 changed paths under any tracked file or directory, so "writes nothing under `demo/`" holds. `~/.keyhole` was also untouched.
+
+The steps created three directories, all covered by `.gitignore`: `node_modules/`, `.sandbox-bin/`, and an empty `.sandbox-home/`. The README's step 2 doesn't mention `.sandbox-home/`.

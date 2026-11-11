@@ -200,9 +200,14 @@ export function resultLines(run: DemoRun, caps: TermCaps, style: StepStyle = "fu
 // ---------------------------------------------------------------------------------------------------
 // The printer
 
-/** `opts.runId`: the id of the run being replayed, for the `REPLAY of run …` footer of its cage cards (C-T7b). */
-export function createStepPrinter(opts: { caps: TermCaps; style: StepStyle; network: Network; mode: "live" | "replay"; runId?: string }): StepPrinter {
+/**
+ * `opts.runId`: the id of the run being replayed, for the `REPLAY of run …` footer of its cage cards (C-T7b).
+ * `opts.saved`: false for a run that writes no files (`demo --sandbox`): its refusal blocks name no fixture file
+ * (final review M3). Default true: a written run, or a replay of committed files.
+ */
+export function createStepPrinter(opts: { caps: TermCaps; style: StepStyle; network: Network; mode: "live" | "replay"; runId?: string; saved?: boolean }): StepPrinter {
   const { caps, style, network, mode, runId } = opts;
+  const saved = opts.saved !== false;
   const g = glyphs(caps);
   const arrow = g.arrow;
   const tag = mode === "replay" ? "[REPLAY]" : "[LIVE]";
@@ -345,7 +350,7 @@ export function createStepPrinter(opts: { caps: TermCaps; style: StepStyle; netw
       staircaseShown = true;
       return [...staircaseLines, ...chainCheckLines(s)];
     }
-    if (isRefusalSlot(s)) return renderRefusalBlock(s, caps, style).split("\n");
+    if (isRefusalSlot(s)) return renderRefusalBlock(s, caps, style, { saved }).split("\n");
     return plainStepLines(s);
   }
 

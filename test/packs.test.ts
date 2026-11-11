@@ -15,17 +15,39 @@ import { REPO } from "./helpers.js";
 
 describe("loadTargetPack", () => {
   it("lists the packs in src/packs", async () => {
-    expect(await listPackIds()).toEqual(["counter", "sputnik-v2"]);
+    expect(await listPackIds()).toEqual(["counter", "sputnik-v2", "sputnik-v2-331"]);
   });
 
-  it("sputnik-v2: the sandbox fixture pins the vendored wasm by sha256 and NEAR code_hash", async () => {
-    const pack = await loadTargetPack("sputnik-v2");
+  it.each(["sputnik-v2", "sputnik-v2-331"])("%s: the sandbox fixture pins the vendored wasm by sha256 and NEAR code_hash", async (id) => {
+    const pack = await loadTargetPack(id);
     const fixture = pack.sandboxFixture;
     expect(fixture).not.toBeNull();
     const wasm = readFileSync(join(REPO, fixture?.wasmPath ?? ""));
     const digest = createHash("sha256").update(wasm).digest();
     expect(fixture?.sha256).toBe(digest.toString("hex"));
     expect(fixture?.codeHash).toBe(baseEncode(digest));
+  });
+
+  it("C-T20c: sputnik-v2-331 pins the sputnikv2.testnet factory's default DAO code (v3.31), fetched read-only", async () => {
+    const fixture = (await loadTargetPack("sputnik-v2-331")).sandboxFixture;
+    expect(fixture).toMatchObject({
+      wasmPath: "vendor/compat-testnet-fetched/sputnikdao2-sputnikv2.testnet-3.31.wasm",
+      sha256: "880bae9a58c99ec1efe8b10cf834b3f0c0ebc7a05d71206f3c1202c4280952da",
+      codeHash: "AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH",
+    });
+  });
+
+  it("C-T20c: sputnik-v2-331 is sputnik-v2 with its own id, description and pinned code; tools, scope, init, setup and tests unchanged", async () => {
+    const hero = await loadTargetPack("sputnik-v2");
+    const v331 = await loadTargetPack("sputnik-v2-331");
+    expect(v331.description).not.toBe(hero.description);
+    expect(v331.description).toContain("3.31");
+    const rest = ({ id: _id, description: _d, sandboxFixture, ...pack }: typeof hero) => {
+      const { wasmPath: _w, sha256: _s, codeHash: _c, ...fixture } = sandboxFixture ?? {};
+      return { ...pack, fixture };
+    };
+    expect(rest(v331)).toEqual(rest(hero));
+    expect(v331.sandboxFixture?.codeHash).not.toBe(hero.sandboxFixture?.codeHash);
   });
 
   it("sputnik-v2: the agent's only call tool is act_proposal; add_proposal is out of scope", async () => {
@@ -49,7 +71,7 @@ describe("loadTargetPack", () => {
   });
 
   it("rejects an unknown pack and names the available ones", async () => {
-    await expect(loadTargetPack("nope")).rejects.toThrow("no target pack nope — available packs: counter, sputnik-v2");
+    await expect(loadTargetPack("nope")).rejects.toThrow("no target pack nope — available packs: counter, sputnik-v2, sputnik-v2-331");
     await expect(loadTargetPack("nope")).rejects.toBeInstanceOf(InputError);
   });
 
@@ -66,8 +88,16 @@ describe("loadTargetPack", () => {
   });
 
   it("sputnik-v2: the exposure row is VOTE (what the key does that the protocol does not limit)", async () => {
-    expect((await loadTargetPack("sputnik-v2")).exposure).toEqual({ label: "VOTE", value: "any proposal here, either way, until burn; quorum 2-of-2" });
+    expect((await loadTargetPack("sputnik-v2")).exposure).toEqual({ label: "VOTE", value: "any proposal here, either way, until burn" });
     expect((await loadTargetPack("counter")).exposure).toBeUndefined();
+  });
+
+  it("final review I1: no pack states a DAO's quorum; that is the receiver's policy, read when the card is built", async () => {
+    for (const id of await listPackIds()) {
+      const raw = readFileSync(join(REPO, "src", "packs", `${id}.pack.json`), "utf8");
+      const pack = JSON.parse(raw);
+      expect(`${pack.exposure?.value ?? ""} ${pack.notEnforced}`, id).not.toMatch(/\d+-of-\d+|quorum \d/);
+    }
   });
 
   it("packProblems checks exposure only when present", () => {
@@ -142,6 +172,8 @@ describe("loadTargetPack", () => {
 describe("packForCodeHash", () => {
   it("selects the pack whose sandbox fixture pins this code hash", async () => {
     expect((await packForCodeHash("ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq"))?.id).toBe("sputnik-v2");
+    // C-T20c: the code recent DAOs of the sputnikv2.testnet factory run (get_default_code_hash, version [3,31]).
+    expect((await packForCodeHash("AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH"))?.id).toBe("sputnik-v2-331");
   });
 
   it("no pack for unknown code, for no code, or for an empty hash", async () => {

@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { KeyPair, type PublicKey, baseEncode, decodeSignedTransaction } from "near-api-js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { signBurn } from "../src/core/burn.js";
-import { buildCageCard } from "../src/core/cage.js";
+import { buildCageCard, cardExposure } from "../src/core/cage.js";
 import { useRpcUrl } from "../src/core/config.js";
 import { fullAccessKeyLoadCount, readSessionKey, saveAccountKey, saveSessionKey, sessionKeyPath } from "../src/core/credentials.js";
 import { EnvironmentError, InputError } from "../src/core/errors.js";
@@ -37,6 +37,26 @@ const FULL_ACCESS_KEY = fx("068-i-burn-delete-key.nonce.json"); // a FullAccess 
 const DELETE_OK = fx("069-i-burn-delete-key.send_tx.json"); // a landed DeleteKey
 const REFUSED = fx("061-g4-deposit-1yocto.send_tx.json"); // InvalidTxError, never in a block
 const PIN = "ZGdM2TFdQpcXrxPxvq25514EViyi9xBSboetDiB3Uiq";
+const POLICY = fx("017-b-get-policy.json"); // the spike DAO's get_policy: council {seat, cosigner}, [1, 2] → 2-of-2
+/** The sputnik packs' VOTE row before the receiver's quorum is read (src/packs/sputnik-v2.pack.json). */
+const VOTE_BASE = "any proposal here, either way, until burn";
+
+/** A call_function reply carrying `value` as its result bytes, shaped like the recorded ones. */
+const viewBody = (value: unknown): string =>
+  JSON.stringify({ jsonrpc: "2.0", id: "x", result: { block_hash: "x", block_height: 1, logs: [], result: [...Buffer.from(JSON.stringify(value))] } });
+/** A get_policy result whose council Group has `size` members (RoleWeight, threshold [1, 2]); `extra` roles after it. */
+const councilPolicy = (size: number, extra: unknown[] = []) => ({
+  roles: [
+    { name: "all", kind: "Everyone", permissions: ["*:AddProposal"], vote_policy: {} },
+    { name: "council", kind: { Group: Array.from({ length: size }, (_, i) => `m${i}.sandbox`) }, permissions: ["*:Finalize", "*:AddProposal", "*:VoteApprove", "*:VoteReject", "*:VoteRemove"], vote_policy: {} },
+    ...extra,
+  ],
+  default_vote_policy: { weight_kind: "RoleWeight", quorum: "0", threshold: [1, 2] },
+  proposal_bond: "100000000000000000000000",
+  proposal_period: "604800000000000",
+  bounty_bond: "100000000000000000000000",
+  bounty_forgiveness_period: "86400000000000",
+});
 
 let urls = 0;
 beforeEach(() => {
@@ -103,34 +123,37 @@ describe("buildCageCard: preview reclassifies against the requested scope", () =
 });
 
 describe("buildCageCard: chain", () => {
-  it("reads the key and the code hash (view_access_key + view_account) and chain wins", async () => {
-    const log = replayFetch({ "query:view_access_key": KEY_PRESENT, "query:view_account": DAO_ACCOUNT });
+  it("reads the key, the code hash and the DAO's policy (view_access_key + view_account + get_policy) and chain wins", async () => {
+    const log = replayFetch({ "query:view_access_key": KEY_PRESENT, "query:view_account": DAO_ACCOUNT, "query:call_function": POLICY });
     const session = sampleSession();
     const card = await buildCageCard(session, "chain");
     expect(card).toMatchObject({ source: "chain", codeHashNow: PIN });
     expect(card.key).toEqual({ publicKey: session.publicKey, accountId: "seat.sandbox", receiverId: "dao.sandbox", methodNames: ["act_proposal"], allowanceRemainingYocto: "50000000000000000000000", nonce: 51000000 });
     expect(new Date(card.readAt).toISOString()).toBe(card.readAt);
-    expect(card.exposure).toMatchObject({ label: "VOTE" });
-    expect(log.map((r) => r.params.request_type).sort()).toEqual(["view_access_key", "view_account"]);
+    expect(card.exposure).toEqual({ label: "VOTE", value: `${VOTE_BASE}; quorum 2-of-2` });
+    expect(log.map((r) => r.params.request_type).sort()).toEqual(["call_function", "view_access_key", "view_account"]);
     expect(log.find((r) => r.params.request_type === "view_access_key")?.params).toMatchObject({ account_id: "seat.sandbox", public_key: session.publicKey, finality: "final" });
     expect(log.find((r) => r.params.request_type === "view_account")?.params).toMatchObject({ account_id: "dao.sandbox", finality: "final" });
+    expect(log.find((r) => r.params.request_type === "call_function")?.params).toMatchObject({ account_id: "dao.sandbox", method_name: "get_policy", finality: "final" });
   });
 
-  it("makes its two reads in parallel: both requests are out before either answer comes back", async () => {
-    const bodies: Record<string, string> = { view_access_key: KEY_PRESENT, view_account: DAO_ACCOUNT };
+  it("makes its three reads in parallel: all requests are out before any answer comes back", async () => {
+    const bodies: Record<string, string> = { view_access_key: KEY_PRESENT, view_account: DAO_ACCOUNT, call_function: POLICY };
     let out = 0;
-    let bothOut!: () => void;
-    const both = new Promise<void>((resolve) => {
-      bothOut = resolve;
+    let allOut!: () => void;
+    const all = new Promise<void>((resolve) => {
+      allOut = resolve;
     });
     globalThis.fetch = async (_input, init) => {
       const req = JSON.parse(String(init?.body));
-      if (++out === 2) bothOut();
-      const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error("the second read was not issued while the first was pending")), 1500));
-      await Promise.race([both, timeout]);
+      if (++out === 3) allOut();
+      const timeout = new Promise<never>((_, reject) => setTimeout(() => reject(new Error("a read was not issued while the others were pending")), 1500));
+      await Promise.race([all, timeout]);
       return new Response(bodies[req.params.request_type], { status: 200 });
     };
-    expect((await buildCageCard(sampleSession(), "chain")).codeHashNow).toBe(PIN);
+    const card = await buildCageCard(sampleSession(), "chain");
+    expect(card.codeHashNow).toBe(PIN);
+    expect(card.exposure.value).toBe(`${VOTE_BASE}; quorum 2-of-2`);
   });
 
   it("passes a null allowance through (the renderer says NO CAP ON CHAIN)", async () => {
@@ -173,6 +196,83 @@ describe("buildCageCard: chain", () => {
       expect((err as InputError).message.includes(shaped.slice(8))).toBe(false);
     }
     expect(calls).toBe(0);
+  });
+});
+
+describe("buildCageCard: the VOTE row's quorum is the receiver's, read with get_policy, never the pack's (final review I1)", () => {
+  /** The chain card of a sputnik session whose DAO answers get_policy with `policyBody`, and its full plate. */
+  async function cardWith(policyBody: string, session: Session = sessionWithTools()): Promise<{ card: CageCard; plate: string }> {
+    replayFetch({ "query:view_access_key": KEY_PRESENT, "query:view_account": DAO_ACCOUNT, "query:call_function": policyBody });
+    const card = await buildCageCard(session, "chain");
+    return { card, plate: renderCageCard(card, "full", CAPS.plain100) };
+  }
+  const voteRow = (plate: string) => plate.split("\n").find((l) => l.startsWith("| VOTE "));
+
+  it("a 1-of-1 DAO: the card says quorum 1-of-1", async () => {
+    const { card, plate } = await cardWith(viewBody(councilPolicy(1)));
+    expect(card.exposure).toEqual({ label: "VOTE", value: `${VOTE_BASE}; quorum 1-of-1` });
+    expect(voteRow(plate)).toBe(`| VOTE       ${`${VOTE_BASE}; quorum 1-of-1`.padEnd(58)}   ${"NOT A KEY LIMIT".padEnd(21)}  |`);
+    expect(plate).not.toContain("2-of-2");
+  });
+
+  it("a 3-of-5 DAO: the card says quorum 3-of-5", async () => {
+    const { card, plate } = await cardWith(viewBody(councilPolicy(5)));
+    expect(card.exposure.value).toBe(`${VOTE_BASE}; quorum 3-of-5`);
+    expect(voteRow(plate)).toContain(`${VOTE_BASE}; quorum 3-of-5`);
+    expect(renderCageCard(card, "mcp", CAPS.plain100)).toContain(`VOTE: ${VOTE_BASE}; quorum 3-of-5 (NOT A KEY LIMIT)`);
+    expect(plate).not.toContain("2-of-2");
+  });
+
+  it("the demo DAO still prints quorum 2-of-2 (the README's card)", async () => {
+    const { plate } = await cardWith(POLICY);
+    expect(voteRow(plate)).toBe("| VOTE       any proposal here, either way, until burn; quorum 2-of-2     NOT A KEY LIMIT        |");
+  });
+
+  it("no quorum is printed that was not read: a failed get_policy, or a policy where no one count decides", async () => {
+    const failed = '{"jsonrpc":"2.0","result":{"block_hash":"x","block_height":1,"error":"wasm execution failed with error: MethodResolveError(MethodNotFound)","logs":[]},"id":"x"}';
+    const another = viewBody(councilPolicy(3, [{ name: "fastlane", kind: { Group: ["f.sandbox"] }, permissions: ["transfer:VoteApprove"], vote_policy: {} }]));
+    const noCouncil = viewBody({ ...councilPolicy(1), roles: [{ name: "Team", kind: { Group: ["t.sandbox"] }, permissions: ["*:*"], vote_policy: {} }] });
+    for (const body of [failed, another, noCouncil, "not json"]) {
+      const { card, plate } = await cardWith(body);
+      expect(card.exposure, body).toEqual({ label: "VOTE", value: VOTE_BASE });
+      expect(plate, body).not.toContain("quorum");
+      expect(card.codeHashNow, body).toBe(PIN); // the rest of the card is read as before
+    }
+  });
+
+  it("a pack with no quorum reads no policy: counter's card makes only the key and code-hash reads", async () => {
+    const log = replayFetch({ "query:view_access_key": KEY_PRESENT, "query:view_account": DAO_ACCOUNT });
+    const card = await buildCageCard(sampleSession({ packId: "counter" }), "chain");
+    expect(log.map((r) => r.params.request_type).sort()).toEqual(["view_access_key", "view_account"]);
+    expect(card.exposure).toEqual({ label: "VALUE", value: "anything the signer owns inside the receiver" });
+  });
+
+  it("an exposure the caller already read is used as given, with no policy read (offline and replay paths)", async () => {
+    const log = replayFetch({ "query:view_access_key": KEY_PRESENT, "query:view_account": DAO_ACCOUNT });
+    const given = { label: "VOTE" as const, value: `${VOTE_BASE}; quorum 3-of-5` };
+    expect((await buildCageCard(sessionWithTools(), "chain", { exposure: given })).exposure).toEqual(given);
+    expect(log.map((r) => r.params.request_type).sort()).toEqual(["view_access_key", "view_account"]);
+  });
+
+  it("preview opens no socket: the pack's row without a quorum, or the exposure wrap read", async () => {
+    let calls = 0;
+    globalThis.fetch = async () => {
+      calls++;
+      throw new Error("preview reached for the network");
+    };
+    expect((await buildCageCard(sessionWithTools(), "preview")).exposure).toEqual({ label: "VOTE", value: VOTE_BASE });
+    const read = { label: "VOTE" as const, value: `${VOTE_BASE}; quorum 1-of-1` };
+    expect((await buildCageCard(sessionWithTools(), "preview", { exposure: read })).exposure).toEqual(read);
+    expect(calls).toBe(0);
+  });
+
+  it("cardExposure: the pack's row completed by the receiver's quorum; the base row when the read fails", async () => {
+    replayFetch({ "query:call_function": viewBody(councilPolicy(5)) });
+    expect(await cardExposure(sessionWithTools())).toEqual({ label: "VOTE", value: `${VOTE_BASE}; quorum 3-of-5` });
+    globalThis.fetch = async () => {
+      throw new Error("unreachable");
+    };
+    expect(await cardExposure(sessionWithTools())).toEqual({ label: "VOTE", value: VOTE_BASE });
   });
 });
 

@@ -49,6 +49,12 @@ const WAITING_METHODS: ReadonlySet<string> = new Set(["send_tx", "broadcast_tx_c
 export const RPC_TIMEOUT_MS = Object.freeze({ waiting: 120_000, other: 30_000 });
 /** Largest response body read: 32 MiB. A contract view returns at most 4 MiB, sent as a JSON number array (up to 4 bytes per byte). */
 export const RPC_MAX_BODY_BYTES = 32 * 1024 * 1024;
+/**
+ * The hint when the retries of a non-send method run out (T21c). rpcCall is not told the network, so it names both
+ * variables that config.ts reads (rpcUrlFor); testnet's comes with one example value.
+ */
+const RETRY_EXHAUSTED_HINT =
+  "wait and retry, or use another RPC endpoint (testnet: set KEYHOLE_TESTNET_RPC, for example https://rpc.testnet.fastnear.com; sandbox: set KEYHOLE_SANDBOX_RPC); offline alternative: npm test (REPLAY)";
 /** The hint for every error after a send whose fate is unknown: never invite a second signature. */
 export const SEND_HINT = "the transaction may have reached the node: look it up on chain before signing it again";
 
@@ -143,7 +149,7 @@ export async function rpcCall(url: string, method: string, params: unknown): Pro
         await sleep(RETRY_DELAYS_MS[attempt - 1]);
         continue;
       }
-      throw new EnvironmentError(`RPC ${where} answered HTTP ${status} for ${method} after ${attempt} attempts`, "wait and retry, or use another RPC endpoint; offline alternative: npm test (REPLAY)");
+      throw new EnvironmentError(`RPC ${where} answered HTTP ${status} for ${method} after ${attempt} attempts`, RETRY_EXHAUSTED_HINT);
     }
     let json: unknown;
     try {

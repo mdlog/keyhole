@@ -217,14 +217,14 @@ describe("test helpers locked in Task 1", () => {
     });
   });
 
-  it("sampleCageCard: the hero card, read from chain, with the sputnik pack's exposure", () => {
+  it("sampleCageCard: the hero card, read from chain, with the sputnik pack's exposure and the hero DAO's quorum", () => {
     const card = sampleCageCard();
     const packJson = JSON.parse(readFileSync(join(REPO, "src", "packs", "sputnik-v2.pack.json"), "utf8"));
     expect(card).toMatchObject({
       source: "chain",
       readAt: "2026-11-11T09:14:07Z",
       codeHashNow: card.session.codeHashPin,
-      exposure: packJson.exposure,
+      exposure: { label: packJson.exposure.label, value: `${packJson.exposure.value}; quorum 2-of-2` },
       session: { id: "ks-7f3a", network: "testnet", accountId: "seat.kh-op.testnet", receiverId: "kh-1a2b.sputnik-v2.testnet", allowanceYocto: "50000000000000000000000" },
       key: { publicKey: card.session.publicKey, accountId: "seat.kh-op.testnet", receiverId: "kh-1a2b.sputnik-v2.testnet", methodNames: ["act_proposal"], allowanceRemainingYocto: "41200000000000000000000", nonce: 3 },
     });

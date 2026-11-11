@@ -124,7 +124,9 @@ const SPUTNIK_PACK = JSON.parse(readFileSync(join(REPO, "src", "packs", "sputnik
 /**
  * The hero cage card as `inspect` reads it on testnet: 0.0412 of the session's 0.05 NEAR left, nonce 3,
  * code hash unchanged. Tools as classifyTools returns them: the pack's views unclassified, dao_vote
- * callable, and the out-of-scope add_proposal `not in allowlist`. Overrides replace whole fields.
+ * callable, and the out-of-scope add_proposal `not in allowlist`. The VOTE row is the pack's, completed by the
+ * hero DAO's quorum as get_policy gives it (council {seat, cosigner}, threshold [1, 2]: 2-of-2). Overrides replace
+ * whole fields.
  */
 export function sampleCageCard(overrides: Partial<CageCard> = {}): CageCard {
   const session = sampleSession({ network: "testnet", accountId: "seat.kh-op.testnet", receiverId: "kh-1a2b.sputnik-v2.testnet" });
@@ -157,7 +159,7 @@ export function sampleCageCard(overrides: Partial<CageCard> = {}): CageCard {
     codeHashNow: session.codeHashPin,
     source: "chain",
     readAt: "2026-11-11T09:14:07Z",
-    exposure: { ...SPUTNIK_PACK.exposure },
+    exposure: { label: SPUTNIK_PACK.exposure.label, value: `${SPUTNIK_PACK.exposure.value}; quorum 2-of-2` },
     ...overrides,
   };
 }

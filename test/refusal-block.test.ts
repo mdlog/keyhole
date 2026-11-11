@@ -9,7 +9,7 @@ import { parseRefusal } from "../src/core/refusal.js";
 import type { Attempt, DemoRun, DemoStep } from "../src/core/types.js";
 import { loadDemoRunFixture } from "../src/demo/replay.js";
 import { chainRejected, renderRefusalBlock } from "../src/render/refusal-block.js";
-import { NOTE_SIGNER_GONE, failExpected, passRefused } from "../src/render/strings.js";
+import { NOTE_SIGNER_GONE, RPC_NOT_SAVED, failExpected, passRefused } from "../src/render/strings.js";
 import { displayWidth, stripAnsi } from "../src/render/style.js";
 import { SANDBOX_FIXTURES, color100, plain100, plain80 } from "./helpers.js";
 
@@ -129,6 +129,22 @@ describe("renderRefusalBlock: full style (LAYOUT R4 (b))", () => {
     expect(renderRefusalBlock(g1, plain100, "beat", { counter: false })).toBe(renderRefusalBlock(g1, plain100, "beat"));
     // Colour does not move it: the same row, with the same styling on the same words.
     expect(stripAnsi(renderRefusalBlock(g1, color100, "full", { counter: false })).split("\n")[0]).toBe(without[0]);
+  });
+
+  it("final review M3: saved: false (a run that writes no files) names no fixture file under 'verbatim'; the row says it is not saved", () => {
+    const wide = { ...plain100, width: 120 };
+    const saved = renderRefusalBlock(g1, wide, "full").split("\n");
+    const unsaved = renderRefusalBlock(g1, wide, "full", { saved: false }).split("\n");
+    expect(unsaved[3]).toBe(`        rpc      response body, verbatim · ${RPC_NOT_SAVED}`);
+    expect(unsaved.join("\n")).not.toContain("demo/fixtures/");
+    // Only that row changes; saved: true is the default, which names the file.
+    expect(unsaved.filter((_, i) => i !== 3)).toEqual(saved.filter((_, i) => i !== 3));
+    expect(renderRefusalBlock(g1, wide, "full", { saved: true })).toBe(saved.join("\n"));
+    expect(saved[3]).toBe("        rpc      response body, verbatim · demo/fixtures/sandbox/052-g1-method-add_proposal.send_tx.json");
+    // At 80 columns the label stays whole on its own row; the beat style names no file either way.
+    for (const l of renderRefusalBlock(g1, plain80, "full", { saved: false }).split("\n")) expect(displayWidth(l), l).toBeLessThanOrEqual(80);
+    expect(renderRefusalBlock(g1, plain80, "full", { saved: false })).toContain(RPC_NOT_SAVED);
+    expect(renderRefusalBlock(g1, plain100, "beat", { saved: false })).toBe(renderRefusalBlock(g1, plain100, "beat"));
   });
 
   it("rows behind the gutter join to the fixture bytes", () => {

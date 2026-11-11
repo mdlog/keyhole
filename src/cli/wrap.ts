@@ -14,9 +14,10 @@ import { homedir } from "node:os";
 import { join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ALLOWANCE_STEP_YOCTO, networkOfAccount } from "../core/amounts.js";
-import { buildCageCard } from "../core/cage.js";
+import { buildCageCard, cardExposure } from "../core/cage.js";
 import { sessionsDir } from "../core/config.js";
 import { EXIT_TX_SENT, EnvironmentError, InputError } from "../core/errors.js";
+import { isAccountId, isMethodName } from "../core/ids.js";
 import type { TargetPack, WrapOptions, WrapPlan } from "../core/types.js";
 import { NO_OPERATOR_PROBLEM, planWrap, sessionFromPlan, signWrap } from "../core/wrap.js";
 import { loadTargetPack } from "../packs/index.js";
@@ -25,7 +26,7 @@ import { EXPOSURE_SUBACCOUNT, MAINNET_OUT_OF_SCOPE, exposureOnAccount, exposureV
 import { glyphs, neutralizeControls, sgr, wrapWords } from "../render/style.js";
 import { type TermCaps, termCaps } from "../render/term.js";
 import { renderTxLineRows } from "../render/tx-line.js";
-import { type Command, type Io, commandUsage, isAccountId, isMethodName, parseAmountYocto, parseOrThrow } from "./args.js";
+import { type Command, type Io, commandUsage, parseAmountYocto, parseOrThrow } from "./args.js";
 import { sessionHint } from "./demo.js";
 
 /** R2 block 7 after the LAYOUT reconciliation: the Terraform-style typed confirm. Only the exact word `yes` signs. */
@@ -48,16 +49,17 @@ const LABEL = 10;
 /** Hanging indent of a wrapped TX PLAN line. */
 const TX_INDENT = 4;
 
-/** The CONTRACT functions wrap calls. Tests replace any of them. */
+/** The CONTRACT functions wrap calls, and the card's exposure read (the DAO's quorum). Tests replace any of them. */
 export interface WrapDeps {
   planWrap: typeof planWrap;
   signWrap: typeof signWrap;
   buildCageCard: typeof buildCageCard;
   loadTargetPack: typeof loadTargetPack;
+  cardExposure: typeof cardExposure;
 }
 
 export function createWrapCommand(overrides: Partial<WrapDeps> = {}): Command {
-  const d: WrapDeps = { planWrap, signWrap, buildCageCard, loadTargetPack, ...overrides };
+  const d: WrapDeps = { planWrap, signWrap, buildCageCard, loadTargetPack, cardExposure, ...overrides };
   const cmd: Command = {
     name: "wrap",
     args: "CONTRACT --allow METHODS --gas AMOUNT [--on-account ACCOUNT]",
@@ -175,7 +177,7 @@ export function createWrapCommand(overrides: Partial<WrapDeps> = {}): Command {
 
 export const wrap: Command = createWrapCommand();
 
-/** R2 blocks 1-6: everything the user reviews before the prompt. Reads no key. */
+/** R2 blocks 1-6: everything the user reviews before the prompt. Reads no key; one view (the card's exposure row). */
 async function printPreview(io: Io, caps: TermCaps, d: WrapDeps, plan: WrapPlan): Promise<void> {
   const draft = plan.draft;
   const sub = draft.mode === "subaccount";
@@ -190,7 +192,10 @@ async function printPreview(io: Io, caps: TermCaps, d: WrapDeps, plan: WrapPlan)
   io.out(`${label(caps, "dry-run")}near-sandbox · ${classified} method${classified === 1 ? "" : "s"} classified · ${(plan.dryRunMs / 1000).toFixed(1)} s`);
   io.out("");
 
-  const card = await d.buildCageCard(sessionFromPlan(plan), "preview");
+  // Final review I1: the VOTE row's quorum is the receiver's own, read now (get_policy), never a pack constant. The
+  // preview itself reads nothing; a policy that cannot be read leaves the quorum out.
+  const session = sessionFromPlan(plan);
+  const card = await d.buildCageCard(session, "preview", { exposure: await d.cardExposure(session) });
   io.out(renderCageCard(card, "full", caps));
 
   // WARN lines: the string planWrap wrote, then the raw panic text it rests on.

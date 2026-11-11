@@ -161,6 +161,38 @@ describe("classifyTools in a running sandbox (opts.sandbox)", () => {
     expect(sandboxRpc()).toBe(sb.rpcUrl);
   });
 
+  it("C-T20c: pack sputnik-v2-331 dry-runs the v3.31 code it pins; the hero scope gets sputnik-v2's labels from its own bodies", async () => {
+    const v331 = await loadTargetPack("sputnik-v2-331");
+    expect(v331.sandboxFixture?.codeHash).toBe("AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH");
+    const dir = captureDir();
+    const tools = byName(await classifyTools(v331, HERO, { sandbox: sb, capture: { dir } }));
+    expect(readdirSync(dir).sort()).toEqual([
+      "sandbox.sputnik-v2-331.dryrun-act_proposal-zero.json",
+      "sandbox.sputnik-v2-331.dryrun-add_proposal-deposit.json",
+      "sandbox.sputnik-v2-331.dryrun-add_proposal-zero.json",
+    ]);
+    const voteZero = read(dir, "sandbox.sputnik-v2-331.dryrun-act_proposal-zero.json");
+    const addZero = read(dir, "sandbox.sputnik-v2-331.dryrun-add_proposal-zero.json");
+    const addDeposit = read(dir, "sandbox.sputnik-v2-331.dryrun-add_proposal-deposit.json");
+    // The 4-arg vote lands with 0 deposit; add_proposal panics with 0 and lands with exactly the policy's bond.
+    expect([bodyState(voteZero), bodyState(addZero), bodyState(addDeposit)]).toEqual(["landed-ok", "landed-failed", "landed-ok"]);
+    expect(tools.dao_vote).toMatchObject({ classification: "callable", evidence: CALLABLE_EVIDENCE });
+    expect(tools.dao_vote.classification).toBe(labelMethod(voteZero, null, true));
+    expect(tools.add_proposal.classification).toBe("not in allowlist");
+    expect(tools.add_proposal.classification).toBe(labelMethod(addZero, addDeposit, false));
+    expect(tools.add_proposal.evidence).toBe(`${ABSENT_EVIDENCE}; 0-deposit dry-run: ${panicMessage(JSON.parse(addZero))}`);
+    expect(Object.keys(tools)).toEqual(["dao_list_proposals", "dao_get_policy", "dao_vote", "add_proposal"]);
+
+    // The dry-run copy runs exactly the v3.31 code (sputnikdao2 2.3.1), not the vendored v2.0.0.
+    const dry = receiverOf(voteZero);
+    expect(dry).toMatch(/^dry-[0-9a-f]{4}\.sandbox$/);
+    expect([receiverOf(addZero), receiverOf(addDeposit)]).toEqual([dry, dry]);
+    expect(await viewCodeHash("sandbox", dry)).toBe("AA4nA45vauiac3jdVwJTzSdUP3oj2r1fDaPAb2mHdgcH");
+    const drySession = sampleSession({ receiverId: dry, packId: "sputnik-v2-331" });
+    expect(await callView(drySession, "version", {})).toBe("2.3.1");
+    expect(((await callView(drySession, "get_policy", {})) as any).proposal_bond).toBe(BOND);
+  });
+
   it("zero-bond capture (prefix): both 0-deposit calls land, so there is no -deposit file", async () => {
     const dir = captureDir();
     const tools = byName(await classifyTools(pack, { receiverId: "x.sandbox", methodNames: ["act_proposal", "add_proposal"] }, { sandbox: sb, capture: { dir, prefix: "zero-bond-" }, policyOverride: { proposal_bond: "0" } }));

@@ -51,7 +51,7 @@ import { loadTargetPack } from "../packs/index.js";
 import { renderCageCard } from "../render/cage-card.js";
 import { chainRejected } from "../render/refusal-block.js";
 import { burnedNothingToServe, codeChanged } from "../render/strings.js";
-import { displayWidth, neutralizeControls } from "../render/style.js";
+import { neutralizeControls, wrapWords } from "../render/style.js";
 import type { TermCaps } from "../render/term.js";
 import { renderTxLine } from "../render/tx-line.js";
 import { type Command, type Io, sessionIdArg } from "./args.js";
@@ -94,18 +94,21 @@ const ATTEMPT_COPY: ToolCopy = {
   first: "Signs any transaction with this session's key; returns the raw RPC response.",
   closing: "Refused transactions never reach a block.",
 };
+/** The Sputnik packs' tool copy: sputnik-v2 and sputnik-v2-331 (C-T20c) declare the same tools. */
+const SPUTNIK_COPY: Readonly<Record<string, ToolCopy & { method: string }>> = {
+  dao_list_proposals: { method: "get_proposals", title: "List DAO proposals", first: "List proposals of the DAO (get_proposals).", closing: READ_ONLY },
+  dao_get_policy: { method: "get_policy", title: "Read the DAO policy", first: "Read the DAO policy: roles, council, vote thresholds (get_policy).", closing: READ_ONLY },
+  dao_vote: {
+    method: "act_proposal",
+    title: "Vote on a DAO proposal",
+    first: "Vote approve or reject on a proposal via act_proposal with the session key.",
+    closing: "The key does not limit which way the vote goes.",
+  },
+};
 /** Pack tools whose copy is written out (keyed by pack, then tool name; the method must match too). */
 const PACK_COPY: Readonly<Record<string, Readonly<Record<string, ToolCopy & { method: string }>>>> = {
-  "sputnik-v2": {
-    dao_list_proposals: { method: "get_proposals", title: "List DAO proposals", first: "List proposals of the DAO (get_proposals).", closing: READ_ONLY },
-    dao_get_policy: { method: "get_policy", title: "Read the DAO policy", first: "Read the DAO policy: roles, council, vote thresholds (get_policy).", closing: READ_ONLY },
-    dao_vote: {
-      method: "act_proposal",
-      title: "Vote on a DAO proposal",
-      first: "Vote approve or reject on a proposal via act_proposal with the session key.",
-      closing: "The key does not limit which way the vote goes.",
-    },
-  },
+  "sputnik-v2": SPUTNIK_COPY,
+  "sputnik-v2-331": SPUTNIK_COPY,
 };
 
 /** Copy for a pack tool with none written out. A method name that is not plain lowercase is left out of the prose. */
@@ -221,29 +224,14 @@ function keyRedactor(keyPair: KeyPair): Redact {
 }
 
 /**
- * One line, wrapped at spaces to `width` columns: each break replaces exactly one space, so the words are kept
- * verbatim and joining the lines with a space gives the line back. A word wider than `width` stays whole.
+ * Every line of `t` wrapped at spaces to TEXT_WIDTH (render/style.ts wrapWords, no lead or hang): each break replaces
+ * exactly one space, so the words are kept verbatim and joining the lines with a space gives the line back. A word
+ * wider than TEXT_WIDTH stays whole.
  */
-function wrapWords(line: string, width: number): string[] {
-  const words = line.split(" ");
-  const lines: string[] = [];
-  let current = words[0];
-  for (const word of words.slice(1)) {
-    if (displayWidth(`${current} ${word}`) <= width) current = `${current} ${word}`;
-    else {
-      lines.push(current);
-      current = word;
-    }
-  }
-  lines.push(current);
-  return lines;
-}
-
-/** Every line of `t` wrapped to TEXT_WIDTH. */
 const wrapped = (t: string) =>
   t
     .split("\n")
-    .flatMap((l) => wrapWords(l, TEXT_WIDTH))
+    .flatMap((l) => wrapWords(l, TEXT_WIDTH, "", ""))
     .join("\n");
 
 /**

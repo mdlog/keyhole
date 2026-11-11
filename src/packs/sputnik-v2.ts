@@ -11,6 +11,7 @@
 import { EnvironmentError, InputError } from "../core/errors.js";
 import { callView } from "../core/rpc.js";
 import type { Session } from "../core/types.js";
+import { quorumOf } from "../render/strings.js";
 
 /** The voting role whose counts and threshold are reported. */
 export const COUNCIL_ROLE = "council";
@@ -150,4 +151,40 @@ export function requiredApprovals(policy: unknown, kind?: unknown): number {
   if (weight > size) weight = size;
   const quorum = toCount(vp.quorum, "quorum");
   return Number(quorum > weight ? quorum : weight);
+}
+
+/**
+ * Whether a sputnikdao2 permission (`KIND:ACTION`, e.g. `*:AddProposal`, `transfer:VoteApprove`) lets its role vote:
+ * its action is a Vote* action, or `*` (every action). Stricter than the `*:Vote*` / `Vote*` patterns alone, since
+ * a per-kind `transfer:VoteApprove` or a blanket `*:*` votes as well.
+ */
+export function canVote(permission: string): boolean {
+  const action = permission.slice(permission.lastIndexOf(":") + 1);
+  return action === "*" || action.startsWith("Vote");
+}
+
+/**
+ * The cage card's quorum words for a get_policy result (final review I1): `quorum N-of-M`, N the approvals the
+ * council needs by its default vote policy (requiredApprovals), M the council Group's size. Null whenever that one
+ * count does not decide every proposal, so the card never states a quorum the policy does not give: no council Group
+ * that votes, token weight, a per-kind vote policy on the council, another role that can vote (its own threshold
+ * could pass a proposal; unreadable permissions count as voting), or a policy that is not one. Pure: no RPC.
+ */
+export function quorumNote(policy: unknown): string | null {
+  let required: number;
+  try {
+    required = requiredApprovals(policy);
+  } catch (e) {
+    if (e instanceof EnvironmentError) return null;
+    throw e;
+  }
+  // requiredApprovals has checked that `roles` is an array whose first `council` role is a Group.
+  const roles = (policy as { roles: unknown[] }).roles;
+  const council = roles.find((r) => isObj(r) && r.name === COUNCIL_ROLE) as Record<string, unknown>;
+  const group = (council.kind as { Group: unknown[] }).Group;
+  const votes = (role: unknown): boolean | null => (isObj(role) && Array.isArray(role.permissions) ? role.permissions.some((p) => typeof p !== "string" || canVote(p)) : null);
+  if (votes(council) !== true) return null;
+  if (!isObj(council.vote_policy) || Object.keys(council.vote_policy).length > 0) return null;
+  if (roles.some((role) => role !== council && votes(role) !== false)) return null;
+  return quorumOf(required, group.length);
 }

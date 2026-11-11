@@ -269,12 +269,15 @@ export async function* runDemo(opts: { network: Network; env?: NodeJS.ProcessEnv
       ...verdict(burned.ok ? (burned.value.txHashes.length === 1 ? [] : [`expected one DeleteKey tx, got ${burned.value.txHashes.length}`]) : [burned.error]),
     });
     // [14] runs only once the DeleteKey landed. If the burn did not finish, the key may still be live and the
-    // after-burn attempt (an in-scope vote) could land on the DAO: it is a FAIL and nothing is sent.
+    // after-burn attempt (an in-scope vote) could land on the DAO: it is a FAIL and nothing is sent. On testnet the
+    // note also names the command that deletes the key (T21c); the sandbox node stops with the run, so there is nothing
+    // to burn there. `npm run keyhole --`, never npx: the npm name `keyhole` is another package.
     const afterBurn = tests.get(AFTER_BURN) as NegativeTest;
+    const unfinished = `FAIL: not sent: the burn [${nn(steps.length)}] did not finish, so the key may still be on chain`;
     yield step(
       burned.ok
         ? await refusalStep(burned.value.session, cast, pack, afterBurn, "burn", b.id)
-        : { phase: "burn", label: afterBurn.label, signer: "session", pass: false, note: `FAIL: not sent: the burn [${nn(steps.length)}] did not finish, so the key may still be on chain` },
+        : { phase: "burn", label: afterBurn.label, signer: "session", pass: false, note: network === "testnet" ? `${unfinished} · burn it: npm run keyhole -- burn ${session.id}` : unfinished },
     );
 
     // -- 7 SMOKE (sandbox only): smokePhase yields [15]–[20], numbered after the steps so far. It never throws for a

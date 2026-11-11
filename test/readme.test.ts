@@ -7,12 +7,13 @@
  * Nothing is typed in from a screenshot, so a README value that drifts from its source turns this file red.
  * Offline: it reads files only.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { formatNear } from "../src/core/amounts.js";
 import { DEFAULT_TESTNET_RPC } from "../src/core/config.js";
 import { parseRefusal } from "../src/core/refusal.js";
+import type { Classification } from "../src/core/types.js";
 import { SIX_OF_EIGHT, noTools } from "../src/render/strings.js";
 import { REPO } from "./helpers.js";
 
@@ -275,9 +276,32 @@ describe("README.md: quoted values pinned to their sources", () => {
     expect(ignored, `.gitignore lists ${dir!.slice(2)}/`).toContain(`${dir!.slice(2)}/`);
   });
 
-  it("step 4 names the refusal a v3.31 DAO gets, and its 'see' is the tools/list handshake's tool list (I1, M3, M8)", () => {
+  it("step 3's note names the default RPC's HTTP 429, KEYHOLE_TESTNET_RPC, and the burn command step 14 prints when the burn did not finish (T21c)", () => {
+    const step3 = trySteps()[2];
+    const host = new URL(DEFAULT_TESTNET_RPC).host;
+    expect(step3).toContain(`\`${DEFAULT_TESTNET_RPC}\``);
+    expect(step3).toContain("HTTP 429");
+    const example = step3.match(/`KEYHOLE_TESTNET_RPC=(https:\/\/\S+?)`/)?.[1];
+    expect(example, "KEYHOLE_TESTNET_RPC=URL example").toBeDefined();
+    expect(new URL(example!).host).not.toBe(host);
+    expect(step3).toContain("`npm run keyhole -- burn ID`");
+    expect(step3).not.toMatch(/npx/);
+    // The words are true of the code: config reads the variable, the RPC hint offers the same example, the driver's note names the command.
+    expect(read("src/core/config.ts")).toContain("env.KEYHOLE_TESTNET_RPC");
+    expect(read("src/core/rpc.ts")).toContain(`set KEYHOLE_TESTNET_RPC, for example ${example}`);
+    expect(read("src/demo/driver.ts")).toContain("burn it: npm run keyhole -- burn ${session.id}");
+    // Two sentences at most (T21c brief): the note is the lines between the `KEYHOLE_DEMO_OUT` paragraph and "See".
+    const note = step3.split("\n").find((l) => l.includes("KEYHOLE_TESTNET_RPC=")) ?? "";
+    expect(note.split(/(?<=[.!?])\s+(?=[A-Z`])/)).toHaveLength(2);
+  });
+
+  it("step 4 says which sputnikv2.testnet DAOs wrap accepts and which it refuses, and its 'see' is the tools/list handshake's tool list (I1, M3, M8; final review C-T20c, M1)", () => {
     const step4 = trySteps()[3];
-    expect(step4).toContain("`sputnikv2.testnet` factory (v3.31)");
+    // C-T20c: recent DAOs of that factory run its default code (v3.31), which pack sputnik-v2-331 pins; M1: older ones
+    // run other builds (v2.0 8RMeZ5…, v3.0 783vth3F…), and only those are refused.
+    expect(step4).toContain("recent DAOs from the maintained `sputnikv2.testnet` factory (v3.31)");
+    expect(step4).toContain("`sputnik-v2-331`");
+    for (const older of ["v2.0 `8RMeZ5…`", "v3.0 `783vth3F…`"]) expect(step4).toContain(older);
     expect(step4).toContain(`\`${NO_TOOLS}\``);
     expect(step4).toContain("(see Limits)");
     expect(step4).toContain("from a `tools/list` handshake");
@@ -314,7 +338,7 @@ describe("README.md: quoted values pinned to their sources", () => {
     for (const [, text, hash] of links) expect(text).toBe(hash);
   });
 
-  it("Limits keeps each recorded limit, with the v3.31 refusal among the first three (I1, M4, C-T9b, C-T10a, C-T17a)", () => {
+  it("Limits keeps each recorded limit, with the sputnikv2.testnet builds among the first three (I1, M4, C-T9b, C-T10a, C-T17a; final review C-T20c, M1)", () => {
     const bullets = section("Limits")
       .split("\n")
       .filter((l) => l.startsWith("- "));
@@ -322,6 +346,12 @@ describe("README.md: quoted values pinned to their sources", () => {
     expect(v331).toBeGreaterThanOrEqual(0);
     expect(v331).toBeLessThan(3);
     expect(bullets[v331]).toContain(`\`${NO_TOOLS}\``);
+    // C-T20c: the packs, counted and named; the v3.31 build is accepted, the factory's older builds are the refused ones (M1).
+    const packs = readdirSync(join(REPO, "src", "packs")).filter((f) => f.endsWith(".pack.json")).map((f) => f.slice(0, -".pack.json".length));
+    expect(bullets[v331]).toMatch(new RegExp(`^- ${NUMBER_WORDS[packs.length].replace(/^./, (c) => c.toUpperCase())} target packs today`));
+    for (const id of packs) expect(bullets[v331]).toContain(`\`${id}\``);
+    expect(bullets[v331]).toContain("`sputnik-v2-331` pins the v3.31 build");
+    for (const older of ["v2.0 (`8RMeZ5…`)", "v3.0 (`783vth3F…`)"]) expect(bullets[v331]).toContain(older);
     const limits = bullets.join("\n");
     for (const phrase of [
       "`keyhole_attempt` does not check it",
@@ -338,11 +368,69 @@ describe("README.md: quoted values pinned to their sources", () => {
     expect(lines[6]).toContain("before each pack call (`dao_vote`)");
   });
 
+  it("final review M2: the dry-run sentence names every label the classifier gives, `inconclusive` included", () => {
+    // `satisfies` makes typecheck fail when a Classification is added or dropped and this list is not.
+    const labels = Object.keys({ callable: 0, "fails-without-deposit (runtime)": 0, "not in allowlist": 0, inconclusive: 0 } satisfies Record<Classification, 0>);
+    const line = lines.find((l) => l.startsWith("Before `wrap` signs, it dry-runs each method"));
+    expect(line).toBeDefined();
+    const listed = labels.map((l) => `\`${l}\``);
+    expect(line).toContain(`labels it ${listed.slice(0, -1).join(", ")} or ${listed.at(-1)};`);
+  });
+
+  it("final review M6: the secret-scan claim names the scan's scope, `ed25519:` values (scripts/scan-secrets.ts)", () => {
+    expect(read("scripts/scan-secrets.ts")).toContain("const ED25519_VALUE = /ed25519:(");
+    expect(section("Disclosures")).toContain("`npm run scan:secrets` finds 0 `ed25519:` private keys in the repo.");
+    expect(readme).not.toMatch(/finds 0 private keys/);
+  });
+
+  it("final review M5: the repo root holds no undisclosed third-party reference file (the VoltAgent DESIGN.md is gone)", () => {
+    expect(existsSync(join(REPO, "DESIGN.md"))).toBe(false);
+  });
+
+  it("final review M1: no sentence says a v3.31 DAO is refused (they are accepted since C-T20c); the src/packs row names every pack", () => {
+    const sentences = readme.split(/(?<=\.)\s+|\n/).filter((t) => t.includes("3.31"));
+    expect(sentences.length).toBeGreaterThan(0);
+    for (const t of sentences) expect(t, t).not.toMatch(/\brefuse[ds]?\b|has another `code_hash`/);
+    const row = lines.find((l) => l.startsWith("| `src/packs/` |"));
+    for (const id of ["sputnik-v2", "sputnik-v2-331", "counter"]) expect(row, id).toContain(`\`${id}\``);
+    expect(section("Disclosures")).toContain("it is also the `sputnik-v2-331` pack's pinned dry-run code");
+    expect(read("vendor/VENDORED.md")).toContain(
+      "- **Use:** for the compatibility run in `compat-sputnikv2-3.31/`, where the spike passes 27/27 unchanged, and the second pack's pinned dry-run code (`src/packs/sputnik-v2-331.pack.json`).",
+    );
+  });
+
+  it("final review I1: 2-of-2 is the demo DAO's quorum, never every DAO's (the card reads each DAO's own)", () => {
+    const fence = readme.indexOf("\n```text\n");
+    const card = readme.slice(fence, readme.indexOf("\n```\n", fence + 1)); // inspect of the judging session: the demo DAO
+    const prose = readme.replace(card, "");
+    const claims = prose.split("\n").filter((l) => /\b\d+-of-\d+\b/.test(l));
+    expect(claims.length).toBeGreaterThan(0);
+    for (const line of claims) expect(line, line).toMatch(/the DAO's quorum \(2-of-2 in the demo DAO\)/);
+    expect(section("Limits")).toContain("the DAO's quorum (2-of-2 in the demo DAO)");
+    expect(lines[9]).toContain("the DAO's quorum (2-of-2 in the demo DAO) is the control");
+  });
+
   it("Disclosures and Evidence keep the verbatim key sentence, the compat-wasm licence basis and the screener-log note (M2, M5)", () => {
     expect(section("Disclosures")).toContain(
       "Private keys live only in near-cli-rs's legacy keychain (`~/.near-credentials`) or in process memory; never in this repo.",
     );
     expect(section("Disclosures")).toContain("It has no licence file of its own: its licence basis is the factory's metadata");
-    expect(section("Evidence")).toContain("The logs of those runs are added by the screener runs.");
+    // I4 (user decision, 11 Nov): one screener log, the Claude Code run; the README says outright that no Codex run is included.
+    const evidence = section("Evidence");
+    expect(evidence).toContain("](demo/screeners/claude-p.log)");
+    expect(evidence).toContain("No Codex run is included: `codex exec` was not run.");
+    expect(evidence).not.toMatch(/codex-exec\.log|added by the screener runs|both screeners/i);
+  });
+
+  it("the screener log the README links exists, matches the version and date it quotes, and shows steps 1 and 2 at exit 0", () => {
+    expect(existsSync(join(REPO, "demo/screeners/codex-exec.log"))).toBe(false);
+    const log = read("demo/screeners/claude-p.log");
+    expect(section("Evidence")).toContain("Claude Code 2.1.322, 2026-11-11");
+    expect(log).toContain("`claude --version` -> 2.1.322 (Claude Code)");
+    expect(log).toContain("Date (UTC):   2026-11-11");
+    expect(log).toContain("--allowedTools");
+    expect(log).toContain("RESULT 20/20 PASS");
+    expect(log).toMatch(/exit 0/);
+    expect(log).not.toContain("\x1b");
   });
 });
